@@ -44,11 +44,6 @@ abstract class AbstractBoundary<Event : Any>(
      */
     override fun dispose() {
         disposables.dispose()
-        featureHolders.forEach {
-            if (it.isDisposable) {
-                it.feature.dispose()
-            }
-        }
     }
 
     /**
@@ -80,13 +75,11 @@ abstract class AbstractBoundary<Event : Any>(
      *
      * @param feature      see [Feature]
      * @param eventFilter  see [EventFilter]
-     * @param isDisposable whether this Feature should be disposed at the end of life cycle or not, default is true
      * @param Event        type of UI Events
      * @param Wish         type of Feature's Wishes
      */
     class FeatureHolder<in Event : Any, Wish : Any>(
-            val feature: Feature<*, Wish>,
-            val eventFilter: EventFilter<Event, Wish>,
-            val isDisposable: Boolean = true
+        val feature: Feature<*, Wish>,
+        val eventFilter: EventFilter<Event, Wish>
     )
 }

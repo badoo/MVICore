@@ -20,4 +20,5 @@ android:
 
 before_install:
   - chmod +x gradlew
+  - yes | sdkmanager "platforms;android-26"
   - yes | sdkmanager "platforms;android-27"

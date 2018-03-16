@@ -6,15 +6,12 @@ import io.reactivex.Observable
 /**
  * Actors are used to convert Wishes into Effects.
  * Each Effect will then be converted by [Reducer] into a new State.
- *
- * @param Wish   type of Feature's Wishes
- * @param State  type of Feature's State
- * @param Effect type of Feature's Effects
  */
 interface Actor<in Wish : Any, in State : Any, Effect : Any> {
+
     /**
-     * Converts Wishes into Effects. Called on Main thread.
-     * Effects must also be published on Main thread.
+     * Converts Wishes into Effects. Called on the main thread.
+     * Effects must also be published on the main thread.
      *
      * @param wish a Wish, call to action
      * @param state current state of the Feature

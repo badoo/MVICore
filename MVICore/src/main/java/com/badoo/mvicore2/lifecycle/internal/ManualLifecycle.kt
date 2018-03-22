@@ -6,5 +6,5 @@ import io.reactivex.Observer
 import io.reactivex.subjects.PublishSubject
 
 class ManualLifecycle(private val subject: PublishSubject<Event> = PublishSubject.create()) : Lifecycle.Manual,
-        Lifecycle by Lifecycle.custom(subject),
+        Lifecycle by Lifecycle.observable(subject),
         Observer<Event> by subject

@@ -20,7 +20,6 @@ import com.badoo.mvicore2.lifecycle.Lifecycle
 import com.badoo.mvicore2.lifecycle.Lifecycle.Event.START
 import com.badoo.mvicore2.lifecycle.Lifecycle.Event.STOP
 import com.badoo.mvicore2.store.Store
-import com.badoo.mvicore2.store.Store.Companion.create
 import io.reactivex.subjects.PublishSubject
 import org.junit.After
 import org.junit.Before
@@ -34,7 +33,7 @@ class DemoTest {
     private val stateTransformer = DemoStateTransformer
     private val lifecycle: Lifecycle.Manual = Lifecycle.manual()
     private val view: TestBindable<DemoViewModel, DemoEvent> = Bindable.test()
-    private val store: Store<DemoWish, DemoState> = create(DemoState(value = INITIAL_VALUE), DemoActor())
+    private val store: Store<DemoWish, DemoState> = Store.create(DemoState(value = INITIAL_VALUE), DemoActor())
     private val newsSource: PublishSubject<Unit> = PublishSubject.create()
     private val newTransformer = Demo.NewsTransformer
     private val binder = Binder.from(lifecycle)

@@ -17,7 +17,8 @@ import com.badoo.mvicore2.binder.Bindable
 import com.badoo.mvicore2.binder.Binder
 import com.badoo.mvicore2.binder.TestBindable
 import com.badoo.mvicore2.lifecycle.Lifecycle
-import com.badoo.mvicore2.lifecycle.TestLifecycle
+import com.badoo.mvicore2.lifecycle.Lifecycle.Event.START
+import com.badoo.mvicore2.lifecycle.Lifecycle.Event.STOP
 import com.badoo.mvicore2.store.Store
 import com.badoo.mvicore2.store.Store.Companion.create
 import io.reactivex.subjects.PublishSubject
@@ -31,7 +32,7 @@ class DemoTest {
 
     private val eventTransformer = DemoEventTransformer
     private val stateTransformer = DemoStateTransformer
-    private val lifecycle: TestLifecycle = Lifecycle.test()
+    private val lifecycle: Lifecycle.Manual = Lifecycle.manual()
     private val view: TestBindable<DemoViewModel, DemoEvent> = Bindable.test()
     private val store: Store<DemoWish, DemoState> = create(DemoState(value = INITIAL_VALUE), DemoActor())
     private val newsSource: PublishSubject<Unit> = PublishSubject.create()
@@ -45,13 +46,13 @@ class DemoTest {
     }
 
     @After
-    fun tearDown() = lifecycle.stop()
+    fun tearDown() = lifecycle.onNext(STOP)
 
     @Test
     fun `when started observe no values`() {
-        lifecycle.start()
+        lifecycle.onNext(START)
 
-        view.observer.assertValues(Value(INITIAL_VALUE))
+        view.received.assertValues(Value(INITIAL_VALUE))
     }
 
     @Test
@@ -59,11 +60,11 @@ class DemoTest {
         val increment = 5
         val expectedFinalValue = INITIAL_VALUE + increment
 
-        lifecycle.start()
+        lifecycle.onNext(START)
 
         view.output.onNext(DemoEvent(increment, ADD))
 
-        view.observer.assertValues(
+        view.received.assertValues(
                 Value(INITIAL_VALUE),
                 Loading,
                 Value(expectedFinalValue)
@@ -75,11 +76,11 @@ class DemoTest {
         val factor = 15
         val expectedFinalValue = INITIAL_VALUE * factor
 
-        lifecycle.start()
+        lifecycle.onNext(START)
 
         view.output.onNext(DemoEvent(factor, MULTIPLY))
 
-        view.observer.assertValues(
+        view.received.assertValues(
                 Value(INITIAL_VALUE),
                 Loading,
                 Value(expectedFinalValue)
@@ -94,7 +95,7 @@ class DemoTest {
 
         view.output.onNext(DemoEvent(factor, MULTIPLY))
 
-        view.observer.assertNoValues()
+        view.received.assertNoValues()
     }
 
     @Test
@@ -104,7 +105,7 @@ class DemoTest {
 
         newsSource.onNext(Unit)
 
-        view.observer.assertNoValues()
+        view.received.assertNoValues()
     }
 
     @Test
@@ -112,11 +113,11 @@ class DemoTest {
         val increment = 1
         val expectedFinalValue = INITIAL_VALUE + increment
 
-        lifecycle.start()
+        lifecycle.onNext(START)
 
         newsSource.onNext(Unit)
 
-        view.observer.assertValues(
+        view.received.assertValues(
                 Value(INITIAL_VALUE),
                 Loading,
                 Value(expectedFinalValue)

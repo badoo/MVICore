@@ -6,14 +6,14 @@ import io.reactivex.observers.TestObserver
 import io.reactivex.subjects.PublishSubject
 
 class TestBindable<In, Out>(
-        val input: PublishSubject<In> = PublishSubject.create(),
+        private val input: PublishSubject<In> = PublishSubject.create(),
         val output: PublishSubject<Out> = PublishSubject.create(),
-        val observer: TestObserver<In> = TestObserver.create()
+        val received: TestObserver<In> = TestObserver.create()
 ) : Bindable<In, Out>,
         ObservableSource<Out> by output,
         Observer<In> by input {
 
     init {
-        input.subscribe(observer)
+        input.subscribe(received)
     }
 }

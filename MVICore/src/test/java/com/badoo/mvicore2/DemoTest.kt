@@ -13,13 +13,14 @@ import com.badoo.mvicore2.Demo.DemoViewModel
 import com.badoo.mvicore2.Demo.DemoViewModel.Loading
 import com.badoo.mvicore2.Demo.DemoViewModel.Value
 import com.badoo.mvicore2.Demo.DemoWish
-import com.badoo.mvicore2.binder.Bindable
 import com.badoo.mvicore2.binder.Binder
-import com.badoo.mvicore2.binder.TestBindable
+import com.badoo.mvicore2.binder.extensions.TestBindable
 import com.badoo.mvicore2.lifecycle.Lifecycle
 import com.badoo.mvicore2.lifecycle.Lifecycle.Event.START
 import com.badoo.mvicore2.lifecycle.Lifecycle.Event.STOP
+import com.badoo.mvicore2.store.Engine
 import com.badoo.mvicore2.store.Store
+import com.badoo.mvicore2.store.extensions.create
 import io.reactivex.subjects.PublishSubject
 import org.junit.After
 import org.junit.Before
@@ -32,8 +33,8 @@ class DemoTest {
     private val eventTransformer = DemoEventTransformer
     private val stateTransformer = DemoStateTransformer
     private val lifecycle: Lifecycle.Manual = Lifecycle.manual()
-    private val view: TestBindable<DemoViewModel, DemoEvent> = Bindable.test()
-    private val store: Store<DemoWish, DemoState> = Store.create(DemoState(value = INITIAL_VALUE), DemoActor())
+    private val view: TestBindable<DemoViewModel, DemoEvent> = TestBindable.create()
+    private val store: Store<DemoWish, DemoState> = Engine.create(DemoState(value = INITIAL_VALUE), DemoActor())
     private val newsSource: PublishSubject<Unit> = PublishSubject.create()
     private val newTransformer = Demo.NewsTransformer
     private val binder = Binder.from(lifecycle)
@@ -51,7 +52,7 @@ class DemoTest {
     fun `when started observe no values`() {
         lifecycle.onNext(START)
 
-        view.received.assertValues(Value(INITIAL_VALUE))
+        view.observer.assertValues(Value(INITIAL_VALUE))
     }
 
     @Test
@@ -63,7 +64,7 @@ class DemoTest {
 
         view.output.onNext(DemoEvent(increment, ADD))
 
-        view.received.assertValues(
+        view.observer.assertValues(
                 Value(INITIAL_VALUE),
                 Loading,
                 Value(expectedFinalValue)
@@ -79,7 +80,7 @@ class DemoTest {
 
         view.output.onNext(DemoEvent(factor, MULTIPLY))
 
-        view.received.assertValues(
+        view.observer.assertValues(
                 Value(INITIAL_VALUE),
                 Loading,
                 Value(expectedFinalValue)
@@ -94,7 +95,7 @@ class DemoTest {
 
         view.output.onNext(DemoEvent(factor, MULTIPLY))
 
-        view.received.assertNoValues()
+        view.observer.assertNoValues()
     }
 
     @Test
@@ -104,7 +105,7 @@ class DemoTest {
 
         newsSource.onNext(Unit)
 
-        view.received.assertNoValues()
+        view.observer.assertNoValues()
     }
 
     @Test
@@ -116,7 +117,7 @@ class DemoTest {
 
         newsSource.onNext(Unit)
 
-        view.received.assertValues(
+        view.observer.assertValues(
                 Value(INITIAL_VALUE),
                 Loading,
                 Value(expectedFinalValue)

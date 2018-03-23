@@ -3,7 +3,7 @@ package com.badoo.mvicore2.binder
 import com.badoo.mvicore2.binder.internal.ScopedBinder
 import com.badoo.mvicore2.lifecycle.Lifecycle
 import io.reactivex.ObservableSource
-import io.reactivex.Observer
+import io.reactivex.functions.Consumer
 
 interface Binder {
 
@@ -16,8 +16,8 @@ interface Binder {
 
     interface OneWayBinding<A : Any, B : Any> {
 
-        fun bind(source: ObservableSource<A>, observer: Observer<B>)
-        fun bind(pair: Pair<ObservableSource<A>, Observer<B>>)
+        fun bind(source: ObservableSource<A>, observer: Consumer<B>)
+        fun bind(pair: Pair<ObservableSource<A>, Consumer<B>>)
     }
 
     interface TwoWayBinding<LeftIn : Any, LeftOut : Any, RightIn : Any, RightOut : Any> {

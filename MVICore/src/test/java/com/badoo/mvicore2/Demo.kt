@@ -10,8 +10,8 @@ import com.badoo.mvicore2.Demo.DemoViewModel.Value
 import com.badoo.mvicore2.Demo.DemoWish.Add
 import com.badoo.mvicore2.Demo.DemoWish.Multiply
 import com.badoo.mvicore2.binder.Transformer
-import com.badoo.mvicore2.store.Reducer.Actor
-import com.badoo.mvicore2.store.Reducer.Effect
+import com.badoo.mvicore2.store.extensions.SmartActor
+import com.badoo.mvicore2.store.extensions.SmartActor.Effect
 import io.reactivex.Observable
 import io.reactivex.Observable.just
 import io.reactivex.rxkotlin.cast
@@ -68,7 +68,7 @@ class Demo {
 
     // region store impl
 
-    class DemoActor : Actor<DemoWish, DemoState> {
+    class DemoActor : SmartActor<DemoWish, DemoState> {
         override fun invoke(wish: DemoWish, currentState: DemoState): Observable<Effect<DemoState>> = when (wish) {
             is Add -> add(wish)
             is Multiply -> multiply(wish)

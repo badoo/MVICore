@@ -14,11 +14,6 @@ import io.reactivex.Observer
 
 interface Lifecycle : ObservableSource<Event> {
 
-    fun startImmediately(): Lifecycle =
-            observable(Observable.wrap(this)
-                    .startWith(Event.START)
-                    .distinctUntilChanged())
-
     enum class Event {
         START,
         STOP
@@ -37,6 +32,11 @@ interface Lifecycle : ObservableSource<Event> {
         fun activity(activity: AppCompatActivity) = Android(activity.lifecycle).startImmediately()
 
         fun fragment(fragment: Fragment) = Android(fragment.lifecycle).startImmediately()
+
+        private fun Lifecycle.startImmediately(): Lifecycle =
+                observable(Observable.wrap(this)
+                        .startWith(Event.START)
+                        .distinctUntilChanged())
     }
 }
 

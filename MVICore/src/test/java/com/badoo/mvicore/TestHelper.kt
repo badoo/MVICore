@@ -22,16 +22,11 @@ import com.badoo.mvicore.TestHelper.TestWish.LoopbackWishInitial
 import com.badoo.mvicore.TestHelper.TestWish.MaybeFulfillable
 import com.badoo.mvicore.TestHelper.TestWish.TranslatesTo3Effects
 import com.badoo.mvicore.TestHelper.TestWish.Unfulfillable
-import com.badoo.mvicore.core.Engine
-import com.badoo.mvicore.core.Feature
 import com.badoo.mvicore.element.Actor
-import com.badoo.mvicore.element.Actor.Companion.combineEffects
 import com.badoo.mvicore.element.News
 import com.badoo.mvicore.element.Reducer
 import io.reactivex.Observable
 import io.reactivex.Observable.just
-import io.reactivex.Observer
-import io.reactivex.subjects.Subject
 import java.util.concurrent.TimeUnit
 
 class TestHelper {
@@ -119,12 +114,10 @@ class TestHelper {
             just(InstantEffect(amount))
 
         private fun asyncJob(): Observable<TestEffect> =
-            combineEffects(
-                immediate = StartedAsync,
-                additional = mockServerUseCase
+            mockServerUseCase
                     .execute()
                     .map { FinishedAsync(it) as TestEffect }
-            )
+                    .startWith(StartedAsync)
 
         private fun emit3effects(): Observable<TestEffect> =
             just(
@@ -150,25 +143,6 @@ class TestHelper {
                 LoopbackEffect3 -> loopBackState3
             }
     }
-
-    class TestFeature(
-        engine: Engine<TestState, TestWish, TestEffect>,
-        newsSubject: Observer<News>,
-        actorInvocationLog: Subject<Pair<TestWish, TestState>>
-    ) : Feature<TestState, TestWish, TestEffect>(
-        engine = engine,
-        initialState = TestState(
-            counter = TestHelper.initialCounter,
-            loading = TestHelper.initialLoading
-        ),
-        actor = TestActor(
-            invocationCallback = { wish, state ->
-                actorInvocationLog.onNext(wish to state)
-            }
-        ),
-        reducer = TestReducer(),
-        newsObserver = newsSubject
-    )
 
     sealed class TestUiEvent {
         object ImportantButtonClicked : TestUiEvent()

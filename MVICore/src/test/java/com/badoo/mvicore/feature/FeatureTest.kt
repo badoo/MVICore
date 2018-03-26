@@ -1,14 +1,12 @@
-package com.badoo.mvicore.core
+package com.badoo.mvicore.feature
 
 import com.badoo.mvicore.TestHelper
 import com.badoo.mvicore.TestHelper.Companion.conditionalMultiplier
 import com.badoo.mvicore.TestHelper.Companion.initialCounter
 import com.badoo.mvicore.TestHelper.Companion.initialLoading
 import com.badoo.mvicore.TestHelper.Companion.instantFulfillAmount1
-import com.badoo.mvicore.TestHelper.TestEffect
 import com.badoo.mvicore.TestHelper.TestEffect.ConditionalThingHappened
 import com.badoo.mvicore.TestHelper.TestEffect.LoopbackEffect1
-import com.badoo.mvicore.TestHelper.TestFeature
 import com.badoo.mvicore.TestHelper.TestState
 import com.badoo.mvicore.TestHelper.TestWish
 import com.badoo.mvicore.TestHelper.TestWish.FulfillableAsync
@@ -21,20 +19,19 @@ import com.badoo.mvicore.TestHelper.TestWish.MaybeFulfillable
 import com.badoo.mvicore.TestHelper.TestWish.TranslatesTo3Effects
 import com.badoo.mvicore.TestHelper.TestWish.Unfulfillable
 import com.badoo.mvicore.element.News
+import com.badoo.mvicore.extension.overrideAssertsForTesting
 import com.badoo.mvicore.onNextEvents
-import com.badoo.mvicore.overrideAssertsForTesting
 import io.reactivex.observers.TestObserver
 import io.reactivex.subjects.PublishSubject
 import junit.framework.Assert.assertEquals
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.MockitoAnnotations
 
-abstract class EngineTest(
-    private val engine: Engine<TestState, TestWish, TestEffect>
+abstract class FeatureTest(
+    private val featureFactory: FeatureFactory
 ) {
-    private lateinit var feature: Store<TestState, TestWish>
+    private lateinit var feature: Feature<TestWish, TestState>
     private lateinit var states: TestObserver<TestState>
     private lateinit var newsSubject: PublishSubject<News>
     private lateinit var newsSubjectTest: TestObserver<News>
@@ -53,14 +50,16 @@ abstract class EngineTest(
         actorInvocationLog = PublishSubject.create<Pair<TestWish, TestState>>()
         actorInvocationLogTest = actorInvocationLog.test()
 
-        feature = TestFeature(engine, newsSubject, actorInvocationLog)
-        feature.connectSource(wishSubject)
-        states = feature.states.test()
-    }
+        feature = featureFactory.create(
+            initialState = TestState(),
+            actor = TestHelper.TestActor({ wish, state -> actorInvocationLog.onNext(wish to state) }),
+            reducer = TestHelper.TestReducer()
+        )
 
-    @After
-    fun tearDown() {
-        feature.dispose()
+        val subscription = PublishSubject.create<TestState>()
+        states = subscription.test()
+        feature.subscribe(subscription)
+        feature.news.subscribe(newsSubject)
     }
 
     @Test
@@ -93,7 +92,7 @@ abstract class EngineTest(
             FulfillableInstantly1
         )
 
-        wishes.forEach { wishSubject.onNext(it) }
+        wishes.forEach { feature.accept(it) }
 
         assertEquals(1 + wishes.size, states.onNextEvents().size)
     }
@@ -106,7 +105,7 @@ abstract class EngineTest(
                 TranslatesTo3Effects
         )
 
-        wishes.forEach { wishSubject.onNext(it) }
+        wishes.forEach { feature.accept(it) }
 
         assertEquals(1 + wishes.size * 3, states.onNextEvents().size)
     }
@@ -119,7 +118,7 @@ abstract class EngineTest(
             FulfillableInstantly1
         )
 
-        wishes.forEach { wishSubject.onNext(it) }
+        wishes.forEach { feature.accept(it) }
 
         val state = states.onNextEvents().last() as TestState
         assertEquals(initialCounter + wishes.size * instantFulfillAmount1, state.counter)
@@ -132,7 +131,7 @@ abstract class EngineTest(
             FulfillableAsync
         )
 
-        wishes.forEach { wishSubject.onNext(it) }
+        wishes.forEach { feature.accept(it) }
 
         val state = states.onNextEvents().last() as TestState
         assertEquals(true, state.loading)
@@ -145,7 +144,7 @@ abstract class EngineTest(
                 FulfillableAsync
         )
 
-        wishes.forEach { wishSubject.onNext(it) }
+        wishes.forEach { feature.accept(it) }
 
         Thread.sleep(TestHelper.mockServerDelayMs + 200)
 
@@ -167,7 +166,7 @@ abstract class EngineTest(
             TranslatesTo3Effects    // maps to 3
         )
 
-        wishes.forEach { wishSubject.onNext(it) }
+        wishes.forEach { feature.accept(it) }
 
         assertEquals(8 + 1, states.onNextEvents().size)
     }
@@ -185,7 +184,7 @@ abstract class EngineTest(
             TranslatesTo3Effects    // should not affect state
         )
 
-        wishes.forEach { wishSubject.onNext(it) }
+        wishes.forEach { feature.accept(it) }
 
         val state = states.onNextEvents().last() as TestState
         assertEquals((initialCounter + 4 * instantFulfillAmount1) * conditionalMultiplier, state.counter)
@@ -205,7 +204,7 @@ abstract class EngineTest(
             TranslatesTo3Effects    // should not affect state
         )
 
-        wishes.forEach { wishSubject.onNext(it) }
+        wishes.forEach { feature.accept(it) }
 
         assertEquals(1, newsSubjectTest.onNextEvents().size)
         assertEquals(true, newsSubjectTest.onNextEvents().last() is ConditionalThingHappened)
@@ -215,48 +214,16 @@ abstract class EngineTest(
     fun `loopback from news to multiple wishes has access to correct latest state`() {
         newsSubject.subscribe {
             if (it is LoopbackEffect1) {
-                wishSubject.onNext(LoopbackWish2)
-                wishSubject.onNext(LoopbackWish3)
+                feature.accept(LoopbackWish2)
+                feature.accept(LoopbackWish3)
             }
         }
 
-        wishSubject.onNext(LoopbackWishInitial)
-        wishSubject.onNext(LoopbackWish1)
+        feature.accept(LoopbackWishInitial)
+        feature.accept(LoopbackWish1)
         assertEquals(4, actorInvocationLogTest.onNextEvents().size)
         assertEquals(LoopbackWish1 to TestHelper.loopBackInitialState, actorInvocationLogTest.onNextEvents()[1])
         assertEquals(LoopbackWish2 to TestHelper.loopBackState1, actorInvocationLogTest.onNextEvents()[2])
         assertEquals(LoopbackWish3 to TestHelper.loopBackState2, actorInvocationLogTest.onNextEvents()[3])
-    }
-
-    @Test
-    fun `an additional connected source can also trigger state emissions`() {
-        val additionalSource = PublishSubject.create<TestWish>()
-        val wishes = listOf<TestWish>(
-            // all of them are mapped to 1 effect each
-            FulfillableInstantly1,
-            FulfillableInstantly1,
-            FulfillableInstantly1
-        )
-
-        feature.connectSource(additionalSource)
-        wishes.forEach { additionalSource.onNext(it) }
-
-        assertEquals(1 + wishes.size, states.onNextEvents().size)
-    }
-
-    @Test
-    fun `disconnecting a source prevents state emissions triggered from that source`() {
-        feature.disconnectSource(wishSubject)
-        val wishes = listOf<TestWish>(
-            // all of them are mapped to 1 effect each
-            FulfillableInstantly1,
-            FulfillableInstantly1,
-            FulfillableInstantly1
-        )
-
-        wishes.forEach { wishSubject.onNext(it) }
-
-        // only 1 for initial state
-        assertEquals(1, states.onNextEvents().size)
     }
 }

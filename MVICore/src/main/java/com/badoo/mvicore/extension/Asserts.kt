@@ -1,4 +1,4 @@
-package com.badoo.mvicore
+package com.badoo.mvicore.extension
 
 import android.os.Looper
 import android.support.annotation.VisibleForTesting

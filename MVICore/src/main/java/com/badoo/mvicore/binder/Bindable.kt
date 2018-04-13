@@ -1,12 +1,6 @@
 package com.badoo.mvicore.binder
 
 import io.reactivex.ObservableSource
-import io.reactivex.Observer
+import io.reactivex.functions.Consumer
 
-interface Bindable<In, Out> : ObservableSource<Out>, Observer<In> {
-
-    companion object {
-
-        fun <In, Out> test(): TestBindable<In, Out> = TestBindable()
-    }
-}
+interface Bindable<In, Out> : ObservableSource<Out>, Consumer<In>

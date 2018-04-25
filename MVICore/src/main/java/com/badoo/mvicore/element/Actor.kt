@@ -1,9 +1,9 @@
 package com.badoo.mvicore.element
 
 import android.support.annotation.MainThread
-import io.reactivex.Observable
+import io.reactivex.disposables.Disposable
 
-interface Actor<in Wish : Any, in State : Any, Effect : Any> {
+interface Actor<in Wish : Any, in State : Any, out Effect : Any> {
     @MainThread
-    operator fun invoke(wish: Wish, state: State): Observable<Effect>
+    operator fun invoke(wish: Wish, state: State, produce: (Effect) -> State): Disposable?
 }

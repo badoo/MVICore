@@ -21,8 +21,8 @@ interface Binder {
     }
 
     interface TwoWayBinding<LeftIn : Any, LeftOut : Any, RightIn : Any, RightOut : Any> {
-        fun bind(left: Bindable<LeftIn, LeftOut>, right: Bindable<RightIn, RightOut>)
-        fun bind(pair: Pair<Bindable<LeftIn, LeftOut>, Bindable<RightIn, RightOut>>)
+        fun bind(left: Processor<LeftIn, LeftOut>, right: Processor<RightIn, RightOut>)
+        fun bind(pair: Pair<Processor<LeftIn, LeftOut>, Processor<RightIn, RightOut>>)
     }
 
     companion object {

@@ -27,6 +27,7 @@ import com.badoo.mvicore.element.News
 import com.badoo.mvicore.element.Reducer
 import io.reactivex.Observable
 import io.reactivex.Observable.just
+import io.reactivex.disposables.Disposable
 import java.util.concurrent.TimeUnit
 
 class TestHelper {
@@ -83,48 +84,50 @@ class TestHelper {
     class TestActor(
         private val invocationCallback: (wish: TestWish, state: TestState) -> Unit,
         private val mockServerUseCase: MockServerUseCase = MockServerUseCase()
-    ) : Actor<TestWish, TestState, TestEffect> {
+    ) : Actor<TestWish, TestState, TestEffect>() {
 
-        override fun invoke(wish: TestWish, state: TestState): Observable<TestEffect> {
+        override fun invoke(wish: TestWish): Disposable? {
             invocationCallback.invoke(wish, state)
             return when (wish) {
                 Unfulfillable -> noop()
                 MaybeFulfillable -> conditional(state)
-                FulfillableInstantly1 -> fulfill(amount = instantFulfillAmount1)
-                FulfillableInstantly2 -> fulfill(amount = instantFulfillAmount2)
+                FulfillableInstantly1 -> fulfill(instantFulfillAmount1)
+                FulfillableInstantly2 -> fulfill(instantFulfillAmount2)
                 FulfillableAsync -> asyncJob()
                 TranslatesTo3Effects -> emit3effects()
-                LoopbackWishInitial -> just(LoopbackEffectInitial)
-                LoopbackWish1 -> just(LoopbackEffect1)
-                LoopbackWish2 -> just(LoopbackEffect2)
-                LoopbackWish3 -> just(LoopbackEffect3)
-                is IncreasCounterBy -> just(InstantEffect(amount = wish.value))
+                LoopbackWishInitial -> dispatch(LoopbackEffectInitial)
+                LoopbackWish1 -> dispatch(LoopbackEffect1)
+                LoopbackWish2 -> dispatch(LoopbackEffect2)
+                LoopbackWish3 -> dispatch(LoopbackEffect3)
+                is IncreasCounterBy -> dispatch(InstantEffect(amount = wish.value))
             }
         }
 
-        private fun noop(): Observable<TestEffect> =
-                Observable.empty()
+        private fun noop(): Disposable? = null
 
-        private fun conditional(state: TestState): Observable<TestEffect> =
+        private fun conditional(state: TestState): Disposable? =
             // depends on current state
-            if (state.counter % divisorForModuloInConditionalWish == 0) just(ConditionalThingHappened(multiplier = conditionalMultiplier))
-            else noop()
+            if (state.counter % divisorForModuloInConditionalWish == 0) {
+                dispatch(ConditionalThingHappened(multiplier = conditionalMultiplier))
+            } else {
+                noop()
+            }
 
-        private fun fulfill(amount: Int): Observable<TestEffect> =
-            just(InstantEffect(amount))
+        private fun fulfill(amount: Int): Disposable? = dispatch(InstantEffect(amount))
 
-        private fun asyncJob(): Observable<TestEffect> =
+        private fun asyncJob(): Disposable? =
             mockServerUseCase
                     .execute()
                     .map { FinishedAsync(it) as TestEffect }
                     .startWith(StartedAsync)
+                    .subscribe { dispatch(it) }
 
-        private fun emit3effects(): Observable<TestEffect> =
-            just(
-                MultipleEffect1,
-                MultipleEffect2,
-                MultipleEffect3
-            )
+        private fun emit3effects(): Disposable? {
+            dispatch(MultipleEffect1)
+            dispatch(MultipleEffect2)
+            dispatch(MultipleEffect3)
+            return null
+        }
     }
 
     class TestReducer : Reducer<TestState, TestEffect> {

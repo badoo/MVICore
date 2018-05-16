@@ -19,20 +19,24 @@ class DefaultFeature<Wish : Any, State : Any, Effect : Any>(
     private val stateSubject = BehaviorSubject.createDefault(initialState)
     private val newsSubject: Subject<News> = PublishSubject.create()
     private val disposables = Disposables()
-    private val processEffect: (Effect) -> State = ::processEffect
 
     override val state: State
-        get() = stateSubject.value
+        get() {
+            assertOnMainThread()
+            return stateSubject.value
+        }
 
     override val news: ObservableSource<News>
         get() = newsSubject
 
+    init {
+        actor.init(::state, ::processEffect)
+    }
 
     override fun accept(wish: Wish) {
+        assertOnMainThread()
         if (!isDisposed) {
-            actor
-                .invoke(wish, state, processEffect)
-                ?.also(disposables::add)
+            actor.invoke(wish)?.also(disposables::add)
         }
     }
 
@@ -47,10 +51,9 @@ class DefaultFeature<Wish : Any, State : Any, Effect : Any>(
     override fun isDisposed(): Boolean =
         disposables.isDisposed
 
-    private fun processEffect(effect: Effect): State {
+    private fun processEffect(effect: Effect) {
         assertOnMainThread()
-
-        return reducer
+        reducer
             .invoke(state, effect)
             .also {
                 stateSubject.onNext(it)

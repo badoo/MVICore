@@ -84,51 +84,50 @@ class TestHelper {
     class TestActor(
         private val invocationCallback: (wish: TestWish, state: TestState) -> Unit,
         private val mockServerUseCase: MockServerUseCase = MockServerUseCase()
-    ) : Actor<TestWish, TestState, TestEffect> {
+    ) : Actor<TestWish, TestState, TestEffect>() {
 
-        override fun invoke(wish: TestWish, state: TestState, produce: (TestEffect) -> TestState): Disposable? {
+        override fun invoke(wish: TestWish): Disposable? {
             invocationCallback.invoke(wish, state)
             return when (wish) {
                 Unfulfillable -> noop()
-                MaybeFulfillable -> conditional(state, produce)
-                FulfillableInstantly1 -> fulfill(instantFulfillAmount1, produce)
-                FulfillableInstantly2 -> fulfill(instantFulfillAmount2, produce)
-                FulfillableAsync -> asyncJob(produce)
-                TranslatesTo3Effects -> emit3effects(produce)
-                LoopbackWishInitial -> just(LoopbackEffectInitial).subscribe { produce(it) }
-                LoopbackWish1 -> just(LoopbackEffect1).subscribe { produce(it) }
-                LoopbackWish2 -> just(LoopbackEffect2).subscribe { produce(it) }
-                LoopbackWish3 -> just(LoopbackEffect3).subscribe { produce(it) }
-                is IncreasCounterBy -> just(InstantEffect(amount = wish.value)).subscribe { produce(it) }
+                MaybeFulfillable -> conditional(state)
+                FulfillableInstantly1 -> fulfill(instantFulfillAmount1)
+                FulfillableInstantly2 -> fulfill(instantFulfillAmount2)
+                FulfillableAsync -> asyncJob()
+                TranslatesTo3Effects -> emit3effects()
+                LoopbackWishInitial -> dispatch(LoopbackEffectInitial)
+                LoopbackWish1 -> dispatch(LoopbackEffect1)
+                LoopbackWish2 -> dispatch(LoopbackEffect2)
+                LoopbackWish3 -> dispatch(LoopbackEffect3)
+                is IncreasCounterBy -> dispatch(InstantEffect(amount = wish.value))
             }
         }
 
         private fun noop(): Disposable? = null
 
-        private fun conditional(state: TestState, produce: (TestEffect) -> TestState): Disposable? =
+        private fun conditional(state: TestState): Disposable? =
             // depends on current state
             if (state.counter % divisorForModuloInConditionalWish == 0) {
-                just(ConditionalThingHappened(multiplier = conditionalMultiplier)).subscribe { produce(it) }
+                dispatch(ConditionalThingHappened(multiplier = conditionalMultiplier))
             } else {
                 noop()
             }
 
-        private fun fulfill(amount: Int, produce: (TestEffect) -> TestState): Disposable? =
-            just(InstantEffect(amount)).subscribe { produce(it) }
+        private fun fulfill(amount: Int): Disposable? = dispatch(InstantEffect(amount))
 
-        private fun asyncJob(produce: (TestEffect) -> TestState): Disposable? =
+        private fun asyncJob(): Disposable? =
             mockServerUseCase
                     .execute()
                     .map { FinishedAsync(it) as TestEffect }
                     .startWith(StartedAsync)
-                    .subscribe { produce(it) }
+                    .subscribe { dispatch(it) }
 
-        private fun emit3effects(produce: (TestEffect) -> TestState): Disposable? =
-            just(
-                MultipleEffect1,
-                MultipleEffect2,
-                MultipleEffect3
-            ).subscribe { produce(it) }
+        private fun emit3effects(): Disposable? {
+            dispatch(MultipleEffect1)
+            dispatch(MultipleEffect2)
+            dispatch(MultipleEffect3)
+            return null
+        }
     }
 
     class TestReducer : Reducer<TestState, TestEffect> {

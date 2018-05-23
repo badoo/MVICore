@@ -6,7 +6,7 @@ import com.badoo.mvicore.featurewithaction.implementation.SimpleFeature.State
 import com.badoo.mvicore.featurewithaction.implementation.SimpleFeature.Wish
 import io.reactivex.Observable
 
-class SimpleFeature : SimpleFeatureAdapter<Wish, Effect, State>(
+class SimpleFeature : ActorReducerFeature<Wish, Effect, State>(
     initialState = State(),
     actor = Actor(),
     reducer = Reducer()

@@ -25,6 +25,7 @@ import com.badoo.mvicore.TestHelper.TestWish.Unfulfillable
 import com.badoo.mvicore.element.Actor
 import com.badoo.mvicore.element.News
 import com.badoo.mvicore.element.Reducer
+import com.badoo.mvicore.feature.DefaultFeature
 import io.reactivex.Observable
 import io.reactivex.Observable.just
 import java.util.concurrent.TimeUnit
@@ -83,9 +84,9 @@ class TestHelper {
     class TestActor(
         private val invocationCallback: (wish: TestWish, state: TestState) -> Unit,
         private val mockServerUseCase: MockServerUseCase = MockServerUseCase()
-    ) : Actor<TestWish, TestState, TestEffect> {
+    ) : DefaultFeature.Actor<TestState, TestWish, TestEffect> {
 
-        override fun invoke(wish: TestWish, state: TestState): Observable<TestEffect> {
+        override fun invoke(state: TestState, wish: TestWish): Observable<TestEffect> {
             invocationCallback.invoke(wish, state)
             return when (wish) {
                 Unfulfillable -> noop()
@@ -127,7 +128,7 @@ class TestHelper {
             )
     }
 
-    class TestReducer : Reducer<TestState, TestEffect> {
+    class TestReducer : DefaultFeature.Reducer<TestState, TestEffect> {
         override fun invoke(state: TestState, effect: TestEffect): TestState =
             when (effect) {
                 is StartedAsync -> state.copy(loading = true)

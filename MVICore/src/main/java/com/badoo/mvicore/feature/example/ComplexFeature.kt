@@ -9,7 +9,7 @@ import io.reactivex.Observable
 
 class ComplexFeature : DefaultFeature<Wish, Action, Effect, State>(
     initialState = State(),
-    wishMapper = WishMapperImpl(),
+    wishToAction = { wish -> Action.Execute(wish) },
     actor = Actor(),
     reducer = Reducer(),
     postProcessor = PostProcessorImpl()
@@ -33,14 +33,6 @@ class ComplexFeature : DefaultFeature<Wish, Action, Effect, State>(
         object SomeEffect1 : Effect()
         object SomeEffect2 : Effect()
         object SomeEffect3 : Effect()
-    }
-
-    class WishMapperImpl :
-        WishMapper<Wish, Action> {
-        override fun invoke(wish: Wish): Action =
-            Action.Execute(
-                wish
-            )
     }
 
     class Actor : DefaultFeature.Actor<State, Action, Effect> {

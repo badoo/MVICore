@@ -5,7 +5,7 @@ import com.badoo.mvicore.element.Reducer
 import io.reactivex.Observable
 import io.reactivex.Observable.just
 
-abstract class ReducerFeature<Wish : Any, State : Any>(
+open class ReducerFeature<Wish : Any, State : Any>(
     initialState: State,
     reducer: Reducer<State, Wish>
 ) : DefaultFeature<Wish, Wish, Wish, State>(

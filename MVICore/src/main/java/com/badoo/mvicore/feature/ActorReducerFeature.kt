@@ -3,7 +3,7 @@ package com.badoo.mvicore.feature
 import com.badoo.mvicore.element.Actor
 import com.badoo.mvicore.element.Reducer
 
-abstract class ActorReducerFeature<Wish : Any, in Effect : Any, State : Any>(
+open class ActorReducerFeature<Wish : Any, in Effect : Any, State : Any>(
     initialState: State,
     actor: Actor<State, Wish, Effect>,
     reducer: Reducer<State, Effect>

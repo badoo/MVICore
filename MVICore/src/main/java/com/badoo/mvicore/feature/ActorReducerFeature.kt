@@ -1,6 +1,4 @@
-package com.badoo.mvicore.featurewithaction.implementation
-
-import com.badoo.mvicore.feature.DefaultFeature
+package com.badoo.mvicore.feature
 
 abstract class ActorReducerFeature<Wish : Any, Effect : Any, State : Any>(
     initialState: State,

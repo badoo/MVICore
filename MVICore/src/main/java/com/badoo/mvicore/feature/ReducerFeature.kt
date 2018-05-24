@@ -1,6 +1,5 @@
-package com.badoo.mvicore.featurewithaction.implementation
+package com.badoo.mvicore.feature
 
-import com.badoo.mvicore.feature.DefaultFeature
 import io.reactivex.Observable
 import io.reactivex.Observable.just
 

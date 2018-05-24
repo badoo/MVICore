@@ -84,6 +84,7 @@ open class DefaultFeature<Wish : Any, Action : Any, Effect : Any, State : Any>(
     }
 
     override fun accept(wish: Wish) {
+        assertOnMainThread()
         val action = wishToAction.invoke(wish)
         actionSubject.onNext(action)
     }

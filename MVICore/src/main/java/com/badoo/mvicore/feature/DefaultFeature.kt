@@ -11,7 +11,7 @@ import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 
-open class DefaultFeature<Wish : Any, Action : Any, Effect : Any, State : Any>(
+open class DefaultFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any>(
     initialState: State,
     bootstrapper: Bootstrapper<Action>? = null,
     private val wishToAction: (Wish) -> Action,
@@ -32,7 +32,7 @@ open class DefaultFeature<Wish : Any, Action : Any, Effect : Any, State : Any>(
         operator fun invoke(state: State, effect: Effect): State
     }
 
-    interface PostProcessor<Action : Any, Effect : Any, State : Any> {
+    interface PostProcessor<Action : Any, in Effect : Any, in State : Any> {
         operator fun invoke(action: Action, effect: Effect, state: State): Action?
     }
 

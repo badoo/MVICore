@@ -1,6 +1,6 @@
 package com.badoo.mvicore.feature
 
-abstract class ActorReducerFeature<Wish : Any, Effect : Any, State : Any>(
+abstract class ActorReducerFeature<Wish : Any, in Effect : Any, State : Any>(
     initialState: State,
     actor: Actor<State, Wish, Effect>,
     reducer: Reducer<State, Effect>

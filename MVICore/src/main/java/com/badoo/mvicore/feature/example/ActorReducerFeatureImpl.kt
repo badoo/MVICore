@@ -1,15 +1,17 @@
-package com.badoo.mvicore.featurewithaction.implementation
+package com.badoo.mvicore.feature.example
 
-import com.badoo.mvicore.feature.DefaultFeature
-import com.badoo.mvicore.featurewithaction.implementation.SimpleFeature.Effect
-import com.badoo.mvicore.featurewithaction.implementation.SimpleFeature.State
-import com.badoo.mvicore.featurewithaction.implementation.SimpleFeature.Wish
+import com.badoo.mvicore.element.Actor
+import com.badoo.mvicore.element.Reducer
+import com.badoo.mvicore.feature.ActorReducerFeature
+import com.badoo.mvicore.feature.example.ActorReducerFeatureImpl.Effect
+import com.badoo.mvicore.feature.example.ActorReducerFeatureImpl.State
+import com.badoo.mvicore.feature.example.ActorReducerFeatureImpl.Wish
 import io.reactivex.Observable
 
-class SimpleFeature : ActorReducerFeature<Wish, Effect, State>(
+class ActorReducerFeatureImpl : ActorReducerFeature<Wish, Effect, State>(
     initialState = State(),
-    actor = Actor(),
-    reducer = Reducer()
+    actor = ActorImpl(),
+    reducer = ReducerImpl()
 ) {
     data class State(
         val i: Int = 0
@@ -27,7 +29,7 @@ class SimpleFeature : ActorReducerFeature<Wish, Effect, State>(
         object SomeEffect3 : Effect()
     }
 
-    class Actor : DefaultFeature.Actor<State, Wish, Effect> {
+    class ActorImpl : Actor<State, Wish, Effect> {
         override fun invoke(state: State, wish: Wish): Observable<Effect> = when (wish) {
             Wish.PublicWish1 -> TODO()
             Wish.PublicWish2 -> TODO()
@@ -35,7 +37,7 @@ class SimpleFeature : ActorReducerFeature<Wish, Effect, State>(
         }
     }
 
-    class Reducer : DefaultFeature.Reducer<State, Effect> {
+    class ReducerImpl : Reducer<State, Effect> {
         override fun invoke(state: State, effect: Effect): State {
             TODO("not implemented")
         }

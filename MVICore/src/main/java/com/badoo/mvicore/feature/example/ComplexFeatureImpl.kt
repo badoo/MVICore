@@ -1,17 +1,20 @@
-package com.badoo.mvicore.featurewithaction.implementation
+package com.badoo.mvicore.feature.example
 
+import com.badoo.mvicore.element.Actor
+import com.badoo.mvicore.element.PostProcessor
+import com.badoo.mvicore.element.Reducer
 import com.badoo.mvicore.feature.DefaultFeature
-import com.badoo.mvicore.featurewithaction.implementation.ComplexFeature.Action
-import com.badoo.mvicore.featurewithaction.implementation.ComplexFeature.Effect
-import com.badoo.mvicore.featurewithaction.implementation.ComplexFeature.State
-import com.badoo.mvicore.featurewithaction.implementation.ComplexFeature.Wish
+import com.badoo.mvicore.feature.example.ComplexFeatureImpl.Action
+import com.badoo.mvicore.feature.example.ComplexFeatureImpl.Effect
+import com.badoo.mvicore.feature.example.ComplexFeatureImpl.State
+import com.badoo.mvicore.feature.example.ComplexFeatureImpl.Wish
 import io.reactivex.Observable
 
-class ComplexFeature : DefaultFeature<Wish, Action, Effect, State>(
+class ComplexFeatureImpl : DefaultFeature<Wish, Action, Effect, State>(
     initialState = State(),
     wishToAction = { wish -> Action.Execute(wish) },
-    actor = Actor(),
-    reducer = Reducer(),
+    actor = ActorImpl(),
+    reducer = ReducerImpl(),
     postProcessor = PostProcessorImpl()
 ) {
     data class State(
@@ -35,7 +38,7 @@ class ComplexFeature : DefaultFeature<Wish, Action, Effect, State>(
         object SomeEffect3 : Effect()
     }
 
-    class Actor : DefaultFeature.Actor<State, Action, Effect> {
+    class ActorImpl : Actor<State, Action, Effect> {
         override fun invoke(state: State, action: Action): Observable<Effect> = when (action) {
             is Action.Execute -> when (action.wish) {
                 Wish.PublicWish1 -> TODO()
@@ -46,7 +49,7 @@ class ComplexFeature : DefaultFeature<Wish, Action, Effect, State>(
         }
     }
 
-    class Reducer : DefaultFeature.Reducer<State, Effect> {
+    class ReducerImpl : Reducer<State, Effect> {
         override fun invoke(state: State, effect: Effect): State {
             TODO("not implemented")
         }

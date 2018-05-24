@@ -1,8 +1,12 @@
 package com.badoo.mvicore.feature
 
+import com.badoo.mvicore.element.Actor
+import com.badoo.mvicore.element.Bootstrapper
 import com.badoo.mvicore.element.News
+import com.badoo.mvicore.element.PostProcessor
+import com.badoo.mvicore.element.Reducer
+import com.badoo.mvicore.element.WishToAction
 import com.badoo.mvicore.extension.assertOnMainThread
-import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import io.reactivex.Observer
 import io.reactivex.disposables.CompositeDisposable
@@ -14,27 +18,11 @@ import io.reactivex.subjects.Subject
 open class DefaultFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any>(
     initialState: State,
     bootstrapper: Bootstrapper<Action>? = null,
-    private val wishToAction: (Wish) -> Action,
+    private val wishToAction: WishToAction<Wish, Action>,
     private val actor: Actor<State, Action, Effect>,
     private val reducer: Reducer<State, Effect>,
     private val postProcessor: PostProcessor<Action, Effect, State>? = null
 ) : Feature<Wish, State> {
-
-    interface Bootstrapper<Action : Any> {
-        operator fun invoke(): Observable<Action>
-    }
-
-    interface Actor<State : Any, in Action : Any, Effect : Any> {
-        operator fun invoke(state: State, action: Action): Observable<Effect>
-    }
-
-    interface Reducer<State : Any, in Effect : Any> {
-        operator fun invoke(state: State, effect: Effect): State
-    }
-
-    interface PostProcessor<Action : Any, in Effect : Any, in State : Any> {
-        operator fun invoke(action: Action, effect: Effect, state: State): Action?
-    }
 
     private val actionSubject = PublishSubject.create<Action>()
     private val stateSubject = BehaviorSubject.createDefault(initialState)

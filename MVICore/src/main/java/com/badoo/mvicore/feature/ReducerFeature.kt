@@ -1,5 +1,7 @@
 package com.badoo.mvicore.feature
 
+import com.badoo.mvicore.element.Actor
+import com.badoo.mvicore.element.Reducer
 import io.reactivex.Observable
 import io.reactivex.Observable.just
 
@@ -12,7 +14,7 @@ abstract class ReducerFeature<Wish : Any, State : Any>(
     actor = BypassActor(),
     reducer = reducer
 ) {
-    class BypassActor<State : Any, Wish : Any> : DefaultFeature.Actor<State, Wish, Wish> {
+    class BypassActor<in State : Any, Wish : Any> : Actor<State, Wish, Wish> {
         override fun invoke(state: State, wish: Wish): Observable<Wish> =
             just(wish)
     }

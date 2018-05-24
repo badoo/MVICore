@@ -84,7 +84,7 @@ class TestHelper {
     class TestActor(
         private val invocationCallback: (wish: TestWish, state: TestState) -> Unit,
         private val mockServerUseCase: MockServerUseCase = MockServerUseCase()
-    ) : DefaultFeature.Actor<TestState, TestWish, TestEffect> {
+    ) : Actor<TestState, TestWish, TestEffect> {
 
         override fun invoke(state: TestState, wish: TestWish): Observable<TestEffect> {
             invocationCallback.invoke(wish, state)
@@ -128,7 +128,7 @@ class TestHelper {
             )
     }
 
-    class TestReducer : DefaultFeature.Reducer<TestState, TestEffect> {
+    class TestReducer : Reducer<TestState, TestEffect> {
         override fun invoke(state: TestState, effect: TestEffect): TestState =
             when (effect) {
                 is StartedAsync -> state.copy(loading = true)

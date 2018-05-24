@@ -13,14 +13,14 @@ import io.reactivex.subjects.Subject
 
 open class DefaultFeature<Wish : Any, Action : Any, Effect : Any, State : Any>(
     initialState: State,
-    bootStrapper: BootStrapper<Action>? = null,
+    bootstrapper: Bootstrapper<Action>? = null,
     private val wishToAction: (Wish) -> Action,
     private val actor: Actor<State, Action, Effect>,
     private val reducer: Reducer<State, Effect>,
     private val postProcessor: PostProcessor<Action, Effect, State>? = null
 ) : Feature<Wish, State> {
 
-    interface BootStrapper<Action : Any> {
+    interface Bootstrapper<Action : Any> {
         operator fun invoke(): Observable<Action>
     }
 
@@ -42,7 +42,7 @@ open class DefaultFeature<Wish : Any, Action : Any, Effect : Any, State : Any>(
     private val disposables = CompositeDisposable()
 
     init {
-        bootStrapper?.let {
+        bootstrapper?.let {
             disposables += it.invoke().subscribe {
                 actionSubject.onNext(it)
             }

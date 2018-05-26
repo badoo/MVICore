@@ -7,7 +7,7 @@ import io.reactivex.functions.Consumer
 
 data class Connection<T>(
     val from: ObservableSource<out T>? = null,
-    val to: Consumer<in T>,
+    val to: Consumer<T>,
     val name: String? = null
 ) {
     companion object {

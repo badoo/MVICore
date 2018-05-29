@@ -25,7 +25,6 @@ import com.badoo.mvicore.TestHelper.TestWish.Unfulfillable
 import com.badoo.mvicore.element.Actor
 import com.badoo.mvicore.element.News
 import com.badoo.mvicore.element.Reducer
-import com.badoo.mvicore.feature.DefaultFeature
 import io.reactivex.Observable
 import io.reactivex.Observable.just
 import java.util.concurrent.TimeUnit

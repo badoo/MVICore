@@ -33,7 +33,6 @@ class DefaultFeatureTest {
     private lateinit var states: TestObserver<TestState>
     private lateinit var newsSubject: PublishSubject<News>
     private lateinit var newsSubjectTest: TestObserver<News>
-    private lateinit var wishSubject: PublishSubject<TestWish>
     private lateinit var actorInvocationLog: PublishSubject<Pair<TestWish, TestState>>
     private lateinit var actorInvocationLogTest: TestObserver<Pair<TestWish, TestState>>
 
@@ -44,7 +43,6 @@ class DefaultFeatureTest {
 
         newsSubject = PublishSubject.create<News>()
         newsSubjectTest = newsSubject.test()
-        wishSubject = PublishSubject.create<TestWish>()
         actorInvocationLog = PublishSubject.create<Pair<TestWish, TestState>>()
         actorInvocationLogTest = actorInvocationLog.test()
 
@@ -75,9 +73,9 @@ class DefaultFeatureTest {
 
     @Test
     fun `there should be no state emission besides the initial one for unfulfillable wishes`() {
-        wishSubject.onNext(Unfulfillable)
-        wishSubject.onNext(Unfulfillable)
-        wishSubject.onNext(Unfulfillable)
+        feature.accept(Unfulfillable)
+        feature.accept(Unfulfillable)
+        feature.accept(Unfulfillable)
 
         assertEquals(1, states.onNextEvents().size)
     }
@@ -85,7 +83,7 @@ class DefaultFeatureTest {
     @Test
     fun `there should be the same amount of states as wishes that translate 1 - 1 to effects plus one for initial state`() {
         val wishes = listOf<TestWish>(
-                // all of them are mapped to 1 effect each
+            // all of them are mapped to 1 effect each
             FulfillableInstantly1,
             FulfillableInstantly1,
             FulfillableInstantly1

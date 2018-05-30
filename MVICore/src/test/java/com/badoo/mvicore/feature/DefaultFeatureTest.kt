@@ -22,11 +22,13 @@ import com.badoo.mvicore.element.News
 import com.badoo.mvicore.extension.overrideAssertsForTesting
 import com.badoo.mvicore.onNextEvents
 import io.reactivex.observers.TestObserver
+import io.reactivex.schedulers.TestScheduler
 import io.reactivex.subjects.PublishSubject
-import junit.framework.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.mockito.MockitoAnnotations
+import java.util.concurrent.TimeUnit
+import kotlin.test.assertEquals
 
 class DefaultFeatureTest {
     private lateinit var feature: Feature<TestWish, TestState>
@@ -97,9 +99,9 @@ class DefaultFeatureTest {
     @Test
     fun `there should be 3 times as many states as wishes that translate 1 - 3 to effects plus one for initial state`() {
         val wishes = listOf<TestWish>(
-                TranslatesTo3Effects,
-                TranslatesTo3Effects,
-                TranslatesTo3Effects
+            TranslatesTo3Effects,
+            TranslatesTo3Effects,
+            TranslatesTo3Effects
         )
 
         wishes.forEach { feature.accept(it) }
@@ -125,7 +127,7 @@ class DefaultFeatureTest {
     @Test
     fun `intermediate state matches expectations in async case`() {
         val wishes = listOf(
-            FulfillableAsync
+            FulfillableAsync(0, TestScheduler())
         )
 
         wishes.forEach { feature.accept(it) }
@@ -137,13 +139,17 @@ class DefaultFeatureTest {
 
     @Test
     fun `final state matches expectations in async case`() {
+        val mockServerDelayMs: Long = 10
+        val testScheduler = TestScheduler()
+
         val wishes = listOf(
-                FulfillableAsync
+            FulfillableAsync(mockServerDelayMs, testScheduler)
         )
 
         wishes.forEach { feature.accept(it) }
 
-        Thread.sleep(TestHelper.mockServerDelayMs + 200)
+        testScheduler.advanceTimeBy(mockServerDelayMs, TimeUnit.MILLISECONDS)
+
 
         val state = states.onNextEvents().last() as TestState
         assertEquals(false, state.loading)
@@ -210,7 +216,7 @@ class DefaultFeatureTest {
     @Test
     fun `loopback from news to multiple wishes has access to correct latest state`() {
         newsSubject.subscribe {
-            if (it is LoopbackEffect1) {
+            if (it === LoopbackEffect1) {
                 feature.accept(LoopbackWish2)
                 feature.accept(LoopbackWish3)
             }

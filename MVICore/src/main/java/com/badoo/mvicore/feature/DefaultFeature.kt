@@ -59,10 +59,7 @@ open class DefaultFeature<Wish : Any, in Action : Any, in Effect : Any, State : 
     }
 
     override val state: State
-        get() {
-            threadVerifier.verify()
-            return stateSubject.value!!
-        }
+        get() = stateSubject.value!!
 
     override val news: ObservableSource<News>
         get() = newsSubject

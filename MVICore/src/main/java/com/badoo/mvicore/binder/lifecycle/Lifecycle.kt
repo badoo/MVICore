@@ -13,16 +13,11 @@ interface Lifecycle : ObservableSource<Lifecycle.Event> {
 
     companion object {
 
-        fun indeterminate(): Lifecycle =
-            Indeterminate
-
         fun manual(): ManualLifecycle =
             ManualLifecycle()
 
         fun wrap(source: ObservableSource<Event>) : Lifecycle =
             FromObservableSource(source)
-
-        internal object Indeterminate : Lifecycle, ObservableSource<Lifecycle.Event> by Observable.never()
     }
 
 }

@@ -11,7 +11,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
 
 class Binder(
-    private val lifecycle: Lifecycle? = Lifecycle.indeterminate()
+    private val lifecycle: Lifecycle? = null
 ) : Disposable {
     private val disposables = CompositeDisposable()
 
@@ -34,14 +34,17 @@ class Binder(
         disposables.add(
             Observable
                 .wrap(source)
-                .takeUntil(Observable.wrap(lifecycle).filter { it == END } )
-                .apply {
+                .let { observable ->
+                    lifecycle?.let {
+                        observable.takeUntil(Observable.wrap(lifecycle).filter { it == END })
+                    } ?: observable
+                }
+                .let { observable ->
                     middleware?.let {
-                        this
+                        observable
                             .doOnNext { middleware.onElement(connection, it) }
-                            .doOnComplete { middleware.onComplete(connection) }
-                            .doOnDispose { middleware.onComplete(connection) }
-                    }
+                            .doFinally { middleware.onComplete(connection) }
+                    } ?: observable
                 }
                 .subscribe(middleware ?: consumer)
         )

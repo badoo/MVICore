@@ -19,7 +19,7 @@ import com.badoo.mvicore.TestHelper.TestWish.MaybeFulfillable
 import com.badoo.mvicore.TestHelper.TestWish.TranslatesTo3Effects
 import com.badoo.mvicore.TestHelper.TestWish.Unfulfillable
 import com.badoo.mvicore.element.News
-import com.badoo.mvicore.extension.overrideAssertsForTesting
+import com.badoo.mvicore.extension.SameThreadVerifier
 import com.badoo.mvicore.onNextEvents
 import io.reactivex.observers.TestObserver
 import io.reactivex.schedulers.TestScheduler
@@ -42,7 +42,7 @@ class DefaultFeatureTest {
     @Before
     fun prepare() {
         MockitoAnnotations.initMocks(this)
-        overrideAssertsForTesting(false)
+        SameThreadVerifier.isEnabled = false
 
         newsSubject = PublishSubject.create<News>()
         newsSubjectTest = newsSubject.test()
@@ -153,6 +153,7 @@ class DefaultFeatureTest {
         wishes.forEach { feature.accept(it) }
 
         actorScheduler.advanceTimeBy(mockServerDelayMs, TimeUnit.MILLISECONDS)
+
 
 
         val state = states.onNextEvents().last() as TestState

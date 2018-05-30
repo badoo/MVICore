@@ -6,7 +6,7 @@ import com.badoo.mvicore.element.News
 import com.badoo.mvicore.element.PostProcessor
 import com.badoo.mvicore.element.Reducer
 import com.badoo.mvicore.element.WishToAction
-import com.badoo.mvicore.extension.assertOnMainThread
+import com.badoo.mvicore.extension.SameThreadVerifier
 import io.reactivex.ObservableSource
 import io.reactivex.Observer
 import io.reactivex.disposables.CompositeDisposable
@@ -28,6 +28,7 @@ open class DefaultFeature<Wish : Any, in Action : Any, in Effect : Any, State : 
     private val stateSubject = BehaviorSubject.createDefault(initialState)
     private val newsSubject: Subject<News> = PublishSubject.create()
     private val disposables = CompositeDisposable()
+    private val threadVerifier = SameThreadVerifier()
 
     init {
         bootstrapper?.let {
@@ -40,7 +41,7 @@ open class DefaultFeature<Wish : Any, in Action : Any, in Effect : Any, State : 
             .flatMap { action ->
                 actor.invoke(state, action)
                     .doOnNext { effect ->
-                        assertOnMainThread()
+                        threadVerifier.verify()
                         val newState = reducer.invoke(state, effect)
                         stateSubject.onNext(newState)
                         postProcessor?.let {
@@ -58,10 +59,7 @@ open class DefaultFeature<Wish : Any, in Action : Any, in Effect : Any, State : 
     }
 
     override val state: State
-        get() {
-            assertOnMainThread()
-            return stateSubject.value!!
-        }
+        get() = stateSubject.value!!
 
     override val news: ObservableSource<News>
         get() = newsSubject
@@ -72,7 +70,7 @@ open class DefaultFeature<Wish : Any, in Action : Any, in Effect : Any, State : 
     }
 
     override fun accept(wish: Wish) {
-        assertOnMainThread()
+        threadVerifier.verify()
         val action = wishToAction.invoke(wish)
         actionSubject.onNext(action)
     }

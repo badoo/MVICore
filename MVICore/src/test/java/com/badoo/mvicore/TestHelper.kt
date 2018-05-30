@@ -57,7 +57,7 @@ class TestHelper {
         object MaybeFulfillable : TestWish()
         object FulfillableInstantly1 : TestWish()
         object FulfillableInstantly2 : TestWish()
-        data class FulfillableAsync(val delayMs: Long, val scheduler: Scheduler) : TestWish()
+        data class FulfillableAsync(val delayMs: Long) : TestWish()
         object TranslatesTo3Effects : TestWish()
         object LoopbackWishInitial : TestWish()
         object LoopbackWish1 : TestWish()
@@ -81,7 +81,8 @@ class TestHelper {
     }
 
     class TestActor(
-        private val invocationCallback: (wish: TestWish, state: TestState) -> Unit
+        private val invocationCallback: (wish: TestWish, state: TestState) -> Unit,
+        private val asyncWorkScheduler: Scheduler
     ) : Actor<TestState, TestWish, TestEffect> {
 
         override fun invoke(state: TestState, wish: TestWish): Observable<TestEffect> {
@@ -116,7 +117,7 @@ class TestHelper {
 
         private fun asyncJob(wish: FulfillableAsync): Observable<TestEffect> =
             just(delayedFulfillAmount)
-                .delay(wish.delayMs, TimeUnit.MILLISECONDS, wish.scheduler)
+                .delay(wish.delayMs, TimeUnit.MILLISECONDS, asyncWorkScheduler)
                 .map { FinishedAsync(it) as TestEffect }
                 .startWith(StartedAsync)
 

@@ -37,6 +37,7 @@ class DefaultFeatureTest {
     private lateinit var newsSubjectTest: TestObserver<News>
     private lateinit var actorInvocationLog: PublishSubject<Pair<TestWish, TestState>>
     private lateinit var actorInvocationLogTest: TestObserver<Pair<TestWish, TestState>>
+    private lateinit var actorScheduler: TestScheduler
 
     @Before
     fun prepare() {
@@ -47,11 +48,15 @@ class DefaultFeatureTest {
         newsSubjectTest = newsSubject.test()
         actorInvocationLog = PublishSubject.create<Pair<TestWish, TestState>>()
         actorInvocationLogTest = actorInvocationLog.test()
+        actorScheduler = TestScheduler()
 
         feature = DefaultFeature(
             initialState = TestState(),
             wishToAction = { wish -> wish },
-            actor = TestHelper.TestActor({ wish, state -> actorInvocationLog.onNext(wish to state) }),
+            actor = TestHelper.TestActor(
+                { wish, state -> actorInvocationLog.onNext(wish to state) },
+                actorScheduler
+            ),
             reducer = TestHelper.TestReducer()
         )
 
@@ -127,7 +132,7 @@ class DefaultFeatureTest {
     @Test
     fun `intermediate state matches expectations in async case`() {
         val wishes = listOf(
-            FulfillableAsync(0, TestScheduler())
+            FulfillableAsync(0)
         )
 
         wishes.forEach { feature.accept(it) }
@@ -140,15 +145,14 @@ class DefaultFeatureTest {
     @Test
     fun `final state matches expectations in async case`() {
         val mockServerDelayMs: Long = 10
-        val testScheduler = TestScheduler()
 
         val wishes = listOf(
-            FulfillableAsync(mockServerDelayMs, testScheduler)
+            FulfillableAsync(mockServerDelayMs)
         )
 
         wishes.forEach { feature.accept(it) }
 
-        testScheduler.advanceTimeBy(mockServerDelayMs, TimeUnit.MILLISECONDS)
+        actorScheduler.advanceTimeBy(mockServerDelayMs, TimeUnit.MILLISECONDS)
 
 
         val state = states.onNextEvents().last() as TestState

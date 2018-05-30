@@ -10,7 +10,7 @@ class SameThreadVerifier {
 
     fun verify() {
         if (isEnabled && (Thread.currentThread().id != originalThread)) {
-            throw AssertionError("Not on main thread")
+            throw AssertionError("Not on same thread as previous verification")
         }
     }
 

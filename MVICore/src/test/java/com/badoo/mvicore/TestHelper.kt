@@ -23,7 +23,7 @@ import com.badoo.mvicore.TestHelper.TestWish.MaybeFulfillable
 import com.badoo.mvicore.TestHelper.TestWish.TranslatesTo3Effects
 import com.badoo.mvicore.TestHelper.TestWish.Unfulfillable
 import com.badoo.mvicore.element.Actor
-import com.badoo.mvicore.element.News
+import com.badoo.mvicore.element.NewsPublisher
 import com.badoo.mvicore.element.Reducer
 import io.reactivex.Observable
 import io.reactivex.Observable.just
@@ -70,14 +70,19 @@ class TestHelper {
         object StartedAsync : TestEffect()
         data class InstantEffect(val amount: Int) : TestEffect()
         data class FinishedAsync(val amount: Int) : TestEffect()
-        data class ConditionalThingHappened(val multiplier: Int) : TestEffect(), News
+        data class ConditionalThingHappened(val multiplier: Int) : TestEffect()
         object MultipleEffect1 : TestEffect()
         object MultipleEffect2 : TestEffect()
         object MultipleEffect3 : TestEffect()
         object LoopbackEffectInitial : TestEffect()
-        object LoopbackEffect1 : TestEffect(), News
+        object LoopbackEffect1 : TestEffect()
         object LoopbackEffect2 : TestEffect()
         object LoopbackEffect3 : TestEffect()
+    }
+
+    sealed class TestNews {
+        object ConditionalThingHappened : TestNews()
+        object Loopback : TestNews()
     }
 
     class TestActor(
@@ -143,6 +148,15 @@ class TestHelper {
                 LoopbackEffect1 -> loopBackState1
                 LoopbackEffect2 -> loopBackState2
                 LoopbackEffect3 -> loopBackState3
+            }
+    }
+
+    class TestNewsPublisher : NewsPublisher<TestWish, TestEffect, TestState, TestNews> {
+        override fun invoke(wish: TestWish, effect: TestEffect, state: TestState): TestNews? =
+            when (effect) {
+                is ConditionalThingHappened -> TestNews.ConditionalThingHappened
+                LoopbackEffect1 -> TestNews.Loopback
+                else -> null
             }
     }
 }

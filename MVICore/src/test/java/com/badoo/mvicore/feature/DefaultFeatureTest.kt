@@ -6,7 +6,7 @@ import com.badoo.mvicore.TestHelper.Companion.initialCounter
 import com.badoo.mvicore.TestHelper.Companion.initialLoading
 import com.badoo.mvicore.TestHelper.Companion.instantFulfillAmount1
 import com.badoo.mvicore.TestHelper.TestEffect.ConditionalThingHappened
-import com.badoo.mvicore.TestHelper.TestEffect.LoopbackEffect1
+import com.badoo.mvicore.TestHelper.TestNews
 import com.badoo.mvicore.TestHelper.TestState
 import com.badoo.mvicore.TestHelper.TestWish
 import com.badoo.mvicore.TestHelper.TestWish.FulfillableAsync
@@ -18,7 +18,6 @@ import com.badoo.mvicore.TestHelper.TestWish.LoopbackWishInitial
 import com.badoo.mvicore.TestHelper.TestWish.MaybeFulfillable
 import com.badoo.mvicore.TestHelper.TestWish.TranslatesTo3Effects
 import com.badoo.mvicore.TestHelper.TestWish.Unfulfillable
-import com.badoo.mvicore.element.News
 import com.badoo.mvicore.extension.SameThreadVerifier
 import com.badoo.mvicore.onNextEvents
 import io.reactivex.observers.TestObserver
@@ -31,10 +30,10 @@ import java.util.concurrent.TimeUnit
 import kotlin.test.assertEquals
 
 class DefaultFeatureTest {
-    private lateinit var feature: Feature<TestWish, TestState>
+    private lateinit var feature: Feature<TestWish, TestState, TestNews>
     private lateinit var states: TestObserver<TestState>
-    private lateinit var newsSubject: PublishSubject<News>
-    private lateinit var newsSubjectTest: TestObserver<News>
+    private lateinit var newsSubject: PublishSubject<TestNews>
+    private lateinit var newsSubjectTest: TestObserver<TestNews>
     private lateinit var actorInvocationLog: PublishSubject<Pair<TestWish, TestState>>
     private lateinit var actorInvocationLogTest: TestObserver<Pair<TestWish, TestState>>
     private lateinit var actorScheduler: TestScheduler
@@ -44,7 +43,7 @@ class DefaultFeatureTest {
         MockitoAnnotations.initMocks(this)
         SameThreadVerifier.isEnabled = false
 
-        newsSubject = PublishSubject.create<News>()
+        newsSubject = PublishSubject.create<TestNews>()
         newsSubjectTest = newsSubject.test()
         actorInvocationLog = PublishSubject.create<Pair<TestWish, TestState>>()
         actorInvocationLogTest = actorInvocationLog.test()
@@ -57,7 +56,8 @@ class DefaultFeatureTest {
                 { wish, state -> actorInvocationLog.onNext(wish to state) },
                 actorScheduler
             ),
-            reducer = TestHelper.TestReducer()
+            reducer = TestHelper.TestReducer(),
+            newsPublisher = TestHelper.TestNewsPublisher()
         )
 
         val subscription = PublishSubject.create<TestState>()
@@ -215,13 +215,13 @@ class DefaultFeatureTest {
         wishes.forEach { feature.accept(it) }
 
         assertEquals(1, newsSubjectTest.onNextEvents().size)
-        assertEquals(true, newsSubjectTest.onNextEvents().last() is ConditionalThingHappened)
+        assertEquals(true, newsSubjectTest.onNextEvents().last() === TestNews.ConditionalThingHappened)
     }
 
     @Test
     fun `loopback from news to multiple wishes has access to correct latest state`() {
         newsSubject.subscribe {
-            if (it === LoopbackEffect1) {
+            if (it === TestNews.Loopback) {
                 feature.accept(LoopbackWish2)
                 feature.accept(LoopbackWish3)
             }

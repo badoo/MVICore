@@ -3,7 +3,7 @@ package com.badoo.mvicore.feature
 import com.badoo.mvicore.consumer.wrap
 import com.badoo.mvicore.element.Actor
 import com.badoo.mvicore.element.Bootstrapper
-import com.badoo.mvicore.element.News
+import com.badoo.mvicore.element.NewsPublisher
 import com.badoo.mvicore.element.PostProcessor
 import com.badoo.mvicore.element.Reducer
 import com.badoo.mvicore.element.WishToAction
@@ -17,18 +17,18 @@ import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 
-open class DefaultFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any>(
+open class DefaultFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any, News : Any>(
     initialState: State,
     bootstrapper: Bootstrapper<Action>? = null,
     private val wishToAction: WishToAction<Wish, Action>,
     actor: Actor<State, Action, Effect>,
     reducer: Reducer<State, Effect>,
-    postProcessor: PostProcessor<Action, Effect, State>? = null
-) : Feature<Wish, State> {
+    postProcessor: PostProcessor<Action, Effect, State>? = null,
+    newsPublisher: NewsPublisher<Action, Effect, State, News>? = null
+) : Feature<Wish, State, News> {
 
     private val threadVerifier = SameThreadVerifier()
     private val actionSubject = PublishSubject.create<Action>()
-    private val effectSubject = PublishSubject.create<Effect>()
     private val stateSubject = BehaviorSubject.createDefault(initialState)
     private val newsSubject = PublishSubject.create<News>()
     private val disposables = DisposableCollection()
@@ -37,10 +37,16 @@ open class DefaultFeature<Wish : Any, in Action : Any, in Effect : Any, State : 
         actionSubject
     ).wrap(wrapperOf = postProcessor)}
 
+    private val newsPublisherWrapper = newsPublisher?.let { NewsPublisherWrapper(
+        newsPublisher,
+        newsSubject
+    ).wrap(wrapperOf = newsPublisher)}
+
     private val reducerWrapper = ReducerWrapper(
         reducer,
         stateSubject,
-        postProcessorWrapper
+        postProcessorWrapper,
+        newsPublisherWrapper
     ).wrap(wrapperOf = reducer)
 
     private val actorWrapper = ActorWrapper(
@@ -48,8 +54,7 @@ open class DefaultFeature<Wish : Any, in Action : Any, in Effect : Any, State : 
         disposables,
         actor,
         stateSubject,
-        reducerWrapper,
-        newsSubject
+        reducerWrapper
     ).wrap(wrapperOf = actor)
 
     init {
@@ -110,8 +115,7 @@ open class DefaultFeature<Wish : Any, in Action : Any, in Effect : Any, State : 
         private val disposables: DisposableCollection,
         private val actor: Actor<State, Action, Effect>,
         private val stateSubject: BehaviorSubject<State>,
-        private val reducerWrapper: Consumer<Triple<State, Action, Effect>>,
-        private val news: Subject<News>
+        private val reducerWrapper: Consumer<Triple<State, Action, Effect>>
     ) : Consumer<Pair<State, Action>> {
 
         // record-playback entry point
@@ -124,15 +128,11 @@ open class DefaultFeature<Wish : Any, in Action : Any, in Effect : Any, State : 
             if (disposables.isDisposed) return
 
             disposables += actor
-                    .invoke(state, action)
-                    .doOnNext { effect ->
-                        invokeReducer(stateSubject.value!!, action, effect)
-                    }
-                    .subscribe {
-                        if (it is News) {
-                            news.onNext(it)
-                        }
-                    }
+                .invoke(state, action)
+                .doOnNext { effect ->
+                    invokeReducer(stateSubject.value!!, action, effect)
+                }
+                .subscribe()
         }
 
         private fun invokeReducer(state: State, action: Action, effect: Effect) {
@@ -153,7 +153,8 @@ open class DefaultFeature<Wish : Any, in Action : Any, in Effect : Any, State : 
     private class ReducerWrapper<State : Any, Action : Any, Effect : Any>(
         private val reducer: Reducer<State, Effect>,
         private val states: Subject<State>,
-        private val postProcessorWrapper: Consumer<Triple<Action, Effect, State>>?
+        private val postProcessorWrapper: Consumer<Triple<Action, Effect, State>>?,
+        private val newsPublisherWrapper: Consumer<Triple<Action, Effect, State>>?
     ) : Consumer<Triple<State, Action, Effect>> {
 
         // record-playback entry point
@@ -166,6 +167,7 @@ open class DefaultFeature<Wish : Any, in Action : Any, in Effect : Any, State : 
             val newState = reducer.invoke(state, effect)
             states.onNext(newState)
             invokePostProcessor(action, effect, newState)
+            invokeNewsPublisher(action, effect, newState)
         }
 
         private fun invokePostProcessor(action: Action, effect: Effect, state: State) {
@@ -177,6 +179,19 @@ open class DefaultFeature<Wish : Any, in Action : Any, in Effect : Any, State : 
                 } else {
                     // there are middlewares around it, and we must treat it as Consumer
                     postProcessorWrapper.accept(Triple(action, effect, state))
+                }
+            }
+        }
+
+        private fun invokeNewsPublisher(action: Action, effect: Effect, state: State) {
+            newsPublisherWrapper?.let {
+                if (newsPublisherWrapper is NewsPublisherWrapper<Action, Effect, State, *>) {
+                    // there's no middleware around it, so we can optimise here by not creating any extra objects
+                    newsPublisherWrapper.publishNews(action, effect, state)
+
+                } else {
+                    // there are middlewares around it, and we must treat it as Consumer
+                    newsPublisherWrapper.accept(Triple(action, effect, state))
                 }
             }
         }
@@ -196,6 +211,24 @@ open class DefaultFeature<Wish : Any, in Action : Any, in Effect : Any, State : 
         fun postProcess(action: Action, effect: Effect, state: State) {
             postProcessor.invoke(action, effect, state)?.let {
                 actions.onNext(it)
+            }
+        }
+    }
+
+    private class NewsPublisherWrapper<Action : Any, Effect : Any, State : Any, News : Any>(
+        private val newsPublisher: NewsPublisher<Action, Effect, State, News>,
+        private val news: Subject<News>
+    ) : Consumer<Triple<Action, Effect, State>> {
+
+        // record-playback entry point
+        override fun accept(t: Triple<Action, Effect, State>) {
+            val (action, effect, state) = t
+            publishNews(action, effect, state)
+        }
+
+        fun publishNews(action: Action, effect: Effect, state: State) {
+            newsPublisher.invoke(action, effect, state)?.let {
+                news.onNext(it)
             }
         }
     }

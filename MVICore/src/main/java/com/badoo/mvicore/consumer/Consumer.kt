@@ -10,10 +10,22 @@ object Middlewares {
     val forNamed: MutableList<ConsumerMiddlewareFactory<*>> = mutableListOf()
 }
 
+interface NonWrappable
+
+interface ConditionallyWrappable {
+    fun isWrappable(): Boolean
+}
+
 fun <T : Any> Consumer<T>.wrap(
     standalone: Boolean = true,
-    name: String? = null
+    name: String? = null,
+    postfix: String? = null,
+    wrapperOf: Any? = null
 ): Consumer<T> {
+    val target = wrapperOf ?: this
+    if (target is NonWrappable) return this
+    if (target is ConditionallyWrappable && !target.isWrappable()) return this
+
     var current = this
     val additional = if (standalone || name != null) Middlewares.forNamed else null
     val middlewares = Middlewares.forAll + (additional ?: emptyList())
@@ -23,7 +35,11 @@ fun <T : Any> Consumer<T>.wrap(
     }
 
     if (current is ConsumerMiddleware<T> && standalone) {
-        (current as ConsumerMiddleware<T>).initAsStandalone(name)
+        (current as ConsumerMiddleware<T>).initAsStandalone(
+            name = name,
+            wrapperOf = target,
+            postfix = postfix
+        )
     }
 
     return current

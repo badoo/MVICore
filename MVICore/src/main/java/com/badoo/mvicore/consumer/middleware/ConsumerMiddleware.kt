@@ -21,10 +21,10 @@ abstract class ConsumerMiddleware<T : Any>(
         return current
     }
 
-    fun initAsStandalone(name: String? = null) {
+    fun initAsStandalone(name: String? = null, wrapperOf: Any? = null, postfix: String?) {
         standaloneConnection = Connection(
             to = innerMost,
-            name = name ?: "${innerMost.javaClass.canonicalName}.input"
+            name = name ?: "${(wrapperOf ?: innerMost).javaClass.canonicalName}.${postfix ?: "input"}"
         ).also {
             onBind(it)
         }

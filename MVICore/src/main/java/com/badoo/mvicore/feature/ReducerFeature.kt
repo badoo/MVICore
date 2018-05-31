@@ -1,5 +1,6 @@
 package com.badoo.mvicore.feature
 
+import com.badoo.mvicore.consumer.NonWrappable
 import com.badoo.mvicore.element.Actor
 import com.badoo.mvicore.element.Bootstrapper
 import com.badoo.mvicore.element.Reducer
@@ -17,7 +18,7 @@ open class ReducerFeature<Wish : Any, State : Any>(
     actor = BypassActor(),
     reducer = reducer
 ) {
-    class BypassActor<in State : Any, Wish : Any> : Actor<State, Wish, Wish> {
+    class BypassActor<in State : Any, Wish : Any> : Actor<State, Wish, Wish>, NonWrappable {
         override fun invoke(state: State, wish: Wish): Observable<Wish> =
             just(wish)
     }

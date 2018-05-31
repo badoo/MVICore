@@ -1,16 +1,18 @@
 package com.badoo.mvicore.feature
 
+import com.badoo.mvicore.consumer.wrap
 import com.badoo.mvicore.element.Actor
 import com.badoo.mvicore.element.Bootstrapper
 import com.badoo.mvicore.element.News
 import com.badoo.mvicore.element.PostProcessor
 import com.badoo.mvicore.element.Reducer
 import com.badoo.mvicore.element.WishToAction
+import com.badoo.mvicore.extension.asConsumer
+import com.badoo.mvicore.feature.internal.DisposableCollection
 import com.badoo.mvicore.extension.SameThreadVerifier
 import io.reactivex.ObservableSource
 import io.reactivex.Observer
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.functions.Consumer
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
@@ -19,43 +21,52 @@ open class DefaultFeature<Wish : Any, in Action : Any, in Effect : Any, State : 
     initialState: State,
     bootstrapper: Bootstrapper<Action>? = null,
     private val wishToAction: WishToAction<Wish, Action>,
-    private val actor: Actor<State, Action, Effect>,
-    private val reducer: Reducer<State, Effect>,
-    private val postProcessor: PostProcessor<Action, Effect, State>? = null
+    actor: Actor<State, Action, Effect>,
+    reducer: Reducer<State, Effect>,
+    postProcessor: PostProcessor<Action, Effect, State>? = null
 ) : Feature<Wish, State> {
 
-    private val actionSubject = PublishSubject.create<Action>()
-    private val stateSubject = BehaviorSubject.createDefault(initialState)
-    private val newsSubject: Subject<News> = PublishSubject.create()
-    private val disposables = CompositeDisposable()
     private val threadVerifier = SameThreadVerifier()
+    private val actionSubject = PublishSubject.create<Action>()
+    private val effectSubject = PublishSubject.create<Effect>()
+    private val stateSubject = BehaviorSubject.createDefault(initialState)
+    private val newsSubject = PublishSubject.create<News>()
+    private val disposables = DisposableCollection()
+    private val postProcessorWrapper = postProcessor?.let { PostProcessorWrapper(
+        postProcessor,
+        actionSubject
+    ).wrap(wrapperOf = postProcessor)}
+
+    private val reducerWrapper = ReducerWrapper(
+        reducer,
+        stateSubject,
+        postProcessorWrapper
+    ).wrap(wrapperOf = reducer)
+
+    private val actorWrapper = ActorWrapper(
+        threadVerifier,
+        disposables,
+        actor,
+        stateSubject,
+        reducerWrapper,
+        newsSubject
+    ).wrap(wrapperOf = actor)
 
     init {
         bootstrapper?.let {
+            val bootstrapperOutput = actionSubject.asConsumer().wrap(
+                wrapperOf = it,
+                postfix = "output"
+            )
+
             disposables += it.invoke().subscribe {
-                actionSubject.onNext(it)
+                bootstrapperOutput.accept(it)
             }
         }
 
-        disposables += actionSubject
-            .flatMap { action ->
-                actor.invoke(state, action)
-                    .doOnNext { effect ->
-                        threadVerifier.verify()
-                        val newState = reducer.invoke(state, effect)
-                        stateSubject.onNext(newState)
-                        postProcessor?.let {
-                            it.invoke(action, effect, newState)?.let {
-                                actionSubject.onNext(it)
-                            }
-                        }
-                    }
-            }
-            .subscribe {
-                if (it is News) {
-                    newsSubject.onNext(it)
-                }
-            }
+        disposables += actionSubject.subscribe {
+            invokeActor(state, it)
+        }
     }
 
     override val state: State
@@ -70,7 +81,6 @@ open class DefaultFeature<Wish : Any, in Action : Any, in Effect : Any, State : 
     }
 
     override fun accept(wish: Wish) {
-        threadVerifier.verify()
         val action = wishToAction.invoke(wish)
         actionSubject.onNext(action)
     }
@@ -81,4 +91,112 @@ open class DefaultFeature<Wish : Any, in Action : Any, in Effect : Any, State : 
 
     override fun isDisposed(): Boolean =
         disposables.isDisposed
+
+    private fun invokeActor(state: State, action: Action) {
+        if (isDisposed) return
+
+        if (actorWrapper is ActorWrapper<State, Action, *>) {
+            // there's no middleware around it, so we can optimise here by not creating any extra objects
+            actorWrapper.processAction(state, action)
+
+        } else {
+            // there are middlewares around it, and we must treat it as Consumer
+            actorWrapper.accept(Pair(state, action))
+        }
+    }
+
+    private class ActorWrapper<State : Any, Action : Any, Effect: Any>(
+        private val threadVerifier: SameThreadVerifier,
+        private val disposables: DisposableCollection,
+        private val actor: Actor<State, Action, Effect>,
+        private val stateSubject: BehaviorSubject<State>,
+        private val reducerWrapper: Consumer<Triple<State, Action, Effect>>,
+        private val news: Subject<News>
+    ) : Consumer<Pair<State, Action>> {
+
+        // record-playback entry point
+        override fun accept(t: Pair<State, Action>) {
+            val (state, action) = t
+            processAction(state, action)
+        }
+
+        fun processAction(state: State, action: Action) {
+            if (disposables.isDisposed) return
+
+            disposables += actor
+                    .invoke(state, action)
+                    .doOnNext { effect ->
+                        invokeReducer(stateSubject.value!!, action, effect)
+                    }
+                    .subscribe {
+                        if (it is News) {
+                            news.onNext(it)
+                        }
+                    }
+        }
+
+        private fun invokeReducer(state: State, action: Action, effect: Effect) {
+            if (disposables.isDisposed) return
+
+            threadVerifier.verify()
+            if (reducerWrapper is ReducerWrapper) {
+                // there's no middleware around it, so we can optimise here by not creating any extra objects
+                reducerWrapper.processEffect(state, action, effect)
+
+            } else {
+                // there are middlewares around it, and we must treat it as Consumer
+                reducerWrapper.accept(Triple(state, action, effect))
+            }
+        }
+    }
+
+    private class ReducerWrapper<State : Any, Action : Any, Effect : Any>(
+        private val reducer: Reducer<State, Effect>,
+        private val states: Subject<State>,
+        private val postProcessorWrapper: Consumer<Triple<Action, Effect, State>>?
+    ) : Consumer<Triple<State, Action, Effect>> {
+
+        // record-playback entry point
+        override fun accept(t: Triple<State, Action, Effect>) {
+            val (state, action, effect) = t
+            processEffect(state, action, effect)
+        }
+
+        fun processEffect(state: State, action: Action, effect: Effect) {
+            val newState = reducer.invoke(state, effect)
+            states.onNext(newState)
+            invokePostProcessor(action, effect, newState)
+        }
+
+        private fun invokePostProcessor(action: Action, effect: Effect, state: State) {
+            postProcessorWrapper?.let {
+                if (postProcessorWrapper is PostProcessorWrapper) {
+                    // there's no middleware around it, so we can optimise here by not creating any extra objects
+                    postProcessorWrapper.postProcess(action, effect, state)
+
+                } else {
+                    // there are middlewares around it, and we must treat it as Consumer
+                    postProcessorWrapper.accept(Triple(action, effect, state))
+                }
+            }
+        }
+    }
+
+    private class PostProcessorWrapper<Action : Any, Effect : Any, State : Any>(
+        private val postProcessor: PostProcessor<Action, Effect, State>,
+        private val actions: Subject<Action>
+    ) : Consumer<Triple<Action, Effect, State>> {
+
+        // record-playback entry point
+        override fun accept(t: Triple<Action, Effect, State>) {
+            val (action, effect, state) = t
+            postProcess(action, effect, state)
+        }
+
+        fun postProcess(action: Action, effect: Effect, state: State) {
+            postProcessor.invoke(action, effect, state)?.let {
+                actions.onNext(it)
+            }
+        }
+    }
 }

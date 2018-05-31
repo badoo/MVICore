@@ -7,7 +7,7 @@ import io.reactivex.functions.Consumer
 
 data class Connection<T>(
     val from: ObservableSource<out T>? = null,
-    val to: Consumer<in T>,
+    val to: Consumer<T>,
     val name: String? = null
 ) {
     companion object {
@@ -21,7 +21,7 @@ data class Connection<T>(
         "<${name ?: ANONYMOUS}> (${from ?: "?"} --> $to)"
 }
 
-infix fun <Out, In> Pair<ObservableSource<out Out>, Consumer<in In>>.using(transformer: (Out) -> In?) =
+infix fun <Out, In> Pair<ObservableSource<out Out>, Consumer<In>>.using(transformer: (Out) -> In?): Connection<In> =
     Connection(
         from = Observable
             .wrap(first)
@@ -29,7 +29,7 @@ infix fun <Out, In> Pair<ObservableSource<out Out>, Consumer<in In>>.using(trans
         to = second
     )
 
-infix fun <T> Pair<ObservableSource<out T>, Consumer<in T>>.named(name: String) =
+infix fun <T> Pair<ObservableSource<out T>, Consumer<T>>.named(name: String): Connection<T> =
     Connection(
         from = first,
         to = second,

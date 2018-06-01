@@ -58,6 +58,10 @@ open class DefaultFeature<Wish : Any, in Action : Any, in Effect : Any, State : 
     ).wrap(wrapperOf = actor)
 
     init {
+        disposables += actionSubject.subscribe {
+            invokeActor(state, it)
+        }
+        
         bootstrapper?.let {
             val bootstrapperOutput = actionSubject.asConsumer().wrap(
                 wrapperOf = it,
@@ -67,10 +71,6 @@ open class DefaultFeature<Wish : Any, in Action : Any, in Effect : Any, State : 
             disposables += it.invoke().subscribe {
                 bootstrapperOutput.accept(it)
             }
-        }
-
-        disposables += actionSubject.subscribe {
-            invokeActor(state, it)
         }
     }
 

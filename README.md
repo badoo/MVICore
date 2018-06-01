@@ -13,7 +13,7 @@ Head over to the [Documentation](documentation/README.md) to see what's possible
 
 ## Version
 
-Latest version is `0.6`
+Latest version is `0.7`
 
 It is considered production ready already, but even though we most probably won't change current APIs until `1.0`, there's no guarantee to that.
 

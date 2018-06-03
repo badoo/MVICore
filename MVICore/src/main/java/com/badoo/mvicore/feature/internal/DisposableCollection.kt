@@ -24,4 +24,10 @@ internal class DisposableCollection : Disposable {
     operator fun plusAssign(disposable: Disposable) {
         add(disposable)
     }
+
+    operator fun plusAssign(obj: Any?) {
+        if (obj is Disposable) {
+            add(obj)
+        }
+    }
 }

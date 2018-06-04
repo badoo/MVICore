@@ -17,7 +17,7 @@ import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 
-open class DefaultFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any, News : Any>(
+open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any, News : Any>(
     initialState: State,
     bootstrapper: Bootstrapper<Action>? = null,
     private val wishToAction: WishToAction<Wish, Action>,

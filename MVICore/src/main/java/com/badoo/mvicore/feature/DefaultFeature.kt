@@ -58,18 +58,23 @@ open class DefaultFeature<Wish : Any, in Action : Any, in Effect : Any, State : 
     ).wrap(wrapperOf = actor)
 
     init {
+        disposables += actorWrapper
+        disposables += reducerWrapper
+        disposables += postProcessorWrapper
+        disposables += newsPublisherWrapper
         disposables += actionSubject.subscribe {
             invokeActor(state, it)
         }
-        
+
         bootstrapper?.let {
-            val bootstrapperOutput = actionSubject.asConsumer().wrap(
+            actionSubject.asConsumer().wrap(
                 wrapperOf = it,
                 postfix = "output"
-            )
-
-            disposables += it.invoke().subscribe {
-                bootstrapperOutput.accept(it)
+            ).also { output ->
+                disposables += output
+                disposables += bootstrapper.invoke().subscribe {
+                    output.accept(it)
+                }
             }
         }
     }

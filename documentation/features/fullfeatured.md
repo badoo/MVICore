@@ -6,13 +6,13 @@ Next: [5. Bootstrappers](bootstrappers.md)
 
 [Go up one level](README.md)
 
-## DefaultFeature
+## BaseFeature
 
 If the reduced functionality of [ReducerFeature](reducerfeature.md) and [ActorReducerFeature](actorreducerfeature.md) is not enough for your case, this base class is your go-to.
 
-DefaultFeature takes four generic parameters:
+BaseFeature takes four generic parameters:
 
-```DefaultFeature<Wish, Action, Effect, State>```
+```BaseFeature<Wish, Action, Effect, State>```
 
 The new one here compared to the simpler Features is the `Action`.
 
@@ -39,7 +39,7 @@ sealed class Action {
 ```
 
 This has two implications:
-1. For `DefaultFeature` to know how your public `Wish` maps to an `Action`, you need to supply a mapping function in the constructor
+1. For `BaseFeature` to know how your public `Wish` maps to an `Action`, you need to supply a mapping function in the constructor
 ```kotlin
 typealias WishToAction<Wish, Action> = (Wish) -> Action
 ```
@@ -49,7 +49,7 @@ typealias WishToAction<Wish, Action> = (Wish) -> Action
 So any incoming `Wish` is mapped to an `Action`, and executed in the `Actor` along with all other `Action`s:
 
 ```kotlin
-class MyComplexFeature : DefaultFeature<Wish, Action, Effect, State>(
+class MyComplexFeature : BaseFeature<Wish, Action, Effect, State>(
     // ...remainder omitted...
     wishToAction = { Execute(it) },
     actor = ActorImpl(),
@@ -98,7 +98,7 @@ typealias PostProcessor<Action, Effect, State> = (Action, Effect, State) -> Acti
 Using the example above this could be:
 
 ```kotlin
-class MyComplexFeature : DefaultFeature<Wish, Action, Effect, State>(
+class MyComplexFeature : BaseFeature<Wish, Action, Effect, State>(
     // ...remainder omitted...
     postProcessor = PostProcessorImpl()
 ) {
@@ -117,7 +117,7 @@ class MyComplexFeature : DefaultFeature<Wish, Action, Effect, State>(
 }
 ```
 
-The implementation of `DefaultFeature` wires everything up for you from mapping your `Wish` to `Action`, calling your `Actor`, `Reducer`, and `PostProcessor` and emitting the next `State`.
+The implementation of `BaseFeature` wires everything up for you from mapping your `Wish` to `Action`, calling your `Actor`, `Reducer`, and `PostProcessor` and emitting the next `State`.
 
 ---
 

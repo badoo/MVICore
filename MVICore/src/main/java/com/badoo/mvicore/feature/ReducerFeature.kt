@@ -13,7 +13,7 @@ open class ReducerFeature<Wish : Any, State : Any, News : Any>(
     reducer: Reducer<State, Wish>,
     bootstrapper: Bootstrapper<Wish>? = null,
     newsPublisher: SimpleNewsPublisher<Wish, State, News>? = null
-) : DefaultFeature<Wish, Wish, Wish, State, News>(
+) : BaseFeature<Wish, Wish, Wish, State, News>(
     initialState = initialState,
     bootstrapper = bootstrapper,
     wishToAction = { wish -> wish },

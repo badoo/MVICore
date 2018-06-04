@@ -97,7 +97,7 @@ class Feature2 : ActorReducerFeature<Wish, Effect, State>(
 }
 ```
 
-Under the hood, `ActorReducerFeature` is a subclass of `DefaultFeature` giving you a subset of all the possibilities there.
+Under the hood, `ActorReducerFeature` is a subclass of `BaseFeature` giving you a subset of all the possibilities there.
 
 It will also wire everything up for you (reacting to a `Wish`, calling your `Actor` and subscribing to the `Observable<Effect>` returned by it, and calling your `Reducer` to emit your next `State`).
 

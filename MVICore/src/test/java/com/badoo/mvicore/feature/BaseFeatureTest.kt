@@ -5,7 +5,6 @@ import com.badoo.mvicore.TestHelper.Companion.conditionalMultiplier
 import com.badoo.mvicore.TestHelper.Companion.initialCounter
 import com.badoo.mvicore.TestHelper.Companion.initialLoading
 import com.badoo.mvicore.TestHelper.Companion.instantFulfillAmount1
-import com.badoo.mvicore.TestHelper.TestEffect.ConditionalThingHappened
 import com.badoo.mvicore.TestHelper.TestNews
 import com.badoo.mvicore.TestHelper.TestState
 import com.badoo.mvicore.TestHelper.TestWish
@@ -29,7 +28,7 @@ import org.mockito.MockitoAnnotations
 import java.util.concurrent.TimeUnit
 import kotlin.test.assertEquals
 
-class DefaultFeatureTest {
+class BaseFeatureTest {
     private lateinit var feature: Feature<TestWish, TestState, TestNews>
     private lateinit var states: TestObserver<TestState>
     private lateinit var newsSubject: PublishSubject<TestNews>
@@ -49,7 +48,7 @@ class DefaultFeatureTest {
         actorInvocationLogTest = actorInvocationLog.test()
         actorScheduler = TestScheduler()
 
-        feature = DefaultFeature(
+        feature = BaseFeature(
             initialState = TestState(),
             wishToAction = { wish -> wish },
             actor = TestHelper.TestActor(

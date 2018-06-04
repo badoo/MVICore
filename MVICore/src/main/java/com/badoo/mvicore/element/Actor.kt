@@ -2,4 +2,4 @@ package com.badoo.mvicore.element
 
 import io.reactivex.Observable
 
-typealias Actor<State, Wish, Effect> = (State, Wish) -> Observable<Effect>
+typealias Actor<State, Action, Effect> = (State, Action) -> Observable<Effect>

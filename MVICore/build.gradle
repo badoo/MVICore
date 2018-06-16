@@ -44,3 +44,16 @@ buildscript {
 repositories {
     mavenCentral()
 }
+
+sourceSets {
+    main {
+        java {}
+    }
+}
+
+task packageSources(type: Jar, dependsOn: 'classes') {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts { archives packageSources }

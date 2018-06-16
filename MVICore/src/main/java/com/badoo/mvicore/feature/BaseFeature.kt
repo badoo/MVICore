@@ -6,6 +6,7 @@ import com.badoo.mvicore.element.Bootstrapper
 import com.badoo.mvicore.element.NewsPublisher
 import com.badoo.mvicore.element.PostProcessor
 import com.badoo.mvicore.element.Reducer
+import com.badoo.mvicore.element.TimeCapsule
 import com.badoo.mvicore.element.WishToAction
 import com.badoo.mvicore.extension.asConsumer
 import com.badoo.mvicore.feature.internal.DisposableCollection
@@ -79,12 +80,17 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
         }
     }
 
+    fun restoreFrom(timeCapsule: TimeCapsule<State>) {
+        timeCapsule.open()?.let {
+            stateSubject.onNext(it)
+        }
+    }
+
     override val state: State
         get() = stateSubject.value!!
 
     override val news: ObservableSource<News>
         get() = newsSubject
-
 
     override fun subscribe(observer: Observer<in State>) {
         stateSubject.subscribe(observer)

@@ -4,7 +4,7 @@ import com.badoo.mvicore.binder.Connection
 import com.badoo.mvicore.consumer.util.Logger
 import io.reactivex.functions.Consumer
 
-class LoggingMiddleWare<T : Any>(
+class LoggingMiddleware<T : Any>(
     wrapped: Consumer<T>,
     private val logger: Logger
 ) : ConsumerMiddleware<T>(wrapped) {

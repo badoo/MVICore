@@ -20,11 +20,11 @@ android {
 }
 
 dependencies {
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.10'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.12'
     implementation 'io.reactivex.rxjava2:rxkotlin:2.2.0'
 
     testImplementation 'junit:junit:4.12'
-    testImplementation 'org.jetbrains.kotlin:kotlin-test-junit:1.2.21'
+    testImplementation 'org.jetbrains.kotlin:kotlin-test-junit:1.2.41'
     testImplementation 'org.amshove.kluent:kluent:1.35'
 }
 
@@ -32,7 +32,7 @@ sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
 
 buildscript {
-    ext.kotlin_version = '1.2.21'
+    ext.kotlin_version = '1.2.50'
     repositories {
         mavenCentral()
     }

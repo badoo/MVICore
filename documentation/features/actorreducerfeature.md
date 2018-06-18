@@ -19,7 +19,7 @@ then now we need to distinguish between
 And now we need a mapping between the two. The `Actor` is basically a function doing just that:
 
 ```kotlin
-typealias Actor<State, Wish, Effect> = (State, Wish) -> Observable<Effect>
+typealias Actor<State, Wish, Effect> = (State, Wish) -> Observable<out Effect>
 ```
 
 This means that now we can consider an incoming `Wish` and our current `State`, and based on them we can do some operations that will emit `Effect`s to change our `State`.

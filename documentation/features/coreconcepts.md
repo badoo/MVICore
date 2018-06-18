@@ -36,17 +36,14 @@ A `Feature` is really only a `Store` with the addition of:
 - being a source of `News`
 
 ```kotlin
-interface Feature<Wish : Any, State : Any> : Store<Wish, State>, Disposable {
+interface Feature<Wish : Any, State : Any, News: Any> : Store<Wish, State>, Disposable {
 
     val news: ObservableSource<News>
 }
 
 ```
 
-`News` is a marker interface you can use for
-- inter-feature communication
-- reacting on _what_ happened instead of how the state changed
-- single-time events which are not contained in the state
+`News` marks the type of the events a `Feature` can emit. These are pieces of information you don’t want to store in the state, just fire off once when they happen.
 
 More about that in later chapters.
 

@@ -6,8 +6,8 @@
 MVICore is a 100% Kotlin, modern MVI framework featuring:
 - an easy way to implement your business features in a reactive way with unidirectional dataflow
 - binding them to the UI with lifecycle handling
-- middlewares (_Coming soon_)
-- time travel debugger (_Coming soon_)
+- middlewares
+- time travel debugger
 
 Head over to the [Documentation](documentation/README.md) to see what's possible.
 

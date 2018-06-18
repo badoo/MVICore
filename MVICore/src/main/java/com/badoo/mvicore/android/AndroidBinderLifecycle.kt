@@ -1,13 +1,12 @@
 package com.badoo.mvicore.android
 
-import android.arch.lifecycle.Lifecycle as AndroidLifecycle
-import android.arch.lifecycle.Lifecycle.Event.ON_CREATE
-import android.arch.lifecycle.Lifecycle.Event.ON_DESTROY
+import android.arch.lifecycle.DefaultLifecycleObserver
 import android.arch.lifecycle.LifecycleObserver
-import android.arch.lifecycle.OnLifecycleEvent
-import com.badoo.mvicore.binder.lifecycle.Lifecycle as BinderLifecycle
+import android.arch.lifecycle.LifecycleOwner
 import io.reactivex.ObservableSource
 import io.reactivex.subjects.PublishSubject
+import android.arch.lifecycle.Lifecycle as AndroidLifecycle
+import com.badoo.mvicore.binder.lifecycle.Lifecycle as BinderLifecycle
 
 
 class AndroidBinderLifecycle(
@@ -18,12 +17,14 @@ class AndroidBinderLifecycle(
     LifecycleObserver {
 
     init {
-        androidLifecycle.addObserver(this)
+        androidLifecycle.addObserver(object : DefaultLifecycleObserver {
+            override fun onCreate(owner: LifecycleOwner) {
+                subject.onNext(BinderLifecycle.Event.BEGIN)
+            }
+
+            override fun onDestroy(owner: LifecycleOwner) {
+                subject.onNext(BinderLifecycle.Event.END)
+            }
+        })
     }
-
-    @OnLifecycleEvent(ON_CREATE)
-    fun onCreated() = subject.onNext(BinderLifecycle.Event.BEGIN)
-
-    @OnLifecycleEvent(ON_DESTROY)
-    fun onDestroyed() = subject.onNext(BinderLifecycle.Event.END)
 }

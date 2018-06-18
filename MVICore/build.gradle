@@ -22,6 +22,7 @@ android {
 dependencies {
     // Android dependencies to be split into another package
     implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'android.arch.lifecycle:common-java8:1.1.1'
 
     implementation 'io.reactivex.rxjava2:rxjava:2.1.12'
     implementation 'io.reactivex.rxjava2:rxkotlin:2.2.0'

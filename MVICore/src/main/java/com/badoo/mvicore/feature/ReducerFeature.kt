@@ -1,6 +1,6 @@
 package com.badoo.mvicore.feature
 
-import com.badoo.mvicore.consumer.NonWrappable
+import com.badoo.mvicore.consumer.middlewareconfig.NonWrappable
 import com.badoo.mvicore.element.Actor
 import com.badoo.mvicore.element.Bootstrapper
 import com.badoo.mvicore.element.NewsPublisher

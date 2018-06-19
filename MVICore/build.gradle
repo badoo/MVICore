@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'org.jetbrains.dokka'
 
 android {
     compileSdkVersion 27
@@ -56,4 +57,19 @@ task packageSources(type: Jar, dependsOn: 'classes') {
     from sourceSets.main.allSource
 }
 
-artifacts { archives packageSources }
+task javadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
+    outputFormat = 'javadoc'
+    outputDirectory = "$buildDir/javadoc"
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    classpath += configurations.compile
+}
+
+task packageJavadoc(type: Jar, dependsOn: javadoc) {
+    from javadoc.outputDirectory
+    classifier = 'javadoc'
+}
+
+artifacts {
+    archives packageSources
+    archives packageJavadoc
+}

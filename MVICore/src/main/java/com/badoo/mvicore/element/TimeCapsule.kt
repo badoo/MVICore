@@ -6,3 +6,16 @@ interface TimeCapsule<in T : Any> {
 
     fun <State : T> register(key: Any, stateSupplier: () -> State)
 }
+
+fun <T : Any> TimeCapsule<T>.wrap(suffix: String) =
+    object : TimeCapsule<T> {
+
+        private fun generateKey(key: Any) =
+            "$key$suffix"
+
+        override fun <State : T> get(key: Any): State? =
+            this@wrap[generateKey(key)]
+
+        override fun <State : T> register(key: Any, stateSupplier: () -> State) =
+            this@wrap.register(generateKey(key), stateSupplier)
+    }

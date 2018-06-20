@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./gradlew --settings-file settings-travis.gradle :MVICore:test --info
+./gradlew --settings-file settings-travis.gradle :mvicore:test --info

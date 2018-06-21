@@ -17,7 +17,7 @@ fun <T : Any> Consumer<T>.wrap(
     var current = this
 
     Middlewares.configurations.forEach {
-        current = it.applyOn(current, name, standalone)
+        current = it.applyOn(current, target, name, standalone)
     }
 
     if (current is ConsumerMiddleware<T> && standalone) {

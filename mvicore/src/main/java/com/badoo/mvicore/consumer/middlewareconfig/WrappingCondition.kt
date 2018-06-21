@@ -64,7 +64,7 @@ interface WrappingCondition {
         class RegexMatcher(private val packageName: String) :
             WrappingCondition {
             override fun shouldWrap(consumer: Consumer<*>, name: String?, standalone: Boolean): Boolean =
-                consumer::class.java.canonicalName.matches(Regex(packageName))
+                Regex(packageName).containsMatchIn(consumer::class.java.canonicalName)
         }
     }
 

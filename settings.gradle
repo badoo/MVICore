@@ -1,1 +1,1 @@
-include ':mvicore', ':mvicore-android'
+include ':mvicore', ':mvicore-android', ':mvicore-debugdrawer'

@@ -21,29 +21,30 @@ android {
 }
 
 dependencies {
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'android.arch.lifecycle:common-java8:1.1.1'
+    def deps = rootProject.ext.deps
 
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.12'
-    implementation 'io.reactivex.rxjava2:rxkotlin:2.2.0'
+    implementation deps('com.android.support:appcompat-v7')
+    implementation deps('android.arch.lifecycle:common-java8')
+
+    implementation deps('io.reactivex.rxjava2:rxjava')
+    implementation deps('io.reactivex.rxjava2:rxkotlin')
+
+    testImplementation deps('junit:junit')
+    testImplementation deps('org.jetbrains.kotlin:kotlin-test-junit')
+    testImplementation deps('org.amshove.kluent:kluent')
 
     implementation project(path: ':mvicore', configuration: 'default')
-
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'org.jetbrains.kotlin:kotlin-test-junit:1.2.41'
-    testImplementation 'org.amshove.kluent:kluent:1.35'
 }
 
 sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
 
 buildscript {
-    ext.kotlin_version = '1.2.50'
     repositories {
         mavenCentral()
     }
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$rootProject.ext.kotlinVersion"
     }
 }
 

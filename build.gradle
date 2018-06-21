@@ -16,6 +16,42 @@ buildscript {
     }
 }
 
+ext {
+    // Android
+    androidArchLifecycleVersion = '1.1.1'
+    androidSupportLibVersion = '27.1.0'
+
+    // Rx
+    rxJavaVersion = '2.1.12'
+    rxKotlinVersion = '2.2.0'
+
+    // Testing
+    junitVersion = '4.12'
+    kluentVersion = '1.23'
+    kotlinVersion = '1.2.50'
+
+    depsWithVersion = [
+            // Android
+            "android.arch.lifecycle:common-java8"                      : androidArchLifecycleVersion,
+            "com.android.support:appcompat-v7"                         : androidSupportLibVersion,
+
+            // Rx
+            "io.reactivex.rxjava2:rxjava"                              : rxJavaVersion,
+            "io.reactivex.rxjava2:rxkotlin"                            : rxKotlinVersion,
+
+            // Testing
+            "junit:junit"                                              : junitVersion,
+            "org.jetbrains.kotlin:kotlin-test-junit"                   : kotlinVersion,
+            "org.amshove.kluent:kluent"                                : kluentVersion,
+    ]
+
+    deps = { String key ->
+        def version = depsWithVersion[key]
+        if (version == null) throw new IllegalDependencyNotation("Version for library '$key' unknown. Update dependencies.gradle")
+        "$key:${version}"
+    }
+}
+
 allprojects {
     repositories {
         google()

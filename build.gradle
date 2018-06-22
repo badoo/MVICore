@@ -20,10 +20,14 @@ ext {
     // Android
     androidArchLifecycleVersion = '1.1.1'
     androidSupportLibVersion = '27.1.0'
+    constraintLayoutVersion = '1.1.2'
 
     // Rx
     rxJavaVersion = '2.1.12'
     rxKotlinVersion = '2.2.0'
+
+    // Misc
+    debugDrawerVersion = '0.8.0'
 
     // Testing
     junitVersion = '4.12'
@@ -32,22 +36,29 @@ ext {
 
     depsWithVersion = [
             // Android
-            "android.arch.lifecycle:common-java8"                      : androidArchLifecycleVersion,
-            "com.android.support:appcompat-v7"                         : androidSupportLibVersion,
+            "android.arch.lifecycle:common-java8"                   : androidArchLifecycleVersion,
+            "com.android.support:appcompat-v7"                      : androidSupportLibVersion,
+            "com.android.support.constraint:constraint-layout"      : constraintLayoutVersion,
 
             // Rx
-            "io.reactivex.rxjava2:rxjava"                              : rxJavaVersion,
-            "io.reactivex.rxjava2:rxkotlin"                            : rxKotlinVersion,
+            "io.reactivex.rxjava2:rxjava"                           : rxJavaVersion,
+            "io.reactivex.rxjava2:rxkotlin"                         : rxKotlinVersion,
+
+            // DebugDrawer
+            "io.palaima.debugdrawer:debugdrawer"                    : debugDrawerVersion,
+            "io.palaima.debugdrawer:debugdrawer-view"               : debugDrawerVersion,
+            "io.palaima.debugdrawer:debugdrawer-no-op"              : debugDrawerVersion,
+            "io.palaima.debugdrawer:debugdrawer-view-no-op"         : debugDrawerVersion,
 
             // Testing
-            "junit:junit"                                              : junitVersion,
-            "org.jetbrains.kotlin:kotlin-test-junit"                   : kotlinVersion,
-            "org.amshove.kluent:kluent"                                : kluentVersion,
+            "junit:junit"                                           : junitVersion,
+            "org.jetbrains.kotlin:kotlin-test-junit"                : kotlinVersion,
+            "org.amshove.kluent:kluent"                             : kluentVersion,
     ]
 
     deps = { String key ->
         def version = depsWithVersion[key]
-        if (version == null) throw new IllegalDependencyNotation("Version for library '$key' unknown. Update dependencies.gradle")
+        if (version == null) throw new IllegalDependencyNotation("Version for library '$key' unknown. Update root build.gradle")
         "$key:${version}"
     }
 }

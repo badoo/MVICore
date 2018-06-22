@@ -13,27 +13,34 @@ Head over to the [Documentation](documentation/README.md) to see what's possible
 
 ## Version
 
-Latest version is `0.8`
-
-It is considered production ready already, but even though we most probably won't change current APIs until `1.0`, there's no guarantee to that.
+Latest version is `1.0.0`
 
 ## Download
 
-Available through jitpack:
+Available through jitpack.
 
-1. Add the maven repo to your root `build.gradle`
+Add the maven repo to your root `build.gradle`
 
 ```groovy
 allprojects {
     repositories {
-        ...
         maven { url 'https://jitpack.io' }
     }
 }
 ```
 
-2. Add the dependency
-
+Add the dependencies:
+- Framework:
 ```groovy
-implementation 'com.github.badoo:MVICore:{latest-version}'
+implementation 'com.github.badoo.mvicore:mvicore:{latest-version}'
+```
+
+- Helper classes for Android:
+```groovy
+implementation 'com.github.badoo.mvicore:mvicore-android:{latest-version}'
+```
+
+- Time travel debugger controls in a [DebugDrawer](https://github.com/palaima/DebugDrawer) module
+```groovy
+implementation 'com.github.badoo.mvicore:mvicore-debugdrawer:{latest-version}'
 ```

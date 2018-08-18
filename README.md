@@ -45,7 +45,7 @@ implementation 'com.github.badoo.mvicore:mvicore:{latest-version}'
 implementation 'com.github.badoo.mvicore:mvicore-android:{latest-version}'
 ```
 
-- Time travel debugger controls in a [DebugDrawer](https://github.com/palaima/DebugDrawer) module
+- Time Travel Debugger controls in a [DebugDrawer](https://github.com/palaima/DebugDrawer) module
 ```groovy
 implementation 'com.github.badoo.mvicore:mvicore-debugdrawer:{latest-version}'
 ```

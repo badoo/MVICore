@@ -1,10 +1,10 @@
 ## FAQ & Best practices
 
-#### I. Feature disposal
+### I. Feature disposal
 
 Never forget to call `feature.dispose()` when the context your `Feature` is living in goes away!
 
-#### II. Keep your Reducers dumb
+### II. Keep your Reducers dumb
 
 The idea is that `Reducer` should contain only resolution to how an `Effect` modifies the `State` directly.
 
@@ -29,7 +29,7 @@ Resolution: `Actor` is the intended place for business logic:
 2. Decide what happens inside your `Actor`, based on any conditional logic or async execution, and emit the corresponding `Effects`
 3. Use your `Reducer` only to implement how it modifies the `State`
 
-#### III. Effects only in Actor
+### III. Effects only in Actor
 
 Once the complexity grows inside your `Actor`, you might be tempted to extract some responsibilities to other classes.
 
@@ -111,7 +111,7 @@ class Executor2 {
 }
 ```
 
-#### IV. Feature to Feature binding
+### IV. Feature to Feature binding
 
 If one of your `Features` should always react to when something happens in another, you can use the `Bootstrapper` for this:
 

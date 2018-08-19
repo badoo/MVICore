@@ -1,1 +1,7 @@
-include ':mvicore', ':mvicore-android', ':mvicore-debugdrawer'
+include ':mvicore'
+include ':mvicore-android'
+include ':mvicore-debugdrawer'
+include ':mvicore-demo:mvicore-demo-catapi'
+include ':mvicore-demo:mvicore-demo-feature1'
+include ':mvicore-demo:mvicore-demo-feature2'
+include ':mvicore-demo:mvicore-demo-app'

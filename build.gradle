@@ -35,8 +35,11 @@ ext {
     debugDrawerVersion = '0.8.0'
     timberVersion = '4.7.0'
     scalpelVersion = '1.1.2'
-    okhttpVersion = '3.10.0'
     glideVersion = '4.7.1'
+
+    // Network
+    okhttpVersion = '3.10.0'
+    retrofitVersion = '2.4.0'
 
     // Testing
     junitVersion = '4.12'
@@ -75,9 +78,14 @@ ext {
             // Utils
             "com.jakewharton.timber:timber"                     : timberVersion,
             "com.jakewharton.scalpel:scalpel"                   : scalpelVersion,
-            "com.squareup.okhttp3:okhttp"                       : okhttpVersion,
             "com.github.bumptech.glide:glide"                   : glideVersion,
             "com.github.bumptech.glide:compiler"                : glideVersion,
+
+            // Network
+            "com.squareup.okhttp3:okhttp"                       : okhttpVersion,
+            "com.squareup.retrofit2:retrofit"                   : retrofitVersion,
+            "com.squareup.retrofit2:adapter-rxjava2"            : retrofitVersion,
+            "com.squareup.retrofit2:converter-simplexml"        : retrofitVersion,
 
             // Testing
             "junit:junit"                                       : junitVersion,

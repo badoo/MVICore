@@ -37,7 +37,7 @@ dependencies {
     testImplementation deps('org.jetbrains.kotlin:kotlin-test-junit')
     testImplementation deps('org.amshove.kluent:kluent')
 
-    implementation project(path: ':mvicore', configuration: 'default')
+    implementation project(':mvicore')
 }
 
 sourceCompatibility = "1.7"

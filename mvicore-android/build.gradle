@@ -3,10 +3,10 @@ apply plugin: 'kotlin-android'
 apply plugin: 'org.jetbrains.dokka'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -17,6 +17,11 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -33,11 +38,8 @@ dependencies {
     testImplementation deps('org.jetbrains.kotlin:kotlin-test-junit')
     testImplementation deps('org.amshove.kluent:kluent')
 
-    implementation project(path: ':mvicore', configuration: 'default')
+    implementation project(":mvicore")
 }
-
-sourceCompatibility = "1.7"
-targetCompatibility = "1.7"
 
 buildscript {
     repositories {

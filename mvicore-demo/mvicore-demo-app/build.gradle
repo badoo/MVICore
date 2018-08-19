@@ -1,0 +1,75 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.badoo.mvicoredemo"
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    // MVICore
+    implementation project(":mvicore")
+    implementation project(":mvicore-android")
+    implementation project(":mvicore-debugdrawer")
+    implementation project(':mvicore-demo:mvicore-demo-feature1')
+    implementation project(':mvicore-demo:mvicore-demo-feature2')
+
+    // Kotlin
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+
+    // Android
+    implementation deps('com.android.support:appcompat-v7')
+    implementation deps('com.android.support.constraint:constraint-layout')
+    implementation deps('com.android.support:design')
+
+    // Rx
+    implementation deps('io.reactivex.rxjava2:rxjava')
+    implementation deps('io.reactivex.rxjava2:rxandroid')
+
+    // DI
+    implementation deps('com.google.dagger:dagger')
+    implementation(deps('com.google.dagger:dagger-android'), { exclude group: 'com.google.code.findbugs' })
+    implementation(deps('com.google.dagger:dagger-android-support'), { exclude group: 'com.google.code.findbugs' })
+    kapt deps('com.google.dagger:dagger-compiler')
+    kapt deps('com.google.dagger:dagger-android-processor')
+
+    // DebugDrawer
+    debugImplementation deps('io.palaima.debugdrawer:debugdrawer')
+    debugImplementation deps('io.palaima.debugdrawer:debugdrawer-view')
+    releaseImplementation deps('io.palaima.debugdrawer:debugdrawer-no-op')
+    releaseImplementation deps('io.palaima.debugdrawer:debugdrawer-view-no-op')
+    implementation deps('io.palaima.debugdrawer:debugdrawer-commons')
+    implementation deps('io.palaima.debugdrawer:debugdrawer-actions')
+    implementation deps('io.palaima.debugdrawer:debugdrawer-scalpel')
+    implementation deps('io.palaima.debugdrawer:debugdrawer-timber')
+    implementation deps('io.palaima.debugdrawer:debugdrawer-network-quality')
+
+    // Utils
+    implementation deps('com.jakewharton.timber:timber')
+    implementation deps('com.jakewharton.scalpel:scalpel')
+    implementation deps('com.squareup.okhttp3:okhttp')
+    implementation deps('com.github.bumptech.glide:glide')
+    kapt deps('com.github.bumptech.glide:compiler')
+}

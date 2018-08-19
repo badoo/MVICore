@@ -41,7 +41,7 @@ Since invocations of the reducer must always happen on the same thread, you must
 ### Solution using ActorReducerFeature
 
 ```kotlin
-class Feature2 : ActorReducerFeature<Wish, Effect, State>(
+class Feature2 : ActorReducerFeature<Wish, Effect, State, Nothing>(
     initialState = State(),
     actor = ActorImpl(),
     reducer = ReducerImpl()
@@ -59,7 +59,7 @@ class Feature2 : ActorReducerFeature<Wish, Effect, State>(
     sealed class Effect {
         object StartedLoading : Effect()
         data class FinishedWithSuccess(val payload : String) : Effect()
-        data class FinishedWithError(val throwable: Throwable) : Effect(), News
+        data class FinishedWithError(val throwable: Throwable) : Effect()
     }
 
     class ActorImpl : Actor<State, Wish, Effect> {
@@ -101,11 +101,9 @@ Under the hood, `ActorReducerFeature` is a subclass of `BaseFeature` giving you 
 
 It will also wire everything up for you (reacting to a `Wish`, calling your `Actor` and subscribing to the `Observable<Effect>` returned by it, and calling your `Reducer` to emit your next `State`).
 
-> _Note: in this example, the error result is not stored in the state, but rather, the `FinishedWithError` effect is marked as being `News`._
+> _Note: in this example, the error result is not stored in the state. The preferred way in most cases is an event-based approach seen in the chapter [News and inter-feature communication](news.md)_
 >
->_This means, that it will automatically emit a one-time signal through `Feature.news` onto which you can subscribe to handle the error (log it, show a toast, etc.)_
->
->_But if you wish, you can still add a field in the `State` to store the error, just don't forget to reset it in the `Reducer` upon the next `StartedLoading` or `FinishedWithSuccess` effects._
+>_But if you need it, you can still add a field in the `State` to store the error, just don't forget to reset it in the `Reducer` upon the next `StartedLoading` or `FinishedWithSuccess` effects._
 >
 >_Another approach would be to use a Kotlin sealed class, or the functional `Either<A, B>` type for the payload, where `A` would be the error, `B` would be actual data. Really only up to you._
 

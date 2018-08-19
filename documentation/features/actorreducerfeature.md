@@ -66,16 +66,17 @@ class Feature2 : ActorReducerFeature<Wish, Effect, State, Nothing>(
         private val service: Observable<String> = TODO()
 
         override fun invoke(state: State, wish: Wish): Observable<Effect> = when (wish) {
-            if (!state.isLoading) {
-                LoadNewData -> {
+            is LoadNewData -> {
+                if (!state.isLoading) {
                     service
                         .observeOn(AndroidSchedulers.mainThread())
                         .map { FinishedWithSuccess(payload = it) as Effect }
                         .startWith(StartedLoading)
                         .onErrorReturn { FinishedWithError(it) }
                 }
-            } else {
-                Observable.empty()
+                else {
+                    Observable.empty()
+                }
             }
         }
     }

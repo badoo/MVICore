@@ -82,7 +82,7 @@ So how is this beneficial to you?
 To sum it up, using this approach allows you to:
 - React on single events which would be probably inconvenient to store in the State
 - React to _what_ happened rather than how it changed the state
-- Inter-feature communication by mapping an important event from one feature to a wish of another
+- Inter-feature communication by mapping an important event from one feature to a wish of another (you could inject an instance of `Feature1` to `Feature2`, which could use `Feature1.news` as a source in its `Bootstrapper` to automatically react)
 
 ---
 

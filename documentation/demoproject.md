@@ -13,4 +13,6 @@ Points of interest:
 - Dagger configuration to make `Feature1` and `Feature2` live longer than the Activity, but lose their state on "sign out / sign in" cycle
 - Check out the DebugDrawer module (swipeable from the right side of the screen) for Time Travel Debugger controls.
 
+---
+
 [Go up one level](../README.md)

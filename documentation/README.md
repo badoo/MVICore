@@ -4,6 +4,6 @@
 2. [Binder: binding sources to consumers](binder/README.md)
 3. [Adding extra functionality: middlewares and time travel](middlewares/README.md)
 4. [Example app](demoproject.md)
-5. FAQ & best practices - _Coming Soon_
+5. [Best practices](bestpractices.md)
 6. Extras - _Coming Soon_
 

@@ -37,7 +37,7 @@ Invocations of the reducer must always happen on the same thread to ensure that 
 Meet the simplest `Feature`, the `ReducerFeature`:
 
 ```kotlin
-class Feature1 : ReducerFeature<Wish, State>(
+class Feature1 : ReducerFeature<Wish, State, Nothing>(
     initialState = State(),
     reducer = ReducerImpl()
 ) {
@@ -59,6 +59,8 @@ class Feature1 : ReducerFeature<Wish, State>(
     }
 }
 ```
+
+
 
 Under the hood, `ReducerFeature` is a subclass of `BaseFeature` giving you a subset of all the possibilities there.
 

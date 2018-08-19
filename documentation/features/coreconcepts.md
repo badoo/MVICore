@@ -45,7 +45,7 @@ interface Feature<Wish : Any, State : Any, News: Any> : Store<Wish, State>, Disp
 
 `News` marks the type of the events a `Feature` can emit. These are pieces of information you don’t want to store in the state, just fire off once when they happen.
 
-More about that in later chapters.
+More about that in the chapter [News and inter-feature communication](news.md).
 
 ## Feature lifecycle
 

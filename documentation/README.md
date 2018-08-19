@@ -5,5 +5,5 @@
 3. [Adding extra functionality: middlewares and time travel](middlewares/README.md)
 4. [Example app](demoproject.md)
 5. [Best practices](bestpractices.md)
-6. Extras - _Coming Soon_
+6. [Extras](extras/README.md)
 

@@ -15,4 +15,4 @@ Points of interest:
 
 ---
 
-[Go up one level](../README.md)
+[Go up one level](README.md)

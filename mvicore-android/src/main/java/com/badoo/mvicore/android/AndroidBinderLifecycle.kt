@@ -4,14 +4,14 @@ import android.arch.lifecycle.DefaultLifecycleObserver
 import android.arch.lifecycle.LifecycleObserver
 import android.arch.lifecycle.LifecycleOwner
 import io.reactivex.ObservableSource
-import io.reactivex.subjects.PublishSubject
+import io.reactivex.subjects.BehaviorSubject
 import android.arch.lifecycle.Lifecycle as AndroidLifecycle
 import com.badoo.mvicore.binder.lifecycle.Lifecycle as BinderLifecycle
 
 
 class AndroidBinderLifecycle(
     androidLifecycle: AndroidLifecycle,
-    private val subject: PublishSubject<BinderLifecycle.Event> = PublishSubject.create()
+    private val subject: BehaviorSubject<BinderLifecycle.Event> = BehaviorSubject.create()
 ) : BinderLifecycle,
     ObservableSource<BinderLifecycle.Event> by subject,
     LifecycleObserver {

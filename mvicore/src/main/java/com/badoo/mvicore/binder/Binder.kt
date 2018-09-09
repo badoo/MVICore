@@ -1,14 +1,16 @@
 package com.badoo.mvicore.binder
 
+import com.badoo.mvicore.binder.lifecycle.Lifecycle
+import com.badoo.mvicore.binder.lifecycle.Lifecycle.Event.BEGIN
+import com.badoo.mvicore.binder.lifecycle.Lifecycle.Event.END
 import com.badoo.mvicore.consumer.middleware.ConsumerMiddleware
 import com.badoo.mvicore.consumer.wrap
-import com.badoo.mvicore.binder.lifecycle.Lifecycle
-import com.badoo.mvicore.binder.lifecycle.Lifecycle.Event.END
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
+import io.reactivex.rxkotlin.plusAssign
 
 class Binder(
     private val lifecycle: Lifecycle? = null
@@ -23,7 +25,6 @@ class Binder(
     }
 
     fun <T : Any> bind(connection: Connection<T>) {
-        val source = connection.from
         val consumer = connection.to
         val middleware = consumer.wrap(
             standalone = false,
@@ -31,24 +32,46 @@ class Binder(
         ) as? ConsumerMiddleware<T>
 
         middleware?.onBind(connection)
-        disposables.add(
-            Observable
-                .wrap(source)
-                .let { observable ->
-                    lifecycle?.let {
-                        observable.takeUntil(Observable.wrap(lifecycle).filter { it == END })
-                    } ?: observable
-                }
-                .let { observable ->
-                    middleware?.let {
-                        observable
-                            .doOnNext { middleware.onElement(connection, it) }
-                            .doFinally { middleware.onComplete(connection) }
-                    } ?: observable
-                }
-                .subscribe(middleware ?: consumer)
-        )
+
+        when {
+            lifecycle != null -> bindWithLifecycle(lifecycle, connection, middleware)
+            else -> bind(connection, middleware)
+        }
     }
+
+    private fun <T : Any> bindWithLifecycle(
+        lifecycle: Lifecycle,
+        connection: Connection<T>,
+        middleware: ConsumerMiddleware<T>?
+    ) {
+        val lifecycleObservable = Observable.wrap(lifecycle)
+        disposables += lifecycleObservable
+            .filter { it == BEGIN }
+            .subscribe { _ ->
+                disposables += Observable
+                    .wrap(connection.from)
+                    .takeUntil(lifecycleObservable.filter { it == END })
+                    .subscribeWithMiddleware(connection, middleware)
+            }
+    }
+
+    private fun <T: Any> bind(
+        connection: Connection<T>,
+        middleware: ConsumerMiddleware<T>?
+    ) {
+        disposables += Observable.wrap(connection.from)
+            .subscribeWithMiddleware(connection, middleware)
+    }
+
+    private fun <T: Any> Observable<out T>.subscribeWithMiddleware(
+        connection: Connection<T>,
+        middleware: ConsumerMiddleware<T>?
+    ): Disposable = run {
+        middleware?.let {
+            this.doOnNext { middleware.onElement(connection, it) }
+                .doFinally { middleware.onComplete(connection) }
+        } ?: this
+    }.subscribe(middleware ?: connection.to)
 
     override fun isDisposed(): Boolean =
         disposables.isDisposed

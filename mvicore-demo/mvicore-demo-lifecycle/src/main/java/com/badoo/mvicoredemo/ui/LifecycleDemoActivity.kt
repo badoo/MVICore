@@ -31,7 +31,7 @@ class LifecycleDemoActivity : AppCompatActivity() {
         Binder(ResumePauseBinderLifecycle(lifecycle))
             .bind(events to resumePauseConsumer)
 
-        events.onNext("Create")
+        events.onNext("onCreate")
     }
 
     override fun onStart() {

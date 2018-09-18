@@ -1,12 +1,15 @@
-package com.badoo.mvicoredemo.ui
+package com.badoo.mvicoredemo.ui.lifecycle
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import com.badoo.mvicore.android.lifecycle.CreateDestroyBinderLifecycle
 import com.badoo.mvicore.android.lifecycle.ResumePauseBinderLifecycle
 import com.badoo.mvicore.android.lifecycle.StartStopBinderLifecycle
 import com.badoo.mvicore.binder.Binder
+import com.badoo.mvicore.binder.named
 import com.badoo.mvicoredemo.R
 import io.reactivex.functions.Consumer
 import io.reactivex.subjects.PublishSubject
@@ -14,22 +17,20 @@ import io.reactivex.subjects.PublishSubject
 class LifecycleDemoActivity : AppCompatActivity() {
 
     private val events = PublishSubject.create<String>()
-    private val createDestroyConsumer = LoggingConsumer("Lifecycle#CreateDestroy")
-    private val startStopConsumer     = LoggingConsumer("Lifecycle#StartStop")
-    private val resumePauseConsumer   = LoggingConsumer("Lifecycle#ResumePause")
+    private val dummyConsumer = Consumer<String> {  }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.lifecycle_demo_activity)
+        setContentView(R.layout.activity_lifecycle_demo)
 
         Binder(CreateDestroyBinderLifecycle(lifecycle))
-            .bind(events to createDestroyConsumer)
+            .bind(events to dummyConsumer named "Lifecycle#CreateDestroy")
 
         Binder(StartStopBinderLifecycle(lifecycle))
-            .bind(events to startStopConsumer)
+            .bind(events to dummyConsumer named "Lifecycle#StartStop")
 
         Binder(ResumePauseBinderLifecycle(lifecycle))
-            .bind(events to resumePauseConsumer)
+            .bind(events to dummyConsumer named "Lifecycle#ResumePause")
 
         events.onNext("onCreate")
     }
@@ -81,11 +82,14 @@ class LifecycleDemoActivity : AppCompatActivity() {
 
         events.onNext("onDestroy")
     }
-}
 
-private class LoggingConsumer(private val tag: String): Consumer<String> {
-    override fun accept(message: String) {
-        Log.d(tag, message)
+    companion object {
+        fun start(context: Context) {
+            ContextCompat.startActivity(
+                context,
+                Intent(context, LifecycleDemoActivity::class.java),
+                null
+            )
+        }
     }
-
 }

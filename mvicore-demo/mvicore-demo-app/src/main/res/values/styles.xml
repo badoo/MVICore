@@ -7,6 +7,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowAnimationStyle">@style/AppTheme.Animations</item>
+        <item name="homeAsUpIndicator">@drawable/ic_menu</item>
     </style>
 
     <style name="AppTheme.Animations" parent="@android:style/Animation.Activity">

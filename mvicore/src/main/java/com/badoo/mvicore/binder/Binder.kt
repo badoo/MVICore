@@ -48,8 +48,6 @@ class Binder(
             name = connection.name
         ) as? ConsumerMiddleware<T>
 
-        middleware?.onBind(connection)
-
         when {
             lifecycle != null -> {
                 connections += (connection to middleware)
@@ -82,6 +80,7 @@ class Binder(
         connection: Connection<T>,
         middleware: ConsumerMiddleware<T>?
     ): Disposable = run {
+        middleware?.onBind(connection)
         middleware?.let {
             this.doOnNext { middleware.onElement(connection, it) }
                 .doFinally { middleware.onComplete(connection) }

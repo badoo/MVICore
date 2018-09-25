@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
+import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
+import android.view.MenuItem
 import com.badoo.mvicore.android.lifecycle.CreateDestroyBinderLifecycle
 import com.badoo.mvicore.android.lifecycle.ResumePauseBinderLifecycle
 import com.badoo.mvicore.android.lifecycle.StartStopBinderLifecycle
@@ -13,6 +15,7 @@ import com.badoo.mvicore.binder.named
 import com.badoo.mvicoredemo.R
 import io.reactivex.functions.Consumer
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.activity_main.*
 
 class LifecycleDemoActivity : AppCompatActivity() {
 
@@ -33,7 +36,35 @@ class LifecycleDemoActivity : AppCompatActivity() {
             .bind(events to dummyConsumer named "Lifecycle#ResumePause")
 
         events.onNext("onCreate")
+        setupDrawer()
     }
+
+    private fun setupDrawer() {
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        navigationView.apply {
+            setCheckedItem(0)
+            setNavigationItemSelectedListener { item ->
+                item.isChecked = true
+                drawerLayout.closeDrawers()
+
+                when (item.itemId) {
+                    R.id.drawer_main -> finish()
+                }
+
+                true
+            }
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean =
+        when (item.itemId) {
+            android.R.id.home -> {
+                drawerLayout.openDrawer(GravityCompat.START)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
 
     override fun onStart() {
         super.onStart()

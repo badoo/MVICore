@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.MenuItem
 import com.badoo.mvicore.android.lifecycle.CreateDestroyBinderLifecycle
 import com.badoo.mvicore.android.lifecycle.ResumePauseBinderLifecycle
@@ -20,7 +21,9 @@ import kotlinx.android.synthetic.main.activity_main.*
 class LifecycleDemoActivity : AppCompatActivity() {
 
     private val events = PublishSubject.create<String>()
-    private val dummyConsumer = Consumer<String> {  }
+    private val dummyConsumer = Consumer<String> {
+        Log.d("LifecycleDemo", it)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

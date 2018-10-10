@@ -43,7 +43,7 @@ class BootstrapperImpl : Bootstrapper<Action> {
 Pass your `Bootstrapper` implementation in the constructor to either `ReducerFeature`, `ActorReducerFeature`, or `BaseFeature`:
 
 ```kotlin
-class MyComplexFeature : BaseFeature<Wish, Action, Effect, State>(
+class MyComplexFeature : BaseFeature<Wish, Action, Effect, State, News>(
     // ...remainder omitted...
     bootstrapper = BootstrapperImpl()
 )

@@ -43,7 +43,7 @@ dependencies {
 
 buildscript {
     repositories {
-        mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$rootProject.ext.kotlinVersion"
@@ -51,7 +51,7 @@ buildscript {
 }
 
 repositories {
-    mavenCentral()
+    jcenter()
 }
 
 sourceSets {

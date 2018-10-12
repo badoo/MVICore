@@ -18,7 +18,7 @@ Head over to the [Documentation](documentation/README.md) to see what's possible
 
 ## Version
 
-Latest version is `1.1.0`
+Latest version is `1.0.0`
 
 ## Download
 

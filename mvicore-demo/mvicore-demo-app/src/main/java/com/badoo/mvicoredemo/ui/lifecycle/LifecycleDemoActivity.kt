@@ -1,9 +1,6 @@
 package com.badoo.mvicoredemo.ui.lifecycle
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -14,9 +11,12 @@ import com.badoo.mvicore.android.lifecycle.StartStopBinderLifecycle
 import com.badoo.mvicore.binder.Binder
 import com.badoo.mvicore.binder.named
 import com.badoo.mvicoredemo.R
+import init
 import io.reactivex.functions.Consumer
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.drawerLayout
+import kotlinx.android.synthetic.main.activity_main.navigationView
+import kotlinx.android.synthetic.main.activity_main.toolbar
 
 class LifecycleDemoActivity : AppCompatActivity() {
 
@@ -45,19 +45,7 @@ class LifecycleDemoActivity : AppCompatActivity() {
     private fun setupDrawer() {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        navigationView.apply {
-            setCheckedItem(0)
-            setNavigationItemSelectedListener { item ->
-                item.isChecked = true
-                drawerLayout.closeDrawers()
-
-                when (item.itemId) {
-                    R.id.drawer_main -> finish()
-                }
-
-                true
-            }
-        }
+        navigationView.init(drawerLayout, 1)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean =
@@ -115,15 +103,5 @@ class LifecycleDemoActivity : AppCompatActivity() {
         super.onDestroy()
 
         events.onNext("onDestroy")
-    }
-
-    companion object {
-        fun start(context: Context) {
-            ContextCompat.startActivity(
-                context,
-                Intent(context, LifecycleDemoActivity::class.java),
-                null
-            )
-        }
     }
 }

@@ -8,7 +8,6 @@ import com.badoo.mvicoredemo.R
 import com.badoo.mvicoredemo.auth.logout
 import com.badoo.mvicoredemo.glide.GlideApp
 import com.badoo.mvicoredemo.ui.common.ObservableSourceActivity
-import com.badoo.mvicoredemo.ui.lifecycle.LifecycleDemoActivity
 import com.badoo.mvicoredemo.ui.main.analytics.FakeAnalyticsTracker
 import com.badoo.mvicoredemo.ui.main.di.component.MainScreenInjector
 import com.badoo.mvicoredemo.ui.main.event.UiEvent
@@ -16,8 +15,22 @@ import com.badoo.mvicoredemo.ui.main.event.UiEvent.ButtonClicked
 import com.badoo.mvicoredemo.ui.main.event.UiEvent.ImageClicked
 import com.badoo.mvicoredemo.ui.main.event.UiEvent.PlusClicked
 import com.badoo.mvicoredemo.ui.main.viewmodel.ViewModel
+import init
 import io.reactivex.functions.Consumer
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.button0
+import kotlinx.android.synthetic.main.activity_main.button1
+import kotlinx.android.synthetic.main.activity_main.button2
+import kotlinx.android.synthetic.main.activity_main.button3
+import kotlinx.android.synthetic.main.activity_main.counter
+import kotlinx.android.synthetic.main.activity_main.drawerLayout
+import kotlinx.android.synthetic.main.activity_main.fab
+import kotlinx.android.synthetic.main.activity_main.help
+import kotlinx.android.synthetic.main.activity_main.image
+import kotlinx.android.synthetic.main.activity_main.imageProgress
+import kotlinx.android.synthetic.main.activity_main.navigationView
+import kotlinx.android.synthetic.main.activity_main.showToasts
+import kotlinx.android.synthetic.main.activity_main.signOut
+import kotlinx.android.synthetic.main.activity_main.toolbar
 import javax.inject.Inject
 
 class MainActivity : ObservableSourceActivity<UiEvent>(), Consumer<ViewModel> {
@@ -41,22 +54,19 @@ class MainActivity : ObservableSourceActivity<UiEvent>(), Consumer<ViewModel> {
         image.setOnClickListener { onNext(ImageClicked) }
         fab.setOnClickListener { onNext(PlusClicked) }
         signOut.setOnClickListener { logout() }
-        showToasts.setOnCheckedChangeListener { _, v -> analyticsTracker.showToasts = v }
+        showToasts.setOnClickListener {
+            // Only for debugging purposes, otherwise should be part of the state!
+            analyticsTracker.showToasts = !analyticsTracker.showToasts
+            showToasts.toggle(analyticsTracker.showToasts)
+        }
+
+        help.setOnClickListener {
+            HelpDialogFragment().show(supportFragmentManager, "help")
+        }
+
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        navigationView.apply {
-            setCheckedItem(0)
-            setNavigationItemSelectedListener { item ->
-                item.isChecked = true
-                drawerLayout.closeDrawers()
-
-                when (item.itemId) {
-                    R.id.drawer_lifecycle -> LifecycleDemoActivity.start(this@MainActivity)
-                }
-
-                true
-            }
-        }
+        navigationView.init(drawerLayout, 0)
     }
 
     override fun accept(vm: ViewModel) {

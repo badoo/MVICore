@@ -3,7 +3,6 @@ package com.badoo.mvicoredemo.ui.main.news
 import android.content.Context
 import android.widget.Toast
 import com.badoo.feature2.Feature2
-import com.badoo.feature2.Feature2.Effect.*
 import com.badoo.feature2.Feature2.News.ErrorExecutingRequest
 import io.reactivex.functions.Consumer
 import timber.log.Timber
@@ -19,7 +18,7 @@ class NewsListener(
     }
 
     fun errorHappened(throwable: Throwable) {
-        Toast.makeText(context, "Some error happened :(", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "Simulated error was triggered", Toast.LENGTH_SHORT).show()
         Timber.w(throwable)
     }
 }

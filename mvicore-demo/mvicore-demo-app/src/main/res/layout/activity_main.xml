@@ -118,24 +118,38 @@
             app:layout_constraintStart_toEndOf="@id/image"
             app:layout_constraintTop_toTopOf="@id/image" />
 
+        <com.badoo.mvicoredemo.ui.common.ToggleButton
+            android:id="@+id/showToasts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:theme="@style/Widget.AppCompat.Button"
+            android:text="@string/settings_show_toasts"
+
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintTop_toBottomOf="@id/image"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/help" />
+
+        <Button
+            android:id="@+id/help"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="?"
+
+            app:layout_constraintStart_toEndOf="@id/showToasts"
+            app:layout_constraintEnd_toStartOf="@id/signOut"
+            app:layout_constraintTop_toTopOf="@id/showToasts" />
+
         <Button
             android:id="@+id/signOut"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:text="@string/action_sign_out"
-            app:layout_constraintStart_toStartOf="@id/showToasts"
-            app:layout_constraintTop_toBottomOf="@id/showToasts" />
-
-        <Switch
-            android:id="@+id/showToasts"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:switchPadding="10dp"
-            android:text="@string/settings_show_toasts"
-            app:layout_constraintStart_toStartOf="@id/image"
-            app:layout_constraintTop_toBottomOf="@id/image" />
+            app:layout_constraintTop_toTopOf="@id/help"
+            app:layout_constraintStart_toEndOf="@id/help"
+            app:layout_constraintEnd_toEndOf="parent"
+             />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"

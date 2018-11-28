@@ -1,5 +1,7 @@
-# MVICore 
+# MVICore
+[![Version](https://jitpack.io/v/badoo/mvicore.svg)](https://jitpack.io/#badoo/mvicore)
 [![Build Status](https://travis-ci.org/badoo/MVICore.svg?branch=master)](https://travis-ci.org/badoo/MVICore)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 ## What's this?
 
@@ -42,7 +44,7 @@ class SimpleFeature : ReducerFeature<Wish, State, Nothing>(
                 IncreaseCounter -> state.copy(
                     counter = state.counter + 1
                 )
-                
+
                 // Create the next state based on the current one
                 is MultiplyBy -> state.copy(
                     counter = state.counter * wish.value
@@ -85,10 +87,6 @@ binder.bind(feature to view using StateToViewModel)
 The library comes with lots of powerful capabilities and tooling.
 
 Head over to the [Documentation](documentation/README.md) to see what's possible.
-
-## Version
-
-Latest version is `1.1.2`
 
 ## Download
 

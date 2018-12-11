@@ -3,6 +3,7 @@ package com.badoo.mvicore.android
 import android.os.Bundle
 import android.os.Parcelable
 import com.badoo.mvicore.element.TimeCapsule
+import kotlin.collections.forEach as kotlinForEach
 
 class AndroidTimeCapsule(private val savedState: Bundle?) : TimeCapsule<Parcelable> {
 
@@ -14,5 +15,5 @@ class AndroidTimeCapsule(private val savedState: Bundle?) : TimeCapsule<Parcelab
         stateSuppliers[key.toString()] = stateSupplier
     }
 
-    fun saveState(outState: Bundle) = stateSuppliers.forEach { key, stateSupplier -> outState.putParcelable(key, stateSupplier()) }
+    fun saveState(outState: Bundle) = stateSuppliers.kotlinForEach { entry -> outState.putParcelable(entry.key, entry.value()) }
 }

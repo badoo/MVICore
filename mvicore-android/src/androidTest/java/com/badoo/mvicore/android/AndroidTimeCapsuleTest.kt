@@ -3,6 +3,9 @@ package com.badoo.mvicore.android
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
+import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.core.IsEqual.equalTo
+import org.hamcrest.core.IsNull.notNullValue
 import org.junit.Test
 
 class AndroidTimeCapsuleTest {
@@ -18,8 +21,8 @@ class AndroidTimeCapsuleTest {
         val restoredTimeCapsule = AndroidTimeCapsule(bundle)
         val restoredState = restoredTimeCapsule.get<SimpleTestParcelable>("test_key")
 
-        assert(restoredState != null)
-        assert(restoredState?.value == "test_value")
+        assertThat(restoredState, notNullValue())
+        assertThat(restoredState?.value, equalTo("test_value"))
     }
 
     class SimpleTestParcelable(val value: String) : Parcelable {

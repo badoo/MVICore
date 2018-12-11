@@ -44,6 +44,7 @@ ext {
     // Testing
     junitVersion = '4.12'
     kluentVersion = '1.23'
+    supportTestVersion = '1.0.2'
 
     depsWithVersion = [
             // Android
@@ -91,6 +92,9 @@ ext {
             "junit:junit"                                       : junitVersion,
             "org.jetbrains.kotlin:kotlin-test-junit"            : kotlinVersion,
             "org.amshove.kluent:kluent"                         : kluentVersion,
+            "com.android.support.test:runner"                   : supportTestVersion,
+            "com.android.support.test:orchestrator"             : supportTestVersion,
+            "com.android.support.test:rules"                    : supportTestVersion,
     ]
 
     deps = { String key ->

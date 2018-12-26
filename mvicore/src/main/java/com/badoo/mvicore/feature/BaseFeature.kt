@@ -1,6 +1,6 @@
 package com.badoo.mvicore.feature
 
-import com.badoo.mvicore.consumer.wrap
+import com.badoo.mvicore.consumer.wrapWithMiddleware
 import com.badoo.mvicore.element.Actor
 import com.badoo.mvicore.element.Bootstrapper
 import com.badoo.mvicore.element.NewsPublisher
@@ -35,19 +35,19 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
     private val postProcessorWrapper = postProcessor?.let { PostProcessorWrapper(
         postProcessor,
         actionSubject
-    ).wrap(wrapperOf = postProcessor)}
+    ).wrapWithMiddleware(wrapperOf = postProcessor)}
 
     private val newsPublisherWrapper = newsPublisher?.let { NewsPublisherWrapper(
         newsPublisher,
         newsSubject
-    ).wrap(wrapperOf = newsPublisher)}
+    ).wrapWithMiddleware(wrapperOf = newsPublisher)}
 
     private val reducerWrapper = ReducerWrapper(
         reducer,
         stateSubject,
         postProcessorWrapper,
         newsPublisherWrapper
-    ).wrap(wrapperOf = reducer)
+    ).wrapWithMiddleware(wrapperOf = reducer)
 
     private val actorWrapper = ActorWrapper(
         threadVerifier,
@@ -55,7 +55,7 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
         actor,
         stateSubject,
         reducerWrapper
-    ).wrap(wrapperOf = actor)
+    ).wrapWithMiddleware(wrapperOf = actor)
 
     init {
         disposables += actorWrapper
@@ -67,7 +67,7 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
         }
 
         bootstrapper?.let {
-            actionSubject.asConsumer().wrap(
+            actionSubject.asConsumer().wrapWithMiddleware(
                 wrapperOf = it,
                 postfix = "output"
             ).also { output ->

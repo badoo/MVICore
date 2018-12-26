@@ -3,8 +3,9 @@ package com.badoo.mvicore.binder
 import com.badoo.mvicore.binder.lifecycle.Lifecycle
 import com.badoo.mvicore.binder.lifecycle.Lifecycle.Event.BEGIN
 import com.badoo.mvicore.binder.lifecycle.Lifecycle.Event.END
-import com.badoo.mvicore.consumer.middleware.ConsumerMiddleware
-import com.badoo.mvicore.consumer.wrap
+import com.badoo.mvicore.consumer.middleware.base.Middleware
+import com.badoo.mvicore.consumer.wrapWithMiddleware
+import com.badoo.mvicore.extension.mapNotNull
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import io.reactivex.disposables.CompositeDisposable
@@ -16,37 +17,36 @@ class Binder(
     private val lifecycle: Lifecycle? = null
 ) : Disposable {
     private val disposables = CompositeDisposable()
-    private val connections = mutableListOf<Pair<Connection<out Any>, ConsumerMiddleware<out Any>?>>()
+    private val connections = mutableListOf<Pair<Connection<*, *>, Middleware<*, *>?>>()
     private val connectionDisposables = CompositeDisposable()
     private var isActive = false
 
     init {
-        lifecycle?.apply {
-            disposables += Observable.wrap(this)
-                .subscribe {
-                    when (it) {
-                       BEGIN -> bindConnections()
-                       END -> unbindConnections()
-                    }
-                }
+        lifecycle?.let {
+            disposables += it.setupConnections()
         }
 
         disposables += connectionDisposables
     }
 
-    fun <T : Any> bind(connection: Pair<ObservableSource<out T>, Consumer<T>>) {
-        bind(Connection(
-            from = connection.first,
-            to = connection.second
-        ))
+    // region bind
+
+    fun <T: Any> bind(connection: Pair<ObservableSource<T>, Consumer<T>>) {
+        bind(
+            Connection(
+                from = connection.first,
+                to = connection.second,
+                transformer = { it }
+            )
+        )
     }
 
-    fun <T : Any> bind(connection: Connection<T>) {
+    fun <Out: Any, In: Any> bind(connection: Connection<Out, In>) {
         val consumer = connection.to
-        val middleware = consumer.wrap(
+        val middleware = consumer.wrapWithMiddleware(
             standalone = false,
             name = connection.name
-        ) as? ConsumerMiddleware<T>
+        ) as? Middleware<Out, In>
 
         when {
             lifecycle != null -> {
@@ -59,40 +59,64 @@ class Binder(
         }
     }
 
-    private fun <T : Any> subscribeWithLifecycle(
-        connection: Connection<T>,
-        middleware: ConsumerMiddleware<T>?
+    private fun <Out: Any, In: Any> subscribeWithLifecycle(
+        connection: Connection<Out, In>,
+        middleware: Middleware<Out, In>?
     ) {
         connectionDisposables += Observable
             .wrap(connection.from)
             .subscribeWithMiddleware(connection, middleware)
     }
 
-    private fun <T: Any> subscribe(
-        connection: Connection<T>,
-        middleware: ConsumerMiddleware<T>?
+    private fun <Out: Any, In: Any> subscribe(
+        connection: Connection<Out, In>,
+        middleware: Middleware<Out, In>?
     ) {
         disposables += Observable.wrap(connection.from)
             .subscribeWithMiddleware(connection, middleware)
     }
 
-    private fun <T: Any> Observable<out T>.subscribeWithMiddleware(
-        connection: Connection<T>,
-        middleware: ConsumerMiddleware<T>?
-    ): Disposable = run {
-        middleware?.onBind(connection)
-        middleware?.let {
-            this.doOnNext { middleware.onElement(connection, it) }
-                .doFinally { middleware.onComplete(connection) }
-        } ?: this
-    }.subscribe(middleware ?: connection.to)
+    private fun <Out: Any, In: Any> Observable<Out>.subscribeWithMiddleware(
+        connection: Connection<Out, In>,
+        middleware: Middleware<Out, In>?
+    ): Disposable =
+        applyTransformer(connection)
+            .run {
+                middleware?.let {
+                    middleware.onBind(connection)
+
+                    this
+                        .doOnNext { middleware.onElement(connection, it) }
+                        .doFinally { middleware.onComplete(connection) }
+                        .subscribe(middleware)
+
+                } ?: subscribe(connection.to)
+            }
+
+    private fun <Out: Any, In: Any> Observable<Out>.applyTransformer(
+        connection: Connection<Out, In>
+    ): Observable<In> =
+        mapNotNull(connection.transformer ?: { it as? In })
+
+    // endregion
+
+    // region lifecycle
+
+    private fun Lifecycle.setupConnections() =
+        Observable.wrap(this)
+            .subscribe {
+                when (it) {
+                    BEGIN -> bindConnections()
+                    END -> unbindConnections()
+                }
+            }
 
     private fun bindConnections() {
         isActive = true
         connections.forEach { (connection, middleware) ->
             subscribeWithLifecycle(
-                connection as Connection<Any>,
-                middleware as? ConsumerMiddleware<Any>
+                connection as Connection<Any, Any>,
+                middleware as? Middleware<Any, Any>
             )
         }
     }
@@ -101,6 +125,8 @@ class Binder(
         isActive = false
         connectionDisposables.clear()
     }
+
+    // endregion
 
     override fun isDisposed(): Boolean =
         disposables.isDisposed
@@ -113,6 +139,3 @@ class Binder(
         disposables.clear()
     }
 }
-
-
-

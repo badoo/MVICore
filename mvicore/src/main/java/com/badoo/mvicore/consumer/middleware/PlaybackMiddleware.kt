@@ -1,6 +1,7 @@
 package com.badoo.mvicore.consumer.middleware
 
 import com.badoo.mvicore.binder.Connection
+import com.badoo.mvicore.consumer.middleware.base.Middleware
 import com.badoo.mvicore.consumer.util.Logger
 import io.reactivex.Observable
 import io.reactivex.functions.Consumer
@@ -9,26 +10,26 @@ open class PlaybackMiddleware<T : Any>(
     wrapped: Consumer<T>,
     private val recordStore: RecordStore,
     private val logger: Logger? = null
-) : ConsumerMiddleware<T>(wrapped) {
+) : Middleware<Any, T>(wrapped) {
 
     private var isInPlaybackMode: Boolean = false
 
-    override fun onBind(endpoints: Connection<T>) {
-        super.onBind(endpoints)
-        logger?.invoke("PlaybackMiddleware: Creating record store entry for $endpoints")
-        recordStore.register(this, endpoints)
+    override fun onBind(connection: Connection<Any, T>) {
+        super.onBind(connection)
+        logger?.invoke("PlaybackMiddleware: Creating record store entry for $connection")
+        recordStore.register(this, connection)
     }
 
-    override fun onElement(endpoints: Connection<T>, element: T) {
-        super.onElement(endpoints, element)
-        logger?.invoke("PlaybackMiddleware: Sending to record store: [$element] on $endpoints")
-        recordStore.record(this, endpoints, element)
+    override fun onElement(connection: Connection<Any, T>, element: T) {
+        super.onElement(connection, element)
+        logger?.invoke("PlaybackMiddleware: Sending to record store: [$element] on $connection")
+        recordStore.record(this, connection, element)
     }
 
-    override fun onComplete(endpoints: Connection<T>) {
-        super.onComplete(endpoints)
-        logger?.invoke("PlaybackMiddleware: Removing record store entry for binding $endpoints")
-        recordStore.unregister(this, endpoints)
+    override fun onComplete(connection: Connection<Any, T>) {
+        super.onComplete(connection)
+        logger?.invoke("PlaybackMiddleware: Removing record store entry for binding $connection")
+        recordStore.unregister(this, connection)
     }
 
     fun startPlayback() {
@@ -60,9 +61,9 @@ open class PlaybackMiddleware<T : Any>(
     interface RecordStore {
         fun startRecording()
         fun stopRecording()
-        fun <T : Any> register(middleware: PlaybackMiddleware<T>, endpoints: Connection<T>)
-        fun <T : Any> unregister(middleware: PlaybackMiddleware<T>, endpoints: Connection<T>)
-        fun <T : Any> record(middleware: PlaybackMiddleware<T>, endpoints: Connection<T>, element: T)
+        fun <T : Any> register(middleware: PlaybackMiddleware<T>, endpoints: Connection<Any, T>)
+        fun <T : Any> unregister(middleware: PlaybackMiddleware<T>, endpoints: Connection<Any, T>)
+        fun <T : Any> record(middleware: PlaybackMiddleware<T>, endpoints: Connection<Any, T>, element: T)
         fun playback(recordKey: RecordKey)
         fun records(): Observable<List<RecordKey>>
         fun state(): Observable<PlaybackState>

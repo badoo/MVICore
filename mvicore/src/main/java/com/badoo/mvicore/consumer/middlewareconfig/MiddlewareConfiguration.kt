@@ -1,6 +1,6 @@
 package com.badoo.mvicore.consumer.middlewareconfig
 
-import com.badoo.mvicore.consumer.middleware.ConsumerMiddleware
+import com.badoo.mvicore.consumer.middleware.base.Middleware
 import io.reactivex.functions.Consumer
 
 data class MiddlewareConfiguration(
@@ -17,7 +17,7 @@ data class MiddlewareConfiguration(
         var current = consumerToWrap
         val middlewares = if (condition.shouldWrap(targetToCheck, name, standalone)) factories else listOf()
         middlewares.forEach {
-            current = (it.invoke(current) as ConsumerMiddleware<T>)
+            current = it.invoke(current) as Middleware<Any, T>
         }
 
         return current

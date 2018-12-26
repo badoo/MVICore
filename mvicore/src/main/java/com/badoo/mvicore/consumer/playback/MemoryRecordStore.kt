@@ -48,19 +48,19 @@ class MemoryRecordStore(
         }
     }
 
-    override fun <T : Any> register(middleware: PlaybackMiddleware<T>, endpoints: Connection<T>) {
+    override fun <T : Any> register(middleware: PlaybackMiddleware<T>, endpoints: Connection<Any, T>) {
         cachedEvents[Key(middleware, endpoints)] = mutableListOf()
         updateRecords()
     }
 
-    override fun <T : Any> unregister(middleware: PlaybackMiddleware<T>, endpoints: Connection<T>) {
+    override fun <T : Any> unregister(middleware: PlaybackMiddleware<T>, endpoints: Connection<Any, T>) {
         val key = Key(middleware, endpoints)
         cachedEvents.remove(key)
         lastElementBuffer.remove(key)
         updateRecords()
     }
 
-    override fun <T : Any> record(middleware: PlaybackMiddleware<T>, endpoints: Connection<T>, element: T) {
+    override fun <T : Any> record(middleware: PlaybackMiddleware<T>, endpoints: Connection<Any, T>, element: T) {
         val key = Key(middleware, endpoints)
         lastElementBuffer[key] = element
 
@@ -132,7 +132,7 @@ class MemoryRecordStore(
 
     private data class Key<T : Any>(
         val middleWare: PlaybackMiddleware<T>,
-        val connection: Connection<T>
+        val connection: Connection<Any, T>
     ) {
         val id = hashCode()
 

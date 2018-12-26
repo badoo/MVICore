@@ -5,6 +5,8 @@ import android.app.Application
 import com.badoo.mvicore.consumer.middleware.LoggingMiddleware
 import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware
 import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore
+import com.badoo.mvicore.consumer.middleware.PluginMiddleware
+import com.badoo.mvicore.consumer.middleware.Test
 import com.badoo.mvicore.consumer.middlewareconfig.MiddlewareConfiguration
 import com.badoo.mvicore.consumer.middlewareconfig.Middlewares
 import com.badoo.mvicore.consumer.middlewareconfig.WrappingCondition
@@ -57,6 +59,15 @@ class App : Application() {
                 ),
                 factories = listOf(
                     { consumer -> PlaybackMiddleware(consumer, recordStore, { Timber.d(it) }) }
+                )
+            )
+        )
+
+        Middlewares.configurations.add(
+            MiddlewareConfiguration(
+                condition = WrappingCondition.Always,
+                factories = listOf(
+                    { consumer -> PluginMiddleware(consumer, Test) }
                 )
             )
         )

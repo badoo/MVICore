@@ -17,8 +17,8 @@ class MemoryRecordStore(
 ) : RecordStore {
     private val state: BehaviorSubject<PlaybackState> = BehaviorSubject.createDefault(IDLE)
     private val records: BehaviorSubject<List<RecordKey>> = BehaviorSubject.createDefault(emptyList())
-    private val cachedEvents: MutableMap<Key<*>, MutableList<Event>> = mutableMapOf()
-    private val lastElementBuffer: MutableMap<Key<*>, Any> = mutableMapOf()
+    private val cachedEvents: MutableMap<Key<*, *>, MutableList<Event>> = mutableMapOf()
+    private val lastElementBuffer: MutableMap<Key<*, *>, Any> = mutableMapOf()
     private var isRecording = false
     private var recordBaseTimestampNanos = 0L
 
@@ -43,19 +43,19 @@ class MemoryRecordStore(
         }
     }
 
-    override fun <T : Any> register(middleware: PlaybackMiddleware<T>, endpoints: Connection<Any, T>) {
+    override fun <Out: Any, In: Any> register(middleware: PlaybackMiddleware<Out, In>, endpoints: Connection<Out, In>) {
         cachedEvents[Key(middleware, endpoints)] = mutableListOf()
         updateRecords()
     }
 
-    override fun <T : Any> unregister(middleware: PlaybackMiddleware<T>, endpoints: Connection<Any, T>) {
+    override fun <Out: Any, In: Any> unregister(middleware: PlaybackMiddleware<Out, In>, endpoints: Connection<Out, In>) {
         val key = Key(middleware, endpoints)
         cachedEvents.remove(key)
         lastElementBuffer.remove(key)
         updateRecords()
     }
 
-    override fun <T : Any> record(middleware: PlaybackMiddleware<T>, endpoints: Connection<Any, T>, element: T) {
+    override fun <Out: Any, In: Any> record(middleware: PlaybackMiddleware<Out, In>, endpoints: Connection<Out, In>, element: In) {
         val key = Key(middleware, endpoints)
         lastElementBuffer[key] = element
 
@@ -125,9 +125,9 @@ class MemoryRecordStore(
             }
     }
 
-    private data class Key<T : Any>(
-        val middleWare: PlaybackMiddleware<T>,
-        val connection: Connection<Any, T>
+    private data class Key<Out: Any, In: Any>(
+        val middleWare: PlaybackMiddleware<Out, In>,
+        val connection: Connection<Out, In>
     ) {
         val id = hashCode()
 

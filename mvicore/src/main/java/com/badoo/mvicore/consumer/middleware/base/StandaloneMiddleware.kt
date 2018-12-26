@@ -39,6 +39,7 @@ internal class StandaloneMiddleware<Out, In>(
     override fun isDisposed() = disposed
 
     override fun dispose() {
+        onComplete(this.connection)
         disposed = true
     }
 

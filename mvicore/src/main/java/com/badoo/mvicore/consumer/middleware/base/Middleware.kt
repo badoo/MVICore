@@ -1,7 +1,6 @@
 package com.badoo.mvicore.consumer.middleware.base
 
 import com.badoo.mvicore.binder.Connection
-import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
 
 abstract class Middleware<Out, In>(

@@ -1,7 +1,6 @@
 package com.badoo.mvicore.binder.lifecycle
 
 import com.badoo.mvicore.binder.lifecycle.internal.FromObservableSource
-import io.reactivex.Observable
 import io.reactivex.ObservableSource
 
 interface Lifecycle : ObservableSource<Lifecycle.Event> {

@@ -1,7 +1,5 @@
 package com.badoo.mvicore.binder
 
-import com.badoo.mvicore.extension.mapNotNull
-import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import io.reactivex.functions.Consumer
 

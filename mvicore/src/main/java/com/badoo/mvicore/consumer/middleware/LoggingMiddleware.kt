@@ -4,7 +4,7 @@ import com.badoo.mvicore.binder.Connection
 import com.badoo.mvicore.consumer.middleware.base.Middleware
 import com.badoo.mvicore.consumer.util.Logger
 import io.reactivex.functions.Consumer
-import java.util.Locale
+import java.util.*
 
 class LoggingMiddleware<T : Any>(
     wrapped: Consumer<T>,

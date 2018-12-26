@@ -1,7 +1,5 @@
 package com.badoo.mvicore.consumer.middlewareconfig
 
-import io.reactivex.functions.Consumer
-
 interface WrappingCondition {
 
     fun shouldWrap(target: Any, name: String?, standalone: Boolean) : Boolean

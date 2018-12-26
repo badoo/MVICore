@@ -3,13 +3,8 @@ package com.badoo.mvicore.consumer.playback
 import com.badoo.mvicore.binder.Connection
 import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware
 import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore
-import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore.Event
-import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore.PlaybackState
-import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore.PlaybackState.FINISHED_PLAYBACK
-import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore.PlaybackState.IDLE
-import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore.PlaybackState.PLAYBACK
-import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore.PlaybackState.RECORDING
-import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore.RecordKey
+import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore.*
+import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore.PlaybackState.*
 import com.badoo.mvicore.consumer.util.Logger
 import io.reactivex.Observable
 import io.reactivex.Scheduler

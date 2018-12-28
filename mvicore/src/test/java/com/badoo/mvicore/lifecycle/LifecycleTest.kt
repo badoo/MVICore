@@ -5,6 +5,12 @@ import com.badoo.mvicore.assertValues
 import com.badoo.mvicore.binder.Binder
 import com.badoo.mvicore.binder.lifecycle.Lifecycle
 import com.badoo.mvicore.binder.lifecycle.ManualLifecycle
+import com.nhaarman.mockito_kotlin.any
+import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.times
+import com.nhaarman.mockito_kotlin.verify
+import io.reactivex.ObservableSource
+import io.reactivex.functions.Consumer
 import io.reactivex.subjects.PublishSubject
 import org.junit.Test
 
@@ -65,8 +71,19 @@ class LifecycleTest {
         consumer.assertValues(0, 2)
     }
 
-    private fun createBinding() {
+    @Test
+    fun `binder does not resubscribe on consecutive begin events`() {
+        val mockedSource: ObservableSource<Int> = mock()
+        createBinding(from = mockedSource)
+
+        lifecycle.begin()
+        lifecycle.begin()
+
+        verify(mockedSource, times(1)).subscribe(any())
+    }
+
+    private fun createBinding(from: ObservableSource<Int> = source, to: Consumer<Int> = consumer) {
         val binder = Binder(lifecycle)
-        binder.bind(source to consumer)
+        binder.bind(from to to)
     }
 }

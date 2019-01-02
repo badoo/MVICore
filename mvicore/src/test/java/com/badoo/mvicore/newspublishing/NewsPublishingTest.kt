@@ -1,20 +1,31 @@
-package com.badoo.mvicore.feature
+package com.badoo.mvicore.newspublishing
 
+import com.badoo.mvicore.consumer.middleware.LoggingMiddleware
+import com.badoo.mvicore.consumer.middlewareconfig.MiddlewareConfiguration
+import com.badoo.mvicore.consumer.middlewareconfig.Middlewares
+import com.badoo.mvicore.consumer.middlewareconfig.WrappingCondition.Always
 import com.badoo.mvicore.element.Actor
 import com.badoo.mvicore.element.NewsPublisher
 import com.badoo.mvicore.element.Reducer
-import com.badoo.mvicore.feature.TestNews.News1
-import com.badoo.mvicore.feature.TestNews.News2
-import com.badoo.mvicore.feature.TestNews.News3
-import com.badoo.mvicore.feature.TestWish.Wish1
-import com.badoo.mvicore.feature.TestWish.Wish2
-import com.badoo.mvicore.feature.TestWish.Wish3
+import com.badoo.mvicore.feature.BaseFeature
+import com.badoo.mvicore.feature.Feature
+import com.badoo.mvicore.newspublishing.TestNews.News1
+import com.badoo.mvicore.newspublishing.TestNews.News2
+import com.badoo.mvicore.newspublishing.TestNews.News3
+import com.badoo.mvicore.newspublishing.TestWish.Wish1
+import com.badoo.mvicore.newspublishing.TestWish.Wish2
+import com.badoo.mvicore.newspublishing.TestWish.Wish3
 import com.nhaarman.mockito_kotlin.whenever
 import io.reactivex.Observable
 import io.reactivex.observers.TestObserver
 import org.amshove.kluent.any
 import org.amshove.kluent.mock
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
+import org.junit.runners.Parameterized.Parameters
 
 sealed class TestWish {
     object Wish1 : TestWish()
@@ -28,9 +39,45 @@ sealed class TestNews {
     object News3 : TestNews()
 }
 
-class NewsPublishingTest {
+@RunWith(Parameterized::class)
+class NewsPublishingTest(private val middlewareConfiguration: MiddlewareConfiguration?) {
+
+    companion object {
+        /**
+         * The fact of using a wrapped news publisher or not shouldn't affect the news publishing logic.
+         */
+        @JvmStatic
+        @Parameters
+        fun parameters(): Iterable<Any?> = listOf<Any?>(
+            // not using middleware
+            null,
+
+            // setup some middleware
+            MiddlewareConfiguration(
+                condition = Always,
+                factories = listOf(
+                    { consumer -> LoggingMiddleware(consumer, {}) }
+                )
+            )
+        )
+    }
+
     private lateinit var feature: Feature<TestWish, Any, TestNews>
     private lateinit var newsTestSubscriber: TestObserver<TestNews>
+
+    @Before
+    fun setUp() {
+        middlewareConfiguration?.let {
+            Middlewares.configurations.add(it)
+        }
+    }
+
+    @After
+    fun tearDown() {
+        middlewareConfiguration?.let {
+            Middlewares.configurations.clear()
+        }
+    }
 
     @Test
     fun `created feature wo news publisher - emit wishes - no news produced`() {

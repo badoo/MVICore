@@ -1,9 +1,11 @@
 package com.badoo.mvicore.newspublishing
 
+import com.badoo.mvicore.consumer.middleware.ConsumerMiddleware
 import com.badoo.mvicore.consumer.middleware.LoggingMiddleware
 import com.badoo.mvicore.consumer.middlewareconfig.MiddlewareConfiguration
 import com.badoo.mvicore.consumer.middlewareconfig.Middlewares
 import com.badoo.mvicore.consumer.middlewareconfig.WrappingCondition.Always
+import com.badoo.mvicore.consumer.middlewareconfig.WrappingCondition.InstanceOf
 import com.badoo.mvicore.element.Actor
 import com.badoo.mvicore.element.NewsPublisher
 import com.badoo.mvicore.element.Reducer
@@ -15,6 +17,9 @@ import com.badoo.mvicore.newspublishing.TestNews.News3
 import com.badoo.mvicore.newspublishing.TestWish.Wish1
 import com.badoo.mvicore.newspublishing.TestWish.Wish2
 import com.badoo.mvicore.newspublishing.TestWish.Wish3
+import com.nhaarman.mockito_kotlin.spy
+import com.nhaarman.mockito_kotlin.times
+import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import io.reactivex.Observable
 import io.reactivex.observers.TestObserver
@@ -47,18 +52,18 @@ class NewsPublishingTest(private val middlewareConfiguration: MiddlewareConfigur
          * The fact of using a wrapped news publisher or not shouldn't affect the news publishing logic.
          */
         @JvmStatic
-        @Parameters
+        @Parameters(name = "{index}: 0-middleware, 1-without")
         fun parameters(): Iterable<Any?> = listOf<Any?>(
-            // not using middleware
-            null,
-
             // setup some middleware
             MiddlewareConfiguration(
                 condition = Always,
                 factories = listOf(
                     { consumer -> LoggingMiddleware(consumer, {}) }
                 )
-            )
+            ),
+
+            // not using middleware
+            null
         )
     }
 
@@ -126,6 +131,24 @@ class NewsPublishingTest(private val middlewareConfiguration: MiddlewareConfigur
         newsTestSubscriber.assertValues(News3, News1, News2)
     }
 
+    @Test
+    fun `setup news middleware, created feature with news publisher - emit N wishes - N news propagated to middleware`() {
+        val testMiddleware = setupTestMiddlewareConfigurationForNews()
+
+        initializeFeatureWithNewsPublisher { action, _, _ ->
+            when (action) {
+                is Wish1 -> News1
+                is Wish2 -> News2
+                is Wish3 -> News3
+                else -> null
+            }
+        }
+
+        listOf(Wish3, Wish1, Wish2).forEach(feature::accept)
+
+        verify(testMiddleware, times(3)).onElement(any(), any())
+    }
+
     private fun initializeFeatureWithNewsPublisher(newsPublisher: NewsPublisher<Any, Any, Any, TestNews>?) {
         feature = BaseFeature(
             initialState = mock(),
@@ -141,5 +164,19 @@ class NewsPublishingTest(private val middlewareConfiguration: MiddlewareConfigur
             newsPublisher = newsPublisher
         )
         newsTestSubscriber = Observable.wrap(feature.news).test()
+    }
+
+    @Suppress("RedundantLambdaArrow")
+    private fun setupTestMiddlewareConfigurationForNews(): ConsumerMiddleware<Any> {
+        val tesMiddleware = spy(LoggingMiddleware<Any>(mock(), mock()))
+
+        Middlewares.configurations.add(
+            MiddlewareConfiguration(
+                condition = InstanceOf(NewsPublisher::class.java),
+                factories = listOf({ _ -> tesMiddleware })
+            )
+        )
+
+        return tesMiddleware
     }
 }

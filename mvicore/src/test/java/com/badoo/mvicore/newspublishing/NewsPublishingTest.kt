@@ -44,26 +44,32 @@ sealed class TestNews {
     object News3 : TestNews()
 }
 
+class Parameter(val middlewareConfiguration: MiddlewareConfiguration?) {
+    override fun toString(): String = if (middlewareConfiguration != null) "with 3rd party middleware" else "without 3rd party middleware"
+}
+
 @RunWith(Parameterized::class)
-class NewsPublishingTest(private val middlewareConfiguration: MiddlewareConfiguration?) {
+class NewsPublishingTest(private val parameter: Parameter) {
 
     companion object {
         /**
          * The fact of using a wrapped news publisher or not shouldn't affect the news publishing logic.
          */
         @JvmStatic
-        @Parameters(name = "{index}: 0-middleware, 1-without")
+        @Parameters(name = "{0}")
         fun parameters(): Iterable<Any?> = listOf<Any?>(
             // setup some middleware
-            MiddlewareConfiguration(
-                condition = Always,
-                factories = listOf(
-                    { consumer -> LoggingMiddleware(consumer, {}) }
+            Parameter(
+                MiddlewareConfiguration(
+                    condition = Always,
+                    factories = listOf(
+                        { consumer -> LoggingMiddleware(consumer, {}) }
+                    )
                 )
             ),
 
             // not using middleware
-            null
+            Parameter(null)
         )
     }
 
@@ -72,14 +78,14 @@ class NewsPublishingTest(private val middlewareConfiguration: MiddlewareConfigur
 
     @Before
     fun setUp() {
-        middlewareConfiguration?.let {
+        parameter.middlewareConfiguration?.let {
             Middlewares.configurations.add(it)
         }
     }
 
     @After
     fun tearDown() {
-        middlewareConfiguration?.let {
+        parameter.middlewareConfiguration?.let {
             Middlewares.configurations.clear()
         }
     }

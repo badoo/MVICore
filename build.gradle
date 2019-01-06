@@ -47,6 +47,8 @@ ext {
     supportTestVersion = '1.0.2'
 
     depsWithVersion = [
+            "org.jetbrains.kotlin:kotlin-stdlib-jdk7"           : kotlinVersion,
+
             // Android
             "android.arch.lifecycle:common-java8"               : androidArchLifecycleVersion,
             "com.android.support:appcompat-v7"                  : androidSupportLibVersion,

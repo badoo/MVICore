@@ -1,0 +1,44 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.badoo.mvicore.todo"
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    androidExtensions {
+        experimental = true
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
+
+    implementation deps('com.android.support:appcompat-v7')
+    implementation deps('com.android.support.constraint:constraint-layout')
+    implementation deps('com.android.support:design')
+
+    implementation deps('io.reactivex.rxjava2:rxjava')
+
+    implementation project(":mvicore")
+    implementation project(":mvicore-android")
+    testImplementation deps("junit:junit")
+}

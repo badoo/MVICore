@@ -177,15 +177,15 @@ class NewsPublishingTest(private val parameter: Parameter) {
 
     @Suppress("RedundantLambdaArrow")
     private fun setupTestMiddlewareConfigurationForNews(): ConsumerMiddleware<Triple<TestWish, Any, Any>> {
-        val tesMiddleware = spy(LoggingMiddleware<Triple<TestWish, Any, Any>>(mock(), mock()))
+        val testMiddleware = spy(LoggingMiddleware<Triple<TestWish, Any, Any>>(mock(), mock()))
 
         Middlewares.configurations.add(
             MiddlewareConfiguration(
                 condition = InstanceOf(NewsPublisher::class.java),
-                factories = listOf({ _ -> tesMiddleware })
+                factories = listOf({ _ -> testMiddleware })
             )
         )
 
-        return tesMiddleware
+        return testMiddleware
     }
 }

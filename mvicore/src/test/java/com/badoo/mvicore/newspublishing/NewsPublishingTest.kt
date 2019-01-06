@@ -17,6 +17,7 @@ import com.badoo.mvicore.newspublishing.TestNews.News3
 import com.badoo.mvicore.newspublishing.TestWish.Wish1
 import com.badoo.mvicore.newspublishing.TestWish.Wish2
 import com.badoo.mvicore.newspublishing.TestWish.Wish3
+import com.nhaarman.mockito_kotlin.argumentCaptor
 import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
@@ -31,6 +32,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
+import kotlin.test.assertEquals
 
 sealed class TestWish {
     object Wish1 : TestWish()
@@ -85,9 +87,7 @@ class NewsPublishingTest(private val parameter: Parameter) {
 
     @After
     fun tearDown() {
-        parameter.middlewareConfiguration?.let {
-            Middlewares.configurations.clear()
-        }
+        Middlewares.configurations.clear()
     }
 
     @Test
@@ -138,7 +138,7 @@ class NewsPublishingTest(private val parameter: Parameter) {
     }
 
     @Test
-    fun `setup news middleware, created feature with news publisher - emit N wishes - N news propagated to middleware`() {
+    fun `setup news publisher middleware, created feature with news publisher - emit N wishes - N events propagated to news publisher middleware`() {
         val testMiddleware = setupTestMiddlewareConfigurationForNews()
 
         initializeFeatureWithNewsPublisher { action, _, _ ->
@@ -152,7 +152,10 @@ class NewsPublishingTest(private val parameter: Parameter) {
 
         listOf(Wish3, Wish1, Wish2).forEach(feature::accept)
 
-        verify(testMiddleware, times(3)).onElement(any(), any())
+        with(argumentCaptor<Triple<TestWish, Any, Any>>()) {
+            verify(testMiddleware, times(3)).onElement(any(), capture())
+            assertEquals(listOf(Wish3, Wish1, Wish2), allValues.map { it.first })
+        }
     }
 
     private fun initializeFeatureWithNewsPublisher(newsPublisher: NewsPublisher<Any, Any, Any, TestNews>?) {
@@ -173,8 +176,8 @@ class NewsPublishingTest(private val parameter: Parameter) {
     }
 
     @Suppress("RedundantLambdaArrow")
-    private fun setupTestMiddlewareConfigurationForNews(): ConsumerMiddleware<Any> {
-        val tesMiddleware = spy(LoggingMiddleware<Any>(mock(), mock()))
+    private fun setupTestMiddlewareConfigurationForNews(): ConsumerMiddleware<Triple<TestWish, Any, Any>> {
+        val tesMiddleware = spy(LoggingMiddleware<Triple<TestWish, Any, Any>>(mock(), mock()))
 
         Middlewares.configurations.add(
             MiddlewareConfiguration(

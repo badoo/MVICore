@@ -1,7 +1,6 @@
 package com.badoo.mvicore.newspublishing
 
 import com.badoo.mvicore.consumer.middleware.ConsumerMiddleware
-import com.badoo.mvicore.consumer.middleware.LoggingMiddleware
 import com.badoo.mvicore.consumer.middlewareconfig.MiddlewareConfiguration
 import com.badoo.mvicore.consumer.middlewareconfig.Middlewares
 import com.badoo.mvicore.consumer.middlewareconfig.WrappingCondition.Always
@@ -23,6 +22,7 @@ import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import io.reactivex.Observable
+import io.reactivex.functions.Consumer
 import io.reactivex.observers.TestObserver
 import org.amshove.kluent.any
 import org.amshove.kluent.mock
@@ -50,6 +50,8 @@ class Parameter(val middlewareConfiguration: MiddlewareConfiguration?) {
     override fun toString(): String = if (middlewareConfiguration != null) "with 3rd party middleware" else "without 3rd party middleware"
 }
 
+private fun <T : Any> createMiddlewareStub(consumer: Consumer<T>): ConsumerMiddleware<T> = object : ConsumerMiddleware<T>(consumer) {}
+
 @RunWith(Parameterized::class)
 class NewsPublishingTest(private val parameter: Parameter) {
 
@@ -65,7 +67,7 @@ class NewsPublishingTest(private val parameter: Parameter) {
                 MiddlewareConfiguration(
                     condition = Always,
                     factories = listOf(
-                        { consumer -> LoggingMiddleware(consumer, {}) }
+                        { consumer -> createMiddlewareStub(consumer) }
                     )
                 )
             ),
@@ -91,7 +93,7 @@ class NewsPublishingTest(private val parameter: Parameter) {
     }
 
     @Test
-    fun `created feature wo news publisher - emit wishes - no news produced`() {
+    fun `feature wo news publisher - emit wishes - no news produced`() {
         initializeFeatureWithNewsPublisher(null)
 
         listOf(Wish1, Wish2, Wish3).forEach(feature::accept)
@@ -100,7 +102,7 @@ class NewsPublishingTest(private val parameter: Parameter) {
     }
 
     @Test
-    fun `created feature with news publisher, null for everything - emit wishes - no news produced`() {
+    fun `feature with news publisher which returns null - emit wishes - no news produced`() {
         initializeFeatureWithNewsPublisher { _, _, _ ->
             null
         }
@@ -111,7 +113,7 @@ class NewsPublishingTest(private val parameter: Parameter) {
     }
 
     @Test
-    fun `created feature with news publisher, same for everything - emit N wishes - N same news produced`() {
+    fun `feature with news publisher which returns 1 news - emit N wishes - N same news produced`() {
         initializeFeatureWithNewsPublisher { _, _, _ ->
             News1
         }
@@ -122,7 +124,7 @@ class NewsPublishingTest(private val parameter: Parameter) {
     }
 
     @Test
-    fun `created feature with news publisher, different news - emit N wishes - N different news produced with a correct order`() {
+    fun `feature with news publisher which returns different news - emit N wishes - N different news produced with a correct order`() {
         initializeFeatureWithNewsPublisher { action, _, _ ->
             when (action) {
                 is Wish1 -> News1
@@ -138,7 +140,7 @@ class NewsPublishingTest(private val parameter: Parameter) {
     }
 
     @Test
-    fun `setup news publisher middleware, created feature with news publisher - emit N wishes - N events propagated to news publisher middleware`() {
+    fun `news publisher middleware, feature with news publisher - emit N wishes - N events propagated to news publisher middleware`() {
         val testMiddleware = setupTestMiddlewareConfigurationForNews()
 
         initializeFeatureWithNewsPublisher { action, _, _ ->
@@ -177,7 +179,7 @@ class NewsPublishingTest(private val parameter: Parameter) {
 
     @Suppress("RedundantLambdaArrow")
     private fun setupTestMiddlewareConfigurationForNews(): ConsumerMiddleware<Triple<TestWish, Any, Any>> {
-        val testMiddleware = spy(LoggingMiddleware<Triple<TestWish, Any, Any>>(mock(), mock()))
+        val testMiddleware = spy(createMiddlewareStub(mock<Consumer<Triple<TestWish, Any, Any>>>()))
 
         Middlewares.configurations.add(
             MiddlewareConfiguration(

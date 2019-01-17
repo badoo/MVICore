@@ -23,6 +23,7 @@ class Binder(
     init {
         lifecycle?.apply {
             disposables += Observable.wrap(this)
+                .distinctUntilChanged()
                 .subscribe {
                     when (it) {
                        BEGIN -> bindConnections()

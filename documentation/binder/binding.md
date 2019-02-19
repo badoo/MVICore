@@ -18,7 +18,7 @@ Let's suppose we have:
 ## Step 1: Direct binding
 
 ```kotlin
-class View : Consumer<Feature1.State>> {
+class View : Consumer<Feature1.State> {
 
     val binder: Binder = TODO()
     val feature: Feature1 = TODO()

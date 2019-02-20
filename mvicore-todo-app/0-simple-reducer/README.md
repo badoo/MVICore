@@ -167,7 +167,7 @@ check it out [here](src/main/java/com/badoo/mvicore/todo/ui/).
 
 ### Wiring
 As you may have notice above, all the elements are described in terms of 
-`ObservableSource` for output and `Consumer` and input. This unification allows for
+`ObservableSource` for output and `Consumer` for input. This unification allows for
 easier element wiring, which MVICore provides using `Binder`. It manages all the
 subscriptions and follows provided `Lifecycle`. More in-depth explanation is available
 [here.](../../documentation/binder/README.md)
@@ -209,8 +209,8 @@ object StateToViewModel: (TodoListFeature.State) -> TodoViewModel {
 ### Saving state
 MVICore provides the mechanism to save a feature state using `TimeCapsule` hooks.
 On Android it uses activity's `onSaveInstanceState` and saves feature state to the 
-`Bundle`. When activity is restore, `Bundle` is passed to the `onCreate`, and used to 
-construct a feature. 
+`Bundle`. When activity is restored, `Bundle` is passed to the `onCreate`, and used 
+to construct a feature. 
 
 ```kotlin
 // onCreate

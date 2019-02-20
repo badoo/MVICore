@@ -111,6 +111,7 @@ received `ViewModel` to prevent synchronization issues with business logic.
 
 For the `TodoListView` the models are defined as follows:
 ```kotlin
+// TodoListView.kt
 data class TodoViewModel(
     val todos: List<TodoItem>
 )
@@ -163,11 +164,16 @@ checkBox.setOnClickListener {
 The rest of the view is pretty similar to the usual `RecyclerView` bindings. You can 
 check it out [here](src/main/java/com/badoo/mvicore/todo/ui/).
 
-### Binder
-Wiring all our parts together takes significant effort. We need to
-transform UiEvent to Wishes and State to ViewModel. Let's try it out
-in an activity.
+### Wiring
+As you may have notice above, all the elements are described in terms of 
+`ObservableSource` for output and `Consumer` and input. This unification allows for
+easier component wiring, which MVICore provides using `Binder`. It manages all the
+subscriptions and follows provided `Lifecycle`. More in-depth explanation is available
+[here.](../../documentation/binder/README.md)
+
+First step is to define the connections between the components: view and feature.
 ```kotlin
+// MainActivity.kt
 val feature = TodoListFeature()
 val view = TodoListView(findViewById(android.R.id.content))
 
@@ -176,8 +182,14 @@ Binder(CreateDestroyBinderLifecycle(lifecycle)).apply {
     bind(feature to view using StateToViewModel)
 }
 ```
-The transformers are just Kotlin functions, extracted to separate classes for better
-visibility.
+The feature output (`State`) is passed as to the view input (`ViewModel`); the view 
+output (`UiEvent`) is passed to the feature input (`Wish`). Do you feel that the 
+syntax describes it a bit better? 
+
+However, these types are 
+not quite compatible with each other. MVICore uses transformers (or mappers) which 
+are essentially named Kotlin functions.
+
 ```kotlin
 object UiEventToWish: (TodoEvent) -> TodoListFeature.Wish? {
     override fun invoke(event: TodoEvent): TodoListFeature.Wish? = when (event) {
@@ -194,18 +206,21 @@ object StateToViewModel: (TodoListFeature.State) -> TodoViewModel {
 ```
 
 ### Saving state
-Android implementation uses parcelable state which is saved when `saveState` method
-is called. Simple workaround is to use serializable and put the state into Android bundle. The logic of wrapping with bundle is extracted into two extension functions:
+MVICore provides the mechanism to save a feature state using `TimeCapsule` hooks.
+On Android it uses activity's `onSaveInstanceState` and saves feature state to the `Bundle`. When activity is restore, `Bundle` is passed to the `onCreate`, and used to construct a feature. 
 
 ```kotlin
-private fun AndroidTimeCapsule.state() =
-  get<Bundle>(CAPSULE_KEY)?.getSerializable(STATE_KEY) as? State
+// onCreate
+capsule = AndroidTimeCapsule(savedInstanceState)
+val feature = TodoListFeature(capsule)
 
-private fun State.toParcelable() = 
-  Bundle().apply { putSerializable(STATE_KEY, this@toParcelable) }
+// onSaveInstanceState
+capsule.saveState(outState)
 ```
 
-Then we can use much more flexible syntax defining it in the feature:
+`TimeCapsule` operates with `Parcelable`, which can be easily implemented for most of
+models. However, the implementation can look a bit bulky, so I abused the fact that
+`Bundle` is `Parcelable`, and used Java serialization.
 
 ```kotlin
 class TodoListFeature(
@@ -218,17 +233,12 @@ class TodoListFeature(
     timeCapsule.register(CAPSULE_KEY) { state.toParcelable() }
   }
 }
-```
 
-Final part is to attach capsule to the activity lifecycle:
+private fun AndroidTimeCapsule.state() =
+  get<Bundle>(CAPSULE_KEY)?.getSerializable(STATE_KEY) as? State
 
-```kotlin
-// onCreate
-capsule = AndroidTimeCapsule(savedInstanceState)
-val feature = TodoListFeature(capsule)
-
-// onSaveInstanceState
-capsule.saveState(outState)
+private fun State.toParcelable() = 
+  Bundle().apply { putSerializable(STATE_KEY, this@toParcelable) }
 ```
 
 ### Testing

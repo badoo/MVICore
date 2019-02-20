@@ -27,37 +27,54 @@ information about features and ideas behind it here(link).
 
 Every `Feature` defines its interface. It accepts `Wish` as an input and outputs the
 latest `State`. The `Wish` is usually defined as a `sealed class` and represents 
-intent (`I` from MVI). The state semantics are better handled by `data class` in the 
-general case, but nothing forbids you from using any entity you wish.
+intent (`I` from MVI). The state semantics are better handled by a `data class` in 
+the general case, but there are no strict rules how to define them. From the outside 
+world every feature looks like a black box which is `Consumer<Wish>` and 
+`ObservableSource<State>`, basic interfaces from RxJava 2. These interfaces have an 
+uttermost significance for connecting MVI elements, which is explored below.
+
+Back to the app: the todo item model contains title and state of the checkbox. The 
+feature receives wishes to create an item, delete it and update "done" status. The
+state stores current todos for the screen.
 
 ```kotlin
-class TodoListFeature: ReducerFeature<Wish, State, News>(
-  initialState = State(),
-  reducer = TODO()
+data class TodoItem(
+    val id: Long = 0,
+    val title: String,
+    val done: Boolean = false
+)
+
+class TodoListFeature: ReducerFeature<Wish, State, Nothing>(
+    initialState = State(),
+    reducer = TODO()
 ) {
   
+    sealed class Wish {
+        data class Create(val item: TodoItem) : Wish()
+        data class Delete(val item: TodoItem) : Wish()
+        data class UpdateDone(val item: TodoItem) : Wish()
+    }
+
+    data class State(
+        val nextId: Long = 0,
+        val todos: List<TodoItem> = emptyList()
+    )
 }
 ```
 
-Business rules can be complex, and MVICore reflects that. `Feature` can contain many 
-elements, which are optional and can be added whenever needed. However, there is one 
-persistent component: `Reducer`. 
+Note `Nothing` as a third type parameter for Feature. It represents `News` in a 
+signature, which are not used here. The other thing is inclusion of the `id` field 
+for the `TodoItem` and `State`. These fields are used to later distiguish items among 
+each other.
+
+Business rules can be complex, and MVICore reflects that. `Feature` can be composed 
+many elements, which are mostly optional and can be used only when required. However, 
+there is one compulsory component: `Reducer`. 
 
 Reducer handles updates of the state. It is a part that guarantees state consistency
 and sequential modification. For more information, check [this page.](../../documentation/features/reducerfeature.md)
 
-
-
-Default reducer for now which just returns the previous state.
-```kotlin
-object ReducerImpl : Reducer<State, Wish> {
-  override fun invoke(state: State, wish: Wish): State = TODO()
-}
-```
-
-### Reducer
-That's where the logic implementation is. We do some stuff depending
-on an input.
+Here is the implementation of state update logic for the app:
 ```kotlin
 object ReducerImpl : Reducer<State, Wish> {
     override fun invoke(state: State, wish: Wish): State = when (wish) {
@@ -76,39 +93,57 @@ object ReducerImpl : Reducer<State, Wish> {
     }
 }
 ```
+The list is updated based on a `Wish`. Kotlin syntactic sugar allows for easy 
+manipulation of the immutable state and list inside. The `nextId` field is used for 
+the autoincrement functionality, similarly to how databases manage it.
 
-Then we certainly need a `TodoItem` model - object representing each created item.
-```kotlin
-data class TodoItem(
-  val id: Long = 0,
-  val title: String,
-  val done: Boolean = false
-)
-```
+> **Why immutability? Mutating the state could be more efficient, and reducer prevents concurrent modification.**
+
+The state is still exposed to the outside world, which can easily modify it without 
+any control from feature side.
 
 ### View
+Similarly to the feature, view can define its own interface in terms of 
+`ObservableSource` and `Consumer`. It receives `ViewModel` which represents current 
+state of the view (not to be confused with MVVM) and emits results of user 
+interaction as `UiEvent`. The view itself **must** be stateless and only render 
+received `ViewModel` to prevent synchronization issues with business logic.
+
+For the `TodoListView` the models are defined as follows:
 ```kotlin
 data class TodoViewModel(
-  val todos: List<TodoItem>
+    val todos: List<TodoItem>
 )
 
 sealed class TodoEvent {
-  data class UpdateDone(val item: TodoItem): TodoEvent()
-  data class Delete(val item: TodoItem): TodoEvent()
-  data class Create(val title: String): TodoEvent()
+    data class UpdateDone(val item: TodoItem): TodoEvent()
+    data class Delete(val item: TodoItem): TodoEvent()
+    data class Create(val title: String): TodoEvent()
 }
 ```
+The view searches for UI elements itself in the root `ViewGroup` and registers
+all the required listeners. `Consumer` implementation is simple, as it has only one 
+method which handles the passed input. `ObservableSource` is implemented using Kotlin 
+delegation pattern and `PublishSubject` which is already conveniently 
+`ObservableSource` by itself.
 
-We encapsulate view logic in a `TodoListView` class. We know that is should have an input of the `TodoViewModel` and output of a `TodoEvent`. Therefore, the view implements `ObservableSource<TodoEvent>` and `Consumer<TodoViewModel>`.
 ```kotlin
 class TodoListView(
     root: ViewGroup,
     private val events: PublishSubject<TodoEvent> = PublishSubject.create()
-): ObservableSource<TodoEvent> by events, Consumer<TodoViewModel> 
+): ObservableSource<TodoEvent> by events, Consumer<TodoViewModel> {
+    private val adapter = TodoListAdapter(events)
+
+    override fun accept(model: TodoViewModel) {
+        adapter.items = model.todos.sortedWith(TodoComparator)
+    }
+}
 ```
 
-Sending events on view interactions: 
+The view listeners are triggering events on the internal `PublishSubject` and the 
+same approach is used inside of the adaptor's view holders. 
 ```kotlin
+// TodoListView.kt
 submit.setOnClickListener {
     if (input.text.isNotEmpty()) {
         events.onNext(
@@ -117,16 +152,16 @@ submit.setOnClickListener {
         input.text.clear()
     }
 }
-```
 
-Then we register listeners on a viewholder in list in a similar fashion.
-```kotlin
+//TodoListAdapter.kt
 checkBox.setOnClickListener {
     item?.let {
         events.onNext(UpdateDone(it))
     }
 }
 ```
+The rest of the view is pretty similar to the usual `RecyclerView` bindings. You can 
+check it out [here](src/main/java/com/badoo/mvicore/todo/ui/).
 
 ### Binder
 Wiring all our parts together takes significant effort. We need to

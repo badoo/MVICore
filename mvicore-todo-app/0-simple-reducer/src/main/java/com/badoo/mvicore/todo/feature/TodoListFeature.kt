@@ -10,7 +10,7 @@ import java.io.Serializable
 
 class TodoListFeature(
     timeCapsule: AndroidTimeCapsule
-): ReducerFeature<Wish, State, News>(
+): ReducerFeature<Wish, State, Nothing>(
     initialState = timeCapsule.state() ?: State(),
     reducer = ReducerImpl
 ) {
@@ -24,8 +24,6 @@ class TodoListFeature(
         data class Delete(val item: TodoItem) : Wish()
         data class UpdateDone(val item: TodoItem) : Wish()
     }
-
-    sealed class News
 
     data class State(
         val nextId: Long = 0,

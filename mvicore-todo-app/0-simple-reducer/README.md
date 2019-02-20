@@ -69,7 +69,7 @@ each other.
 
 Business rules can be complex, and MVICore reflects that. `Feature` can be composed 
 many elements, which are mostly optional and can be used only when required. However, 
-there is one compulsory component: `Reducer`. 
+there is one compulsory element: `Reducer`. 
 
 Reducer handles updates of the state. It is a part that guarantees state consistency
 and sequential modification. For more information, check [this page.](../../documentation/features/reducerfeature.md)
@@ -97,7 +97,8 @@ The list is updated based on a `Wish`. Kotlin syntactic sugar allows for easy
 manipulation of the immutable state and list inside. The `nextId` field is used for 
 the autoincrement functionality, similarly to how databases manage it.
 
-> **Why immutability? Mutating the state could be more efficient, and reducer prevents concurrent modification.**
+> **Why immutability? Mutating the state could be more efficient, and reducer 
+prevents concurrent modification.**
 
 The state is still exposed to the outside world, which can easily modify it without 
 any control from feature side.
@@ -167,11 +168,11 @@ check it out [here](src/main/java/com/badoo/mvicore/todo/ui/).
 ### Wiring
 As you may have notice above, all the elements are described in terms of 
 `ObservableSource` for output and `Consumer` and input. This unification allows for
-easier component wiring, which MVICore provides using `Binder`. It manages all the
+easier element wiring, which MVICore provides using `Binder`. It manages all the
 subscriptions and follows provided `Lifecycle`. More in-depth explanation is available
 [here.](../../documentation/binder/README.md)
 
-First step is to define the connections between the components: view and feature.
+First step is to define the connections between the elements: view and feature.
 ```kotlin
 // MainActivity.kt
 val feature = TodoListFeature()
@@ -186,9 +187,9 @@ The feature output (`State`) is passed as to the view input (`ViewModel`); the v
 output (`UiEvent`) is passed to the feature input (`Wish`). Do you feel that the 
 syntax describes it a bit better? 
 
-However, these types are 
-not quite compatible with each other. MVICore uses transformers (or mappers) which 
-are essentially named Kotlin functions.
+However, these types are not quite compatible with each other. MVICore uses 
+transformers (or mappers) which are essentially named Kotlin functions. They can be
+much more powerful than just simple 1-1 mappings, but it is not required for now.
 
 ```kotlin
 object UiEventToWish: (TodoEvent) -> TodoListFeature.Wish? {
@@ -207,7 +208,9 @@ object StateToViewModel: (TodoListFeature.State) -> TodoViewModel {
 
 ### Saving state
 MVICore provides the mechanism to save a feature state using `TimeCapsule` hooks.
-On Android it uses activity's `onSaveInstanceState` and saves feature state to the `Bundle`. When activity is restore, `Bundle` is passed to the `onCreate`, and used to construct a feature. 
+On Android it uses activity's `onSaveInstanceState` and saves feature state to the 
+`Bundle`. When activity is restore, `Bundle` is passed to the `onCreate`, and used to 
+construct a feature. 
 
 ```kotlin
 // onCreate
@@ -241,5 +244,13 @@ private fun State.toParcelable() =
   Bundle().apply { putSerializable(STATE_KEY, this@toParcelable) }
 ```
 
-### Testing
-(shrug)
+### Unit testing
+From the explanations above, you can see that every element (except UI) can be easily 
+unit tested feeding the input and observing the output using `TestObserver` from 
+RxJava. The feature additionally exposes it current state using which can be leveraged
+for easier testing. The example of the feature test can be found 
+[here.](src/test/java/com/badoo/mvicore/todo/feature/TodoListFeatureTest.kt).
+
+Apart from these elements, consider testing transformers (mappers), as they play an 
+important role connecting the pieces together and can contain a lot of logic by 
+themselves.

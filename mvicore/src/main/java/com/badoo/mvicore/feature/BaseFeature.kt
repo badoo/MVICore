@@ -27,15 +27,19 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
     private val stateSubject = BehaviorSubject.createDefault(initialState)
     private val newsSubject = PublishSubject.create<News>()
     private val disposables = DisposableCollection()
-    private val postProcessorWrapper = postProcessor?.let { PostProcessorWrapper(
-        postProcessor,
-        actionSubject
-    ).wrapWithMiddleware(wrapperOf = postProcessor)}
+    private val postProcessorWrapper = postProcessor?.let {
+        PostProcessorWrapper(
+            postProcessor,
+            actionSubject
+        ).wrapWithMiddleware(wrapperOf = postProcessor)
+    }
 
-    private val newsPublisherWrapper = newsPublisher?.let { NewsPublisherWrapper(
-        newsPublisher,
-        newsSubject
-    ).wrapWithMiddleware(wrapperOf = newsPublisher)}
+    private val newsPublisherWrapper = newsPublisher?.let {
+        NewsPublisherWrapper(
+            newsPublisher,
+            newsSubject
+        ).wrapWithMiddleware(wrapperOf = newsPublisher)
+    }
 
     private val reducerWrapper = ReducerWrapper(
         reducer,
@@ -62,15 +66,16 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
         }
 
         bootstrapper?.let {
-            actionSubject.asConsumer().wrapWithMiddleware(
-                wrapperOf = it,
-                postfix = "output"
-            ).also { output ->
-                disposables += output
-                disposables += bootstrapper.invoke().subscribe {
-                    output.accept(it)
+            actionSubject.asConsumer()
+                .wrapWithMiddleware(
+                    wrapperOf = it,
+                    postfix = "output"
+                ).also { output ->
+                    disposables += output
+                    disposables += bootstrapper.invoke().subscribe {
+                        output.accept(it)
+                    }
                 }
-            }
         }
     }
 

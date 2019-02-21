@@ -17,7 +17,7 @@ data class Connection<Out, In>(
         name == null
 
     override fun toString(): String =
-        "<${name ?: ANONYMOUS}> (${from ?: "?"} --> $to)"
+        "<${name ?: ANONYMOUS}> (${from ?: "?"} --> $to${transformer?.let { " using $it" } ?: ""})"
 }
 
 infix fun <Out, In> Pair<ObservableSource<Out>, Consumer<In>>.using(transformer: (Out) -> In?): Connection<Out, In> =

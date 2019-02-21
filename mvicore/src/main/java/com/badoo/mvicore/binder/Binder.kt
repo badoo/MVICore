@@ -82,7 +82,7 @@ class Binder(
     ): Disposable =
         applyTransformer(connection)
             .run {
-                middleware?.let {
+                if (middleware != null) {
                     middleware.onBind(connection)
 
                     this
@@ -90,7 +90,9 @@ class Binder(
                         .doFinally { middleware.onComplete(connection) }
                         .subscribe(middleware)
 
-                } ?: subscribe(connection.to)
+                } else {
+                    subscribe(connection.to)
+                }
             }
 
     private fun <Out: Any, In: Any> Observable<Out>.applyTransformer(

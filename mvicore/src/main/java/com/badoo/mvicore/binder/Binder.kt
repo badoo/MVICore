@@ -104,6 +104,7 @@ class Binder(
 
     private fun Lifecycle.setupConnections() =
         Observable.wrap(this)
+            .distinctUntilChanged()
             .subscribe {
                 when (it) {
                     BEGIN -> bindConnections()

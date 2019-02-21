@@ -32,7 +32,6 @@ class BaseFeatureTest {
     private lateinit var feature: Feature<TestWish, TestState, TestNews>
     private lateinit var states: TestObserver<TestState>
     private lateinit var newsSubject: PublishSubject<TestNews>
-    private lateinit var newsSubjectTest: TestObserver<TestNews>
     private lateinit var actorInvocationLog: PublishSubject<Pair<TestWish, TestState>>
     private lateinit var actorInvocationLogTest: TestObserver<Pair<TestWish, TestState>>
     private lateinit var actorScheduler: TestScheduler
@@ -43,7 +42,6 @@ class BaseFeatureTest {
         SameThreadVerifier.isEnabled = false
 
         newsSubject = PublishSubject.create<TestNews>()
-        newsSubjectTest = newsSubject.test()
         actorInvocationLog = PublishSubject.create<Pair<TestWish, TestState>>()
         actorInvocationLogTest = actorInvocationLog.test()
         actorScheduler = TestScheduler()
@@ -153,8 +151,6 @@ class BaseFeatureTest {
 
         actorScheduler.advanceTimeBy(mockServerDelayMs, TimeUnit.MILLISECONDS)
 
-
-
         val state = states.onNextEvents().last() as TestState
         assertEquals(false, state.loading)
         assertEquals(initialCounter + TestHelper.delayedFulfillAmount, state.counter)
@@ -196,25 +192,6 @@ class BaseFeatureTest {
         val state = states.onNextEvents().last() as TestState
         assertEquals((initialCounter + 4 * instantFulfillAmount1) * conditionalMultiplier, state.counter)
         assertEquals(false, state.loading)
-    }
-
-    @Test
-    fun `the number and type of news emitted should match expectations`() {
-        val wishes = listOf(
-            FulfillableInstantly1,  // no news
-            FulfillableInstantly1,  // no news
-            MaybeFulfillable,       // should not do anything in this state, no news
-            Unfulfillable,          // should not do anything
-            FulfillableInstantly1,  // no news
-            FulfillableInstantly1,  // no news
-            MaybeFulfillable,       // as total of 108 is divisible by 3, it should emit news
-            TranslatesTo3Effects    // should not affect state
-        )
-
-        wishes.forEach { feature.accept(it) }
-
-        assertEquals(1, newsSubjectTest.onNextEvents().size)
-        assertEquals(true, newsSubjectTest.onNextEvents().last() === TestNews.ConditionalThingHappened)
     }
 
     @Test

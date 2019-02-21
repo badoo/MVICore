@@ -36,7 +36,7 @@ class Binder(
             Connection(
                 from = connection.first,
                 to = connection.second,
-                transformer = { it }
+                transformer = null
             )
         )
     }
@@ -98,7 +98,9 @@ class Binder(
     private fun <Out: Any, In: Any> Observable<Out>.applyTransformer(
         connection: Connection<Out, In>
     ): Observable<In> =
-        mapNotNull(connection.transformer ?: { it as? In })
+        connection.transformer?.let {
+            mapNotNull(it)
+        } ?: this as Observable<In>
 
     // endregion
 

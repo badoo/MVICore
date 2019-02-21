@@ -20,7 +20,7 @@ abstract class Middleware<Out, In>(
     }
 
     open fun onComplete(connection: Connection<Out, In>) {
-        wrapped.applyIfMiddleware { onBind(connection) }
+        wrapped.applyIfMiddleware { onComplete(connection) }
     }
 
     private inline fun Consumer<In>.applyIfMiddleware(

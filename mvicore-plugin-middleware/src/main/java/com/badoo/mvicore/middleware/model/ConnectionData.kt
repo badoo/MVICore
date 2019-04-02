@@ -18,17 +18,17 @@ data class Element(
     val payload: Any
 )
 
-sealed class Event {
+sealed class Event(val type: String) {
     data class Bind(
-        val connectionData: ConnectionData
-    ) : Event()
+        val connection: ConnectionData
+    ) : Event("bind")
 
     data class Data(
         val connection: ConnectionData,
         val element: Element
-    ) : Event()
+    ) : Event("data")
 
     data class Complete(
         val connection: ConnectionData
-    ) : Event()
+    ) : Event("complete")
 }

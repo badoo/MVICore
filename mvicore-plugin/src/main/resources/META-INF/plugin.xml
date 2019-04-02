@@ -1,6 +1,6 @@
-<idea-plugin version="2">
+<idea-plugin>
     <id>com.badoo.mvicore.plugin</id>
-    <name>MVICore plugin</name>
+    <name>MVICore</name>
     <version>0.0.1</version>
     <vendor email="andrei.shikov@corp.badoo.com" url="http://www.tech.badoo.com">Badoo</vendor>
 
@@ -20,7 +20,7 @@
             anchor="right"
             factoryClass="com.badoo.mvicore.plugin.ToolWindowFactory"/>
     </extensions>
-X
+
     <application-components>
         <!-- Add your application components here -->
     </application-components>

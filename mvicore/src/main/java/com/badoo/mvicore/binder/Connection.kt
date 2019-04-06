@@ -29,6 +29,14 @@ infix fun <Out, In> Pair<ObservableSource<out Out>, Consumer<In>>.using(transfor
         to = second
     )
 
+infix fun <Out, In> Pair<ObservableSource<out Out>, Consumer<In>>.usingObservable(transformer: (Out) -> Observable<In>): Connection<In> =
+    Connection(
+        from = Observable
+            .wrap(first)
+            .flatMap(transformer),
+        to = second
+    )
+
 infix fun <T> Pair<ObservableSource<out T>, Consumer<T>>.named(name: String): Connection<T> =
     Connection(
         from = first,

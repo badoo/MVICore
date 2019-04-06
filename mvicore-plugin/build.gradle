@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     id "org.jetbrains.intellij" version "0.4.7"
 }
@@ -31,8 +33,8 @@ dependencies {
     testImplementation deps('org.amshove.kluent:kluent')
 }
 
-sourceCompatibility = "1.7"
-targetCompatibility = "1.7"
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
     jcenter()
@@ -41,6 +43,12 @@ repositories {
 task packageSources(type: Jar, dependsOn: 'classes') {
     classifier = 'sources'
     from sourceSets.main.allSource
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 artifacts {

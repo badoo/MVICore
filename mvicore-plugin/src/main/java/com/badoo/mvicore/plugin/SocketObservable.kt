@@ -14,10 +14,10 @@ class SocketObservable(
     val parser = JsonParser()
 
     val thread = thread(start = true, name = "mvicore-plugin-read") {
-        val socket = Socket(host, port)
-        val reader = socket.getInputStream().bufferedReader()
-
         try {
+            val socket = Socket(host, port)
+            val reader = socket.getInputStream().bufferedReader()
+
             while (!Thread.currentThread().isInterrupted) {
                 val line = reader.readLine() ?: continue
                 emitter.onNext(parser.parse(line))

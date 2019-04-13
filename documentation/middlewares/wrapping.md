@@ -1,11 +1,5 @@
 # Automatic wrapping of reactive components with Middlewares
 
-Previous: [1. What is a middleware and why is it good for me?](middleware.md)
-
-Next : [3. Middleware configurations](configuration.md)
-
-[Go up one level](README.md)
-
 ## The power of `Consumer<T>`
 
 Remember when in the [Core concepts](../features/coreconcepts.md) we said that
@@ -36,6 +30,7 @@ The list of `Middlewares` that will be applied can be customised flexibly by nam
 As an extra, the `BaseFeature` implementation is also using `Consumer<T>` internally for its components.
 
 That means, you can add `Middlewares` to not just the `Reducer`, but the `Actor`, `Bootstrapper`, `PostProcessor`, and `NewsPublisher` as well. These wrappings will be named:
+
 - com.example.myapp.MyCoolFeature.BootstrapperImpl.output
 - com.example.myapp.MyCoolFeature.ActorImpl.input
 - com.example.myapp.MyCoolFeature.ReducerImpl.input
@@ -61,11 +56,3 @@ If you want descriptive names for the connection part instead of ANONYMOUS, reme
 binder.bind(source to target named "MyTarget.ViewModels")
 binder.bind(source to target using transformer ""MyTarget.ViewModels")
 ```
-
-
----
-
-Next : [3. Middleware configurations](configuration.md)
-
-[Go up one level](README.md)
-

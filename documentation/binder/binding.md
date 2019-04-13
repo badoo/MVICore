@@ -1,16 +1,11 @@
 # Binding Features to the UI (and other reactive components)
 
-Previous: [1. Binder usage and lifecycle](binder.md)
-
-Next: [3. Lifecycle handling on Android](android.md)
-
-[Go up one level](README.md)
-
 ## I have my Feature, now what?
 
 Let's take a step by step approach how to connect our Features to the UI.
 
 Let's suppose we have:
+
 - `Feature1<Wish, State>`
 - `Binder` instance
 - A View, where we want to render the state of `Feature1`, and trigger some `Wish`es on them.
@@ -53,6 +48,7 @@ class View : Consumer<Feature1.State> {
 ```
 
 In this example, `View` accepts `State` directly, and talks to `Feature1` directly. This is wrong for multiple reasons:
+
 - The `View` is now tightly coupled to `Feature1`
 - The `View` really shouldn't care where it gets the data it wants to display on the screen from. It shouldn't render data models, but rather view models that doesn't require local logic to transform (see the comments about "complex logic").
 - The `View` has the additional responsibility of managing bindings
@@ -192,6 +188,7 @@ class Bindings @Inject constructor(
 ## Step 4: Profit
 
 Let's consider the benefits so far:
+
 - We completely decoupled our UI and our business logic.
 - Our `View` doesn't know anything about a `Feature`, it only knows how to render `ViewModels` and how to trigger `UiEvents`, and has become a reusable unit in itself.
 - It can be fed `ViewModels` from any other source.
@@ -233,10 +230,3 @@ class Bindings @Inject constructor(
 All this without modifying anything in our `View`!
 
 Once you add multiple reactive components, the `Bindings` class becomes your high level overview of the whole graph of who talks to whom, in a really descriptive way.
-
-
----
-
-Next: [3. Lifecycle handling on Android](android.md)
-
-[Go up one level](README.md)

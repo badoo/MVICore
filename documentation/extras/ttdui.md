@@ -5,11 +5,8 @@ If you are on Android and using [DebugDrawer](https://github.com/palaima/DebugDr
 ![MVICore DebugDrawer module](https://i.imgur.com/AXfyo9r.png)
 
 UI controls include:
+
 - start recording
 - stop recording
 - start playback
 - record selection dropdown, which automatically updates itself with all records available in the RecordStore
-
----
-
-[Go up one level](README.md)

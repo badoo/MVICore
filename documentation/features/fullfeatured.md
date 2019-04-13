@@ -1,11 +1,5 @@
 # Going full-featured
 
-Previous: [3. Handling async jobs](actorreducerfeature.md)
-
-Next: [5. Bootstrappers](bootstrappers.md)
-
-[Go up one level](README.md)
-
 ## BaseFeature
 
 If the reduced functionality of [ReducerFeature](reducerfeature.md) and [ActorReducerFeature](actorreducerfeature.md) is not enough for your case, this base class is your go-to.
@@ -19,6 +13,7 @@ The new one here compared to the simpler Features is the `Action`.
 ## Actions
 
 Use-case:
+
 - you need some kind of an "internal `Wish`" to execute, but you don't want to leak it through your `Wish` sealed class, as it would make it publicly callable.
 - you want to be able to trigger these "internal `Wish`es"
 
@@ -39,6 +34,7 @@ sealed class Action {
 ```
 
 This has two implications:
+
 1. For `BaseFeature` to know how your public `Wish` maps to an `Action`, you need to supply a mapping function in the constructor
 ```kotlin
 typealias WishToAction<Wish, Action> = (Wish) -> Action
@@ -118,9 +114,3 @@ class MyComplexFeature : BaseFeature<Wish, Action, Effect, State>(
 ```
 
 The implementation of `BaseFeature` wires everything up for you from mapping your `Wish` to `Action`, calling your `Actor`, `Reducer`, and `PostProcessor` and emitting the next `State`.
-
----
-
-Next: [5. Bootstrappers](bootstrappers.md)
-
-[Go up one level](README.md)

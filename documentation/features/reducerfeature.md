@@ -1,12 +1,5 @@
 # Your first and simplest feature
 
-Previous: [1. Core concepts](coreconcepts.md)
-
-Next: [3. Handling async jobs](actorreducerfeature.md)
-
-[Go up one level](README.md)
-
-
 ## Reducer
 
 Your simplest `Feature` would be one which only uses a `Reducer` to create and emit new states based on the latest one and an incoming effect.
@@ -19,13 +12,15 @@ typealias Reducer<State, Effect> = (State, Effect) -> State
 
 The name `Effect` is used here in the more generic context.
 
-> _Note: Later there will be a distinction between `Wish`es and `Effect`s, but for now, they are one and the same in this simplest example._
+!!! note
+    Later there will be a distinction between `Wish`es and `Effect`s, but for now, they are one and the same in this simplest example.
 
 ## Important ##
 
 Invocations of the reducer must always happen on the same thread to ensure that new `Effect`s are always applied to the latest `State` and we are not losing modifications.
 
-> _If two threads were to read State<sup>n</sup>, then apply some `Effect` over it, one would derive State<sup>n+1'</sup>, while the other would derive  State<sup>n+1''</sup> from it, and depending on the order of execution, one or the other would be lost. By enforcing the single-thread policy, all `Effect`s are always applied to the latest state._
+!!! warning ""
+    If two threads were to read State<sup>n</sup>, then apply some `Effect` over it, one would derive State<sup>n+1'</sup>, while the other would derive  State<sup>n+1''</sup> from it, and depending on the order of execution, one or the other would be lost. By enforcing the single-thread policy, all `Effect`s are always applied to the latest state.
 
 ## Excercise #1
 ### Task
@@ -69,9 +64,3 @@ It will also wire everything up for you (reacting to a `Wish`, calling your `Red
 ### When should you use ReducerFeature
 - There are no async jobs in your Feature
 - There's no extra business logic. Whatever comes in as a `Wish`, always modifies the `State` without a question, and we just want to keep track of it.
-
----
-
-Next: [3. Handling async jobs](actorreducerfeature.md)
-
-[Go up one level](README.md)

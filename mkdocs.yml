@@ -12,6 +12,7 @@ copyright: 'Copyright &copy; 2019 Badoo Trading Limited'
 
 theme:
   name: 'material'
+  favicon: 'https://badoo.com/favicon.ico'
   logo:
     icon: 'code'
   palette:

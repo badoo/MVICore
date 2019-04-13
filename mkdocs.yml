@@ -2,7 +2,7 @@ site_name: MVICore
 
 site_description: MVI framework (not just) for Android, with events, middlewares, and time-travel debugger.
 site_author: Badoo
-site_url: https://badoo.github.io/mvicore
+site_url: https://badoo.github.io/MVICore
 
 repo_name: MVICore
 repo_url: https://github.com/badoo/MVICore

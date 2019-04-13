@@ -55,7 +55,7 @@ class SimpleFeature : ReducerFeature<Wish, State, Nothing>(
 
 ```
 
-Note: ```Feature``` has additional components to solve problems like side-effects, events, initialisation, internal jobs in a standardised way. For a full list go to [Documentation](documentation/README.md) to see what's possible.
+Note: ```Feature``` has additional components to solve problems like side-effects, events, initialisation, internal jobs in a standardised way. For a full list go to [Documentation](https://badoo.github.io/MVICore) to see what's possible.
 
 ### 2. Your state machine is reactive
 
@@ -86,7 +86,7 @@ binder.bind(feature to view using StateToViewModel)
 
 The library comes with lots of powerful capabilities and tooling.
 
-Head over to the [Documentation](documentation/README.md) to see what's possible.
+Head over to the [Documentation](https://badoo.github.io/MVICore) to see what's possible.
 
 ## Download
 

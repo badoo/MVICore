@@ -5,6 +5,7 @@ import com.badoo.mvicore.middleware.model.ConnectionData
 import com.badoo.mvicore.middleware.model.Element
 import com.badoo.mvicore.middleware.model.Event
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import java.io.IOException
@@ -22,11 +23,11 @@ object TestStore: PluginMiddleware.EventStore {
         )
     }
 
-    override fun onElement(connection: Connection<out Any, out Any>, element: Any) {
+    override fun <T: Any> onElement(connection: Connection<out Any, out Any>, element: T) {
         events.onNext(
             Event.Data(
                 connection = ConnectionData(connection),
-                element = Element(element)
+                element = Element(elementGson.toJsonTree(element, element.javaClass))
             )
         )
     }
@@ -57,7 +58,7 @@ object TestStore: PluginMiddleware.EventStore {
                             val event = events.poll()
                             println("Sending event $event")
                             try {
-                                val eventString = Gson().toJson(event) + "\n"
+                                val eventString = eventGson.toJson(event) + "\n"
                                 reader.getOutputStream().write(eventString.toByteArray())
                             } catch (e: Exception) {
                                 events.addFirst(event)
@@ -71,4 +72,12 @@ object TestStore: PluginMiddleware.EventStore {
             }
         }
     }
+
+    private val elementGson = GsonBuilder()
+        .setFieldNamingStrategy {
+            "${it.name} ${it.type}"
+        }
+        .create()
+
+    private val eventGson = Gson()
 }

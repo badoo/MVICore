@@ -26,7 +26,7 @@ class PluginMiddleware<Out: Any, In: Any>(
 
     interface EventStore {
         fun onBind(connection: Connection<out Any, out Any>)
-        fun onElement(connection: Connection<out Any, out Any>, element: Any)
+        fun <T: Any> onElement(connection: Connection<out Any, out Any>, element: T)
         fun onComplete(connection: Connection<out Any, out Any>)
     }
 }

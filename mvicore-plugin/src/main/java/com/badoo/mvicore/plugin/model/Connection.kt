@@ -13,6 +13,6 @@ data class Connection(
     val to: Id?,
     val name: String?
 ) {
-    val title = name ?:
-        "${from?.shortName.orEmpty()} -> ${to?.shortName.orEmpty()}"
+    override fun toString(): String =
+        name ?: "${from?.shortName.orEmpty()} -> ${to?.shortName.orEmpty()}"
 }

@@ -1,5 +1,6 @@
 package com.badoo.mvicore.binder
 
+import com.badoo.mvicore.connector.Connector
 import com.badoo.mvicore.extension.mapNotNull
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
@@ -29,7 +30,7 @@ infix fun <Out, In> Pair<ObservableSource<out Out>, Consumer<In>>.using(transfor
         to = second
     )
 
-infix fun <Out, In> Pair<ObservableSource<out Out>, Consumer<In>>.usingObservable(transformer: (Out) -> Observable<In>): Connection<In> =
+infix fun <Out, In> Pair<ObservableSource<out Out>, Consumer<In>>.using(transformer: Connector<Out, In>): Connection<In> =
     Connection(
         from = Observable
             .wrap(first)

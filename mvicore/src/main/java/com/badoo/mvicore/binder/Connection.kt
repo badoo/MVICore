@@ -1,7 +1,7 @@
 package com.badoo.mvicore.binder
 
 import com.badoo.mvicore.connector.Connector
-import com.badoo.mvicore.extension.mapNotNull
+import com.badoo.mvicore.connector.NotNullConnector
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import io.reactivex.functions.Consumer
@@ -23,12 +23,7 @@ data class Connection<T>(
 }
 
 infix fun <Out, In> Pair<ObservableSource<out Out>, Consumer<In>>.using(transformer: (Out) -> In?): Connection<In> =
-    Connection(
-        from = Observable
-            .wrap(first)
-            .mapNotNull(transformer),
-        to = second
-    )
+    using(NotNullConnector(transformer))
 
 infix fun <Out, In> Pair<ObservableSource<out Out>, Consumer<In>>.using(transformer: Connector<Out, In>): Connection<In> =
     Connection(

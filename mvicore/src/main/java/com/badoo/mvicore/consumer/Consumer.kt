@@ -35,7 +35,7 @@ fun <In : Any> Consumer<In>.wrapWithMiddleware(
     }
 
     if (current is Middleware<*, *> && standalone) {
-        StandaloneMiddleware(
+        return StandaloneMiddleware(
             wrappedMiddleware = current as Middleware<Any, In>,
             name = name ?: wrapperOf?.javaClass?.canonicalName,
             postfix = postfix

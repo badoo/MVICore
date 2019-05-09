@@ -1,6 +1,7 @@
 package com.badoo.mvicore.consumer
 
-import com.badoo.mvicore.consumer.middleware.ConsumerMiddleware
+import com.badoo.mvicore.consumer.middleware.base.Middleware
+import com.badoo.mvicore.consumer.middleware.base.StandaloneMiddleware
 import com.badoo.mvicore.consumer.middlewareconfig.Middlewares
 import com.badoo.mvicore.consumer.middlewareconfig.NonWrappable
 import io.reactivex.functions.Consumer
@@ -18,12 +19,12 @@ import io.reactivex.functions.Consumer
  * @param postfix       Passed on to [ConsumerMiddleware], in most cases you shouldn't need to override this.
  * @param wrapperOf     Passed on to [ConsumerMiddleware], in most cases you shouldn't need to override this.
  */
-fun <T : Any> Consumer<T>.wrap(
+fun <In : Any> Consumer<In>.wrapWithMiddleware(
     standalone: Boolean = true,
     name: String? = null,
     postfix: String? = null,
     wrapperOf: Any? = null
-): Consumer<T> {
+): Consumer<In> {
     val target = wrapperOf ?: this
     if (target is NonWrappable) return this
 
@@ -33,13 +34,32 @@ fun <T : Any> Consumer<T>.wrap(
         current = it.applyOn(current, target, name, standalone)
     }
 
-    if (current is ConsumerMiddleware<T> && standalone) {
-        (current as ConsumerMiddleware<T>).initAsStandalone(
-            name = name,
-            wrapperOf = target,
+    if (current is Middleware<*, *> && standalone) {
+        return StandaloneMiddleware(
+            wrappedMiddleware = current as Middleware<In, In>,
+            name = name ?: wrapperOf?.javaClass?.canonicalName,
             postfix = postfix
         )
     }
 
     return current
 }
+
+@Deprecated(
+    "Use wrapWithMiddleware directly",
+    ReplaceWith(
+        "wrapWithMiddleware(standalone, name, postfix, wrapperOf)",
+        "com.badoo.mvicore.consumer.wrapWithMiddleware"
+    )
+)
+fun <In: Any> Consumer<In>.wrap(
+    standalone: Boolean = true,
+    name: String? = null,
+    postfix: String? = null,
+    wrapperOf: Any? = null
+) = wrapWithMiddleware(
+    standalone,
+    name,
+    postfix,
+    wrapperOf
+)

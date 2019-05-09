@@ -1,7 +1,12 @@
 package com.badoo.mvicore.feature
 
 import com.badoo.mvicore.consumer.wrapWithMiddleware
-import com.badoo.mvicore.element.*
+import com.badoo.mvicore.element.Actor
+import com.badoo.mvicore.element.Bootstrapper
+import com.badoo.mvicore.element.NewsPublisher
+import com.badoo.mvicore.element.PostProcessor
+import com.badoo.mvicore.element.Reducer
+import com.badoo.mvicore.element.WishToAction
 import com.badoo.mvicore.extension.SameThreadVerifier
 import com.badoo.mvicore.extension.asConsumer
 import com.badoo.mvicore.feature.internal.DisposableCollection

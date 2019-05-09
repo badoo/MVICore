@@ -197,24 +197,29 @@ class ToolWindowFactory : ToolWindowFactory, DumbAware {
 
     private class JsonTreeNode(private val name: String, private val value: JsonElement, private val parent: TreeNode) : TreeNode {
         private val children = ArrayList<JsonTreeNode>()
+        private val nameWithType: String
 
         init {
+            val element = value
             when {
-                value.isJsonObject -> {
-                    val obj = value.asJsonObject
-                    for ((key, value1) in obj.entrySet()) {
-                        if (value1 !is JsonNull) {
-                            children.add(JsonTreeNode(key, value1, this))
+                element.isJsonObject -> {
+                    val obj = element.asJsonObject
+
+                    for ((key, value) in obj.entrySet()) {
+                        if (value !is JsonNull) {
+                            children.add(JsonTreeNode(key, value, this))
                         }
                     }
                 }
-                value.isJsonArray -> {
+                element.isJsonArray -> {
                     val array = value.asJsonArray
                     for (i in 0 until array.size()) {
                         children.add(JsonTreeNode("[$i]", array.get(i), this))
                     }
                 }
             }
+
+            nameWithType = name
         }
 
         override fun isLeaf(): Boolean = children.size == 0
@@ -235,6 +240,20 @@ class ToolWindowFactory : ToolWindowFactory, DumbAware {
             override fun nextElement(): JsonTreeNode = iter.next()
         }
 
-        override fun toString(): String = if (allowsChildren) name else "$name: $value"
+        override fun toString(): String = if (allowsChildren) nameWithType else "$nameWithType: $value"
+
+        companion object {
+            private const val TYPE = "\$type"
+            private const val VALUE = "\$value"
+
+            private val JsonObject.isWrapper: Boolean
+                get() = get(TYPE) != null || get(VALUE) != null
+
+            private fun JsonObject.unwrap(): Pair<String, JsonElement> {
+                val type = get(TYPE).asString
+                val value = get(VALUE)
+                return type to value
+            }
+        }
     }
 }

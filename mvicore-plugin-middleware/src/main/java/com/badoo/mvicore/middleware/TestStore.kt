@@ -6,9 +6,17 @@ import com.badoo.mvicore.middleware.model.Element
 import com.badoo.mvicore.middleware.model.Event
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
+import com.google.gson.JsonSerializationContext
+import com.google.gson.JsonSerializer
+import com.google.gson.TypeAdapter
+import com.google.gson.stream.JsonReader
+import com.google.gson.stream.JsonWriter
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import java.io.IOException
+import java.lang.reflect.Type
 import java.net.InetAddress
 import java.net.ServerSocket
 import java.util.concurrent.ConcurrentLinkedDeque
@@ -27,7 +35,7 @@ object TestStore: PluginMiddleware.EventStore {
         events.onNext(
             Event.Data(
                 connection = ConnectionData(connection),
-                element = Element(elementGson.toJsonTree(element, element.javaClass))
+                element = Element(typeAwareGson.toJsonTree(element))
             )
         )
     }
@@ -58,7 +66,7 @@ object TestStore: PluginMiddleware.EventStore {
                             val event = events.poll()
                             println("Sending event $event")
                             try {
-                                val eventString = eventGson.toJson(event) + "\n"
+                                val eventString = simpleGson.toJson(event) + "\n"
                                 reader.getOutputStream().write(eventString.toByteArray())
                             } catch (e: Exception) {
                                 events.addFirst(event)
@@ -73,11 +81,8 @@ object TestStore: PluginMiddleware.EventStore {
         }
     }
 
-    private val elementGson = GsonBuilder()
-        .setFieldNamingStrategy {
-            "${it.name} ${it.type}"
-        }
+    private val simpleGson = Gson()
+    private val typeAwareGson = GsonBuilder()
+        .registerTypeAdapterFactory(RuntimeTypeAdapterFactory.of(Any::class.java))
         .create()
-
-    private val eventGson = Gson()
 }

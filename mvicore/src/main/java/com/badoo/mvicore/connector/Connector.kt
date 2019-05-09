@@ -1,5 +1,5 @@
 package com.badoo.mvicore.connector
 
-import io.reactivex.Observable
+import io.reactivex.ObservableSource
 
-interface Connector<Out, In>: (Out) -> Observable<In>
+interface Connector<Out, In>: (ObservableSource<Out>) -> ObservableSource<In>

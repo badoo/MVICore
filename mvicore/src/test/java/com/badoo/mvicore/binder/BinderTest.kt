@@ -16,7 +16,7 @@ class BinderTest {
 
     @Test
     fun `binder connects with plain transformer`() {
-        binder.bind(source to consumer using { it.toString() })
+        binder.bind(source to consumer using IntToString)
 
         source.onNext(0)
         consumer.assertValues("0")
@@ -28,6 +28,10 @@ class BinderTest {
 
         source.onNext(0)
         consumer.assertValues("0", "1")
+    }
+
+    object IntToString: (Int) -> String {
+        override fun invoke(it: Int): String = it.toString()
     }
 
     object TestConnector: Connector<Int, String> {

@@ -1,15 +1,16 @@
 package com.badoo.mvicore.consumer.middleware
 
 import com.badoo.mvicore.binder.Connection
+import com.badoo.mvicore.consumer.middleware.base.Middleware
 import com.badoo.mvicore.consumer.util.Logger
 import io.reactivex.functions.Consumer
-import java.util.Locale
+import java.util.*
 
-class LoggingMiddleware<T : Any>(
-    wrapped: Consumer<T>,
+class LoggingMiddleware<Out: Any, In: Any>(
+    wrapped: Consumer<In>,
     private val logger: Logger,
     private val config: Config = Config()
-) : ConsumerMiddleware<T>(wrapped) {
+) : Middleware<Out, In>(wrapped) {
 
     data class Config(
         val locale: Locale = Locale.US,
@@ -23,17 +24,17 @@ class LoggingMiddleware<T : Any>(
         logger("${config.tag}: $message")
     }
 
-    override fun onBind(connection: Connection<T>) {
+    override fun onBind(connection: Connection<Out, In>) {
         super.onBind(connection)
         log(config.onBindTemplate.format(config.locale, connection))
     }
 
-    override fun onElement(connection: Connection<T>, element: T) {
+    override fun onElement(connection: Connection<Out, In>, element: In) {
         super.onElement(connection, element)
         log(config.onElementTemplate.format(config.locale, connection, element))
     }
 
-    override fun onComplete(connection: Connection<T>) {
+    override fun onComplete(connection: Connection<Out, In>) {
         super.onComplete(connection)
         log(config.onCompleteTemplate.format(config.locale, connection))
     }

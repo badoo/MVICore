@@ -36,7 +36,7 @@ class Binder(
             Connection(
                 from = connection.first,
                 to = connection.second,
-                transformer = { it }
+                transformer = null
             )
         )
     }
@@ -82,7 +82,7 @@ class Binder(
     ): Disposable =
         applyTransformer(connection)
             .run {
-                middleware?.let {
+                if (middleware != null) {
                     middleware.onBind(connection)
 
                     this
@@ -90,13 +90,17 @@ class Binder(
                         .doFinally { middleware.onComplete(connection) }
                         .subscribe(middleware)
 
-                } ?: subscribe(connection.to)
+                } else {
+                    subscribe(connection.to)
+                }
             }
 
     private fun <Out: Any, In: Any> Observable<Out>.applyTransformer(
         connection: Connection<Out, In>
     ): Observable<In> =
-        mapNotNull(connection.transformer ?: { it as? In })
+        connection.transformer?.let {
+            mapNotNull(it)
+        } ?: this as Observable<In>
 
     // endregion
 
@@ -104,6 +108,7 @@ class Binder(
 
     private fun Lifecycle.setupConnections() =
         Observable.wrap(this)
+            .distinctUntilChanged()
             .subscribe {
                 when (it) {
                     BEGIN -> bindConnections()

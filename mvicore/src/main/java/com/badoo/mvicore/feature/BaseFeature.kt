@@ -1,7 +1,12 @@
 package com.badoo.mvicore.feature
 
 import com.badoo.mvicore.consumer.wrapWithMiddleware
-import com.badoo.mvicore.element.*
+import com.badoo.mvicore.element.Actor
+import com.badoo.mvicore.element.Bootstrapper
+import com.badoo.mvicore.element.NewsPublisher
+import com.badoo.mvicore.element.PostProcessor
+import com.badoo.mvicore.element.Reducer
+import com.badoo.mvicore.element.WishToAction
 import com.badoo.mvicore.extension.SameThreadVerifier
 import com.badoo.mvicore.extension.asConsumer
 import com.badoo.mvicore.feature.internal.DisposableCollection
@@ -27,15 +32,19 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
     private val stateSubject = BehaviorSubject.createDefault(initialState)
     private val newsSubject = PublishSubject.create<News>()
     private val disposables = DisposableCollection()
-    private val postProcessorWrapper = postProcessor?.let { PostProcessorWrapper(
-        postProcessor,
-        actionSubject
-    ).wrapWithMiddleware(wrapperOf = postProcessor)}
+    private val postProcessorWrapper = postProcessor?.let {
+        PostProcessorWrapper(
+            postProcessor,
+            actionSubject
+        ).wrapWithMiddleware(wrapperOf = postProcessor)
+    }
 
-    private val newsPublisherWrapper = newsPublisher?.let { NewsPublisherWrapper(
-        newsPublisher,
-        newsSubject
-    ).wrapWithMiddleware(wrapperOf = newsPublisher)}
+    private val newsPublisherWrapper = newsPublisher?.let {
+        NewsPublisherWrapper(
+            newsPublisher,
+            newsSubject
+        ).wrapWithMiddleware(wrapperOf = newsPublisher)
+    }
 
     private val reducerWrapper = ReducerWrapper(
         reducer,
@@ -62,15 +71,16 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
         }
 
         bootstrapper?.let {
-            actionSubject.asConsumer().wrapWithMiddleware(
-                wrapperOf = it,
-                postfix = "output"
-            ).also { output ->
-                disposables += output
-                disposables += bootstrapper.invoke().subscribe {
-                    output.accept(it)
+            actionSubject.asConsumer()
+                .wrapWithMiddleware(
+                    wrapperOf = it,
+                    postfix = "output"
+                ).also { output ->
+                    disposables += output
+                    disposables += bootstrapper.invoke().subscribe {
+                        output.accept(it)
+                    }
                 }
-            }
         }
     }
 

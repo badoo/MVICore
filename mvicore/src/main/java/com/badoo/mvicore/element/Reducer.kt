@@ -1,3 +1,4 @@
 package com.badoo.mvicore.element
 
-typealias Reducer<State, Effect> = (State, Effect) -> State
+typealias Reducer<State, Effect> =
+    (state: State, effect: Effect) -> State

@@ -36,7 +36,7 @@ fun <In : Any> Consumer<In>.wrapWithMiddleware(
 
     if (current is Middleware<*, *> && standalone) {
         return StandaloneMiddleware(
-            wrappedMiddleware = current as Middleware<Any, In>,
+            wrappedMiddleware = current as Middleware<In, In>,
             name = name ?: wrapperOf?.javaClass?.canonicalName,
             postfix = postfix
         )
@@ -44,3 +44,22 @@ fun <In : Any> Consumer<In>.wrapWithMiddleware(
 
     return current
 }
+
+@Deprecated(
+    "Use wrapWithMiddleware directly",
+    ReplaceWith(
+        "wrapWithMiddleware(standalone, name, postfix, wrapperOf)",
+        "com.badoo.mvicore.consumer.wrapWithMiddleware"
+    )
+)
+fun <In: Any> Consumer<In>.wrap(
+    standalone: Boolean = true,
+    name: String? = null,
+    postfix: String? = null,
+    wrapperOf: Any? = null
+) = wrapWithMiddleware(
+    standalone,
+    name,
+    postfix,
+    wrapperOf
+)

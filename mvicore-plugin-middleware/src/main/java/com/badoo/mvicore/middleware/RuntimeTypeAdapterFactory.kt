@@ -1,40 +1,24 @@
 package com.badoo.mvicore.middleware
 
-import com.google.gson.*
+import com.google.gson.Gson
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
+import com.google.gson.JsonParseException
+import com.google.gson.JsonPrimitive
+import com.google.gson.TypeAdapter
+import com.google.gson.TypeAdapterFactory
 import com.google.gson.internal.Streams
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
-
 import java.io.IOException
 import java.util.LinkedHashMap
 
-    class RuntimeTypeAdapterFactory<T: Any> private constructor(
+class RuntimeTypeAdapterFactory(
     private val typeFieldName: String,
     private val maintainType: Boolean
 ) : TypeAdapterFactory {
     private val labelToSubtype = LinkedHashMap<String, Class<*>>()
-    private val subtypeToLabel = LinkedHashMap<Class<*>, String>()
-
-    /**
-     * Registers `type` identified by `label`. Labels are case
-     * sensitive.
-     *
-     * @throws IllegalArgumentException if either `type` or `label`
-     * have already been registered on this type adapter.
-     */
-    @JvmOverloads
-    fun registerSubtype(type: Class<out T>, label: String? = type.simpleName): RuntimeTypeAdapterFactory<T> {
-        if (label == null) {
-            throw NullPointerException()
-        }
-        if (subtypeToLabel.containsKey(type) || labelToSubtype.containsKey(label)) {
-            throw IllegalArgumentException("types and labels must be unique")
-        }
-        labelToSubtype[label] = type
-        subtypeToLabel[type] = label
-        return this
-    }
 
     override fun <R: Any> create(gson: Gson, type: TypeToken<R>): TypeAdapter<R>? {
         val labelToDelegate = LinkedHashMap<String, TypeAdapter<*>>()
@@ -71,10 +55,11 @@ import java.util.LinkedHashMap
                         it.asJsonObject
                     } else {
                         JsonObject().apply {
-                            add("value", it)
+                            add("$value", it)
                         }
                     }
                 }
+
 
                 if (maintainType) {
                     Streams.write(jsonObject, out)
@@ -95,31 +80,5 @@ import java.util.LinkedHashMap
                 Streams.write(clone, out)
             }
         }.nullSafe()
-    }
-
-    companion object {
-
-        /**
-         * Creates a new runtime type adapter using for `baseType` using `typeFieldName` as the type field name. Type field names are case sensitive.
-         * `maintainType` flag decide if the type will be stored in pojo or not.
-         */
-        fun <T: Any> of(baseType: Class<T>, typeFieldName: String, maintainType: Boolean): RuntimeTypeAdapterFactory<T> {
-            return RuntimeTypeAdapterFactory(typeFieldName, maintainType)
-        }
-
-        /**
-         * Creates a new runtime type adapter using for `baseType` using `typeFieldName` as the type field name. Type field names are case sensitive.
-         */
-        fun <T: Any> of(baseType: Class<T>, typeFieldName: String): RuntimeTypeAdapterFactory<T> {
-            return RuntimeTypeAdapterFactory(typeFieldName, false)
-        }
-
-        /**
-         * Creates a new runtime type adapter for `baseType` using `"type"` as
-         * the type field name.
-         */
-        fun <T: Any> of(baseType: Class<T>): RuntimeTypeAdapterFactory<T> {
-            return RuntimeTypeAdapterFactory("\$type", false)
-        }
     }
 }

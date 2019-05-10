@@ -7,7 +7,12 @@ import com.badoo.mvicore.plugin.utils.mainThreadScheduler
 import com.google.gson.JsonElement
 import com.google.gson.JsonNull
 import com.google.gson.JsonObject
-import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.ActionPlaces
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.actionSystem.IdeActions
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
@@ -20,7 +25,11 @@ import com.intellij.ui.treeStructure.Tree
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import java.awt.BorderLayout
-import java.util.*
+import java.text.SimpleDateFormat
+import java.util.ArrayList
+import java.util.Date
+import java.util.Enumeration
+import java.util.LinkedList
 import javax.swing.JPanel
 import javax.swing.JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
 import javax.swing.JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED
@@ -200,7 +209,25 @@ class ToolWindowFactory : ToolWindowFactory, DumbAware {
         private val nameWithType: String
 
         init {
-            val element = value
+            val (element, type, timestamp) = if (value.isWrapper) {
+                val obj = value.asJsonObject
+                val type = obj.remove(TYPE).asString
+                val primitive = obj.remove(VALUE)
+                val timestamp = obj.remove(TIMESTAMP)?.asLong
+
+                Triple(
+                    (primitive ?: value),
+                    type,
+                    timestamp
+                )
+            } else {
+                Triple(value, null, null)
+            }
+            nameWithType =
+                name +
+                    (type?.let { "($it)" } ?: "") +
+                    (timestamp?.let { " ${it.dateString()}" } ?: "")
+
             when {
                 element.isJsonObject -> {
                     val obj = element.asJsonObject
@@ -218,8 +245,6 @@ class ToolWindowFactory : ToolWindowFactory, DumbAware {
                     }
                 }
             }
-
-            nameWithType = name
         }
 
         override fun isLeaf(): Boolean = children.size == 0
@@ -245,15 +270,13 @@ class ToolWindowFactory : ToolWindowFactory, DumbAware {
         companion object {
             private const val TYPE = "\$type"
             private const val VALUE = "\$value"
+            private const val TIMESTAMP = "\$timestamp"
 
-            private val JsonObject.isWrapper: Boolean
-                get() = get(TYPE) != null || get(VALUE) != null
+            private val JsonElement.isWrapper: Boolean
+                get() = isJsonObject && this.asJsonObject.get(TYPE) != null
 
-            private fun JsonObject.unwrap(): Pair<String, JsonElement> {
-                val type = get(TYPE).asString
-                val value = get(VALUE)
-                return type to value
-            }
+            private fun Long.dateString() =
+                SimpleDateFormat("HH:mm:ss").format(Date(this))
         }
     }
 }

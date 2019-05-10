@@ -4,6 +4,7 @@ apply plugin: 'kotlin'
 apply plugin: 'org.jetbrains.dokka'
 
 group = 'com.github.badoo'
+version = System.getenv("VERSION")
 
 dependencies {
     def deps = rootProject.ext.deps

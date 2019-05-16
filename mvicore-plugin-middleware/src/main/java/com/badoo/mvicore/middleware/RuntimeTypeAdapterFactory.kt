@@ -55,7 +55,7 @@ class RuntimeTypeAdapterFactory(
                         it.asJsonObject
                     } else {
                         JsonObject().apply {
-                            add("$value", it)
+                            add("\$value", it)
                         }
                     }
                 }

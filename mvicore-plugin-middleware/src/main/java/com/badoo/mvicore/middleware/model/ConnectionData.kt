@@ -15,10 +15,6 @@ data class ConnectionData(
     )
 }
 
-data class Element(
-    val payload: JsonElement
-)
-
 sealed class Event(val type: String) {
     data class Bind(
         val connection: ConnectionData
@@ -26,7 +22,7 @@ sealed class Event(val type: String) {
 
     data class Data(
         val connection: ConnectionData,
-        val element: Element
+        val element: JsonElement
     ) : Event("data")
 
     data class Complete(

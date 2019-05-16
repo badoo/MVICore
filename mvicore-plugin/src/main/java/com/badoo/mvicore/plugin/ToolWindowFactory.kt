@@ -109,8 +109,12 @@ class ToolWindowFactory : ToolWindowFactory, DumbAware {
                 "data" -> {
                     val connection = it.get("connection").toConnection()
                     val element = it.getAsJsonObject("element")
+                    val rootWrapper = JsonObject().apply {
+                        val (timestamp, type, value) = element.parse()
+                        add("${timestamp?.dateString()} $type", value)
+                    }
                     itemsList.add(
-                        Item(connection, element)
+                        Item(connection, rootWrapper)
                     )
                 }
                 "complete" -> {
@@ -130,6 +134,40 @@ class ToolWindowFactory : ToolWindowFactory, DumbAware {
         )
         else -> null
     }
+
+    private fun JsonElement.parse(): Triple<Long?, String?, JsonElement> = when (this) {
+        is JsonObject -> if (isWrapper) {
+            val obj = this
+            val type = obj.remove(TYPE).asString
+            val primitive = obj.remove(VALUE)
+            val timestamp = obj.remove(TIMESTAMP)?.asLong
+
+            if (primitive == null) {
+                this.entrySet().map {
+                    val (_, type, obj) = it.value.parse()
+                    Triple(it.key, type, obj)
+                }.forEach {
+                    remove(it.first)
+                    add("${it.first} (${it.second})", it.third)
+                }
+            }
+
+            Triple(timestamp, type, primitive ?: this)
+        } else {
+            Triple(null, null, this)
+        }
+        else -> Triple(null, null, this)
+    }
+
+    private val TYPE = "\$type"
+    private val VALUE = "\$value"
+    private val TIMESTAMP = "\$timestamp"
+
+    private val JsonElement.isWrapper: Boolean
+        get() = isJsonObject && this.asJsonObject.get(TYPE) != null
+
+    private fun Long.dateString() =
+        SimpleDateFormat("HH:mm:ss").format(Date(this))
 
     private fun String.toId(): Id? {
         val parts = split("@")
@@ -204,30 +242,10 @@ class ToolWindowFactory : ToolWindowFactory, DumbAware {
             }
     }
 
-    private class JsonTreeNode(private val name: String, private val value: JsonElement, private val parent: TreeNode) : TreeNode {
+    private class JsonTreeNode(private val name: String, private val element: JsonElement, private val parent: TreeNode) : TreeNode {
         private val children = ArrayList<JsonTreeNode>()
-        private val nameWithType: String
 
         init {
-            val (element, type, timestamp) = if (value.isWrapper) {
-                val obj = value.asJsonObject
-                val type = obj.remove(TYPE).asString
-                val primitive = obj.remove(VALUE)
-                val timestamp = obj.remove(TIMESTAMP)?.asLong
-
-                Triple(
-                    (primitive ?: value),
-                    type,
-                    timestamp
-                )
-            } else {
-                Triple(value, null, null)
-            }
-            nameWithType =
-                name +
-                    (type?.let { "($it)" } ?: "") +
-                    (timestamp?.let { " ${it.dateString()}" } ?: "")
-
             when {
                 element.isJsonObject -> {
                     val obj = element.asJsonObject
@@ -239,7 +257,7 @@ class ToolWindowFactory : ToolWindowFactory, DumbAware {
                     }
                 }
                 element.isJsonArray -> {
-                    val array = value.asJsonArray
+                    val array = element.asJsonArray
                     for (i in 0 until array.size()) {
                         children.add(JsonTreeNode("[$i]", array.get(i), this))
                     }
@@ -253,7 +271,7 @@ class ToolWindowFactory : ToolWindowFactory, DumbAware {
 
         override fun getParent(): TreeNode = parent
 
-        override fun getAllowsChildren() = value.isJsonObject || value.isJsonArray
+        override fun getAllowsChildren() = element.isJsonObject || element.isJsonArray
 
         override fun getChildAt(i: Int): TreeNode = children[i]
 
@@ -265,18 +283,6 @@ class ToolWindowFactory : ToolWindowFactory, DumbAware {
             override fun nextElement(): JsonTreeNode = iter.next()
         }
 
-        override fun toString(): String = if (allowsChildren) nameWithType else "$nameWithType: $value"
-
-        companion object {
-            private const val TYPE = "\$type"
-            private const val VALUE = "\$value"
-            private const val TIMESTAMP = "\$timestamp"
-
-            private val JsonElement.isWrapper: Boolean
-                get() = isJsonObject && this.asJsonObject.get(TYPE) != null
-
-            private fun Long.dateString() =
-                SimpleDateFormat("HH:mm:ss").format(Date(this))
-        }
+        override fun toString(): String = if (allowsChildren) name else "$name: $element"
     }
 }

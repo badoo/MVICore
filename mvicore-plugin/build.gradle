@@ -54,3 +54,7 @@ compileKotlin {
 artifacts {
     archives packageSources
 }
+
+jar {
+    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+}

@@ -17,8 +17,7 @@
         <!-- Add your extensions here -->
         <toolWindow
             id="MVICore"
-            anchor="bottom"
-            secondary="false"
+            anchor="right"
             factoryClass="com.badoo.mvicore.plugin.ToolWindowFactory"/>
     </extensions>
 

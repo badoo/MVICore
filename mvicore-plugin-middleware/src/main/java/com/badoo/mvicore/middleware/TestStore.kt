@@ -2,7 +2,6 @@ package com.badoo.mvicore.middleware
 
 import com.badoo.mvicore.binder.Connection
 import com.badoo.mvicore.middleware.model.ConnectionData
-import com.badoo.mvicore.middleware.model.Element
 import com.badoo.mvicore.middleware.model.Event
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -27,13 +26,11 @@ object TestStore: PluginMiddleware.EventStore {
         events.onNext(
             Event.Data(
                 connection = ConnectionData(connection),
-                element = Element(
-                    typeAwareGson.toJsonTree(element).apply {
-                        if (isJsonObject) {
-                            asJsonObject.addProperty("\$timestamp", System.currentTimeMillis())
-                        }
+                element = typeAwareGson.toJsonTree(element).apply {
+                    if (isJsonObject) {
+                        asJsonObject.addProperty("\$timestamp", System.currentTimeMillis())
                     }
-                )
+                }
             )
         )
     }

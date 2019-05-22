@@ -17,7 +17,6 @@ group = 'com.github.badoo'
 
 dependencies {
     def deps = rootProject.ext.deps
-    implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     testImplementation deps('junit:junit')
     testImplementation deps('org.jetbrains.kotlin:kotlin-test-junit')
     testImplementation deps('org.amshove.kluent:kluent')

@@ -7,7 +7,7 @@ class ModelWatcher<T>(
     private class Watcher<T, R>(
         val accessor: T.() -> R,
         val callback: (R) -> Unit,
-        val comparator: (R?, R) -> Boolean
+        val diffStrategy: (R?, R) -> Boolean
     )
 
     init {
@@ -23,7 +23,7 @@ class ModelWatcher<T>(
         watchers.forEach { element ->
             val old = state?.let { element.accessor(it) }
             val new = element.accessor(value)
-            if (state == null || element.comparator(old, new)) {
+            if (state == null || element.diffStrategy(old, new)) {
                 element.callback(new)
             }
         }
@@ -34,13 +34,13 @@ class ModelWatcher<T>(
     inner class Builder internal constructor() {
         fun <R> watch(
             accessor: T.() -> R,
-            comparator: (R?, R) -> Boolean = ByValue(),
+            diffStrategy: DiffStrategy<R> = ByValue(),
             callback: (R) -> Unit
         ) {
             watchers += Watcher(
                 accessor,
                 callback,
-                comparator
+                diffStrategy
             ) as Watcher<T, Any?>
         }
     }

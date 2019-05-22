@@ -1,47 +1,52 @@
 package com.badoo.mvicore
 
-class ModelWatcher<T>(
-    initBindings: ModelWatcher<T>.Builder.() -> Unit
-): (T) -> Unit {
-
-    private class Watcher<T, R>(
-        val accessor: T.() -> R,
-        val callback: (R) -> Unit,
-        val diffStrategy: (R?, R) -> Boolean
-    )
-
-    init {
-        Builder().apply {
-            initBindings()
-        }
-    }
-
-    private val watchers = mutableListOf<Watcher<T, Any?>>()
+class ModelWatcher<T> private constructor(
+    private val watchers: List<Watcher<T, Any?>>
+) {
     private var state: T? = null
 
-    override fun invoke(value: T) {
+    operator fun invoke(value: T) {
+        val state = this.state
         watchers.forEach { element ->
-            val old = state?.let { element.accessor(it) }
-            val new = element.accessor(value)
-            if (state == null || element.diffStrategy(old, new)) {
+            val getter = element.accessor
+            val new = getter(value)
+            if (state == null || !element.diffStrategy(getter(state), new)) {
                 element.callback(new)
             }
         }
 
-        state = value
+        this.state = value
     }
 
-    inner class Builder internal constructor() {
+    private class Watcher<T, R>(
+        val accessor: (T) -> R,
+        val callback: (R) -> Unit,
+        val diffStrategy: (R?, R) -> Boolean
+    )
+
+    class Builder<T> @PublishedApi internal constructor() {
+        private val watchers = mutableListOf<Watcher<T, Any?>>()
+
         fun <R> watch(
-            accessor: T.() -> R,
-            diffStrategy: DiffStrategy<R> = ByValue(),
+            accessor: (T) -> R,
+            diff: DiffStrategy<R> = byValue(),
             callback: (R) -> Unit
         ) {
             watchers += Watcher(
                 accessor,
                 callback,
-                diffStrategy
+                diff
             ) as Watcher<T, Any?>
         }
+
+        @PublishedApi
+        internal fun build(): ModelWatcher<T> =
+            ModelWatcher(watchers)
     }
 }
+
+
+inline fun <T> modelWatcher(init: ModelWatcher.Builder<T>.() -> Unit): ModelWatcher<T> =
+    ModelWatcher.Builder<T>()
+        .apply(init)
+        .build()

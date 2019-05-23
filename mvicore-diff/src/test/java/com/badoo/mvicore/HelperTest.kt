@@ -48,7 +48,7 @@ class HelperTest {
                 Model(list = listOf(""))
             )
         ) { updates ->
-            watch(self(), diff) {
+            watch(itself(), diff) {
                 updates += it.list
             }
         }

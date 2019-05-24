@@ -6,7 +6,7 @@ class ModelWatcher<T> private constructor(
     private var model: T? = null
 
     operator fun invoke(value: T) {
-        val state = this.state
+        val state = model
         watchers.forEach { element ->
             val getter = element.accessor
             val new = getter(value)
@@ -15,7 +15,7 @@ class ModelWatcher<T> private constructor(
             }
         }
 
-        this.state = value
+        model = value
     }
 
     private class Watcher<T, R>(

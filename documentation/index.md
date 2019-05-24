@@ -1,11 +1,9 @@
 # MVICore
-[![Version](https://jitpack.io/v/badoo/mvicore.svg)](https://jitpack.io/#badoo/mvicore)
-[![Build Status](https://travis-ci.org/badoo/MVICore.svg?branch=master)](https://travis-ci.org/badoo/MVICore)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 ## What's this?
 
 MVICore is a modern MVI framework featuring:
+
 - **100% Kotlin**: An easy way to implement your business features in a reactive way with unidirectional dataflow
 - **Scaling with complexity**: operate with a single Reducer if needed, with the option of having the full power of additional components to handle more complex cases
 - **Event handling**: A solution to handling events that you don’t want to store in the state
@@ -55,7 +53,8 @@ class SimpleFeature : ReducerFeature<Wish, State, Nothing>(
 
 ```
 
-Note: ```Feature``` has additional components to solve problems like side-effects, events, initialisation, internal jobs in a standardised way. For a full list go to [Documentation](https://badoo.github.io/MVICore) to see what's possible.
+!!! note
+    ```Feature``` has additional components to solve problems like side-effects, events, initialisation, internal jobs in a standardised way. For a full list check [Features](features/coreconcepts.md) section to see what's possible.
 
 ### 2. Your state machine is reactive
 
@@ -82,12 +81,6 @@ binder.bind(view to feature using ViewEventToWish)
 binder.bind(feature to view using StateToViewModel)
 ```
 
-## Documentation
-
-The library comes with lots of powerful capabilities and tooling.
-
-Head over to the [Documentation](https://badoo.github.io/MVICore) to see what's possible.
-
 ## Download
 
 Available through jitpack.
@@ -103,6 +96,7 @@ allprojects {
 ```
 
 Add the dependencies:
+
 - Framework:
 ```groovy
 implementation 'com.github.badoo.mvicore:mvicore:{latest-version}'

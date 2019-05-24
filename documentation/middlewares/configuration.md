@@ -1,12 +1,5 @@
 # Middleware configurations
 
-Previous: [2. Automatic wrapping of reactive components with Middlewares](wrapping.md)
-
-Next: [4. LoggingMiddleware](loggingmiddleware.md)
-
-[Go up one level](README.md)
-
-
 ## What is a Middleware configuration?
 
 It is defined as a pair of a condition and a list of factories:
@@ -30,6 +23,7 @@ If it returns `false`, the original object is returned without any modifications
 interface WrappingCondition {
 
     fun shouldWrap(target: Any, name: String?, standalone: Boolean) : Boolean
+}
 ```
 
 The interface contains implementations for most common case checks, such as:
@@ -73,6 +67,7 @@ val middlewareFactory: ConsumerMiddlewareFactory<*> = { consumer -> SomeMiddlewa
 ## Ok, how do I use it?
 
 Let's say:
+
 1. You want to add `LoggingMiddleware` to all of your bindings and consumers
 
 and
@@ -133,10 +128,3 @@ fun <T : Any> Consumer<T>.wrap(
     return current
 }
 ```
-
----
-
-Next: [4. LoggingMiddleware](loggingmiddleware.md)
-
-[Go up one level](README.md)
-

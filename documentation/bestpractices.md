@@ -25,6 +25,7 @@ class ReducerImpl : Reducer<State, Effect> {
 If you find yourself adding conditionals, it's a smell that probably business logic is creeping from your `Actor` to your `Reducer`.
 
 Resolution: `Actor` is the intended place for business logic:
+
 1. Create `Effects` with meaningful names to describe what can happen to your `State`
 2. Decide what happens inside your `Actor`, based on any conditional logic or async execution, and emit the corresponding `Effects`
 3. Use your `Reducer` only to implement how it modifies the `State`
@@ -61,6 +62,7 @@ class Executor2 {
 This way the reader of your code can have no simple understanding of what `Effect` is the result of what and where.
 
 Resolution:
+
 1. Keep your `Effects` internal to your `Feature`
 2. In your extracted classes use only local result types
 3. Map those results to `Effects` in your `Actor`, ensuring that all business logic is understandable in a high-level overview in one place.
@@ -133,7 +135,3 @@ class Feature2(
 ```
 
 This assumes that `Feature1` lives longer than `Feature2`. If this is not the case, you could still connect them with `Binder.bind()`.
-
----
-
-[Go up one level](README.md)

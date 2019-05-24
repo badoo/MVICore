@@ -3,7 +3,7 @@ package com.badoo.mvicore
 class ModelWatcher<T> private constructor(
     private val watchers: List<Watcher<T, Any?>>
 ) {
-    private var state: T? = null
+    private var model: T? = null
 
     operator fun invoke(value: T) {
         val state = this.state

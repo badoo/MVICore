@@ -1,6 +1,6 @@
 ## Calculating model diff
 
-MVICore includes utility classes to observe difference in the received models to prevent redundant view updates.
+MVICore includes utility classes to observe difference in the received models and prevent redundant view updates.
 
 ```kotlin
 data class Model(
@@ -29,8 +29,8 @@ class View: Consumer<Model> {
 }
 ```
     
-By default, the difference is calculated by value (using `equals`). You can specify your own whenever needed.
-The library also includes a couple of commonly used default values.
+By default, the difference is calculated by value (using `equals`). It is configurable through `diffStrategy` parameter.
+The library also includes a couple of commonly used defaults.
 
 ```kotlin
 val watcher = modelWatcher {

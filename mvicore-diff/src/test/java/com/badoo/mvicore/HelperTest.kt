@@ -37,22 +37,4 @@ class HelperTest {
 
         assertEquals(2, results.size)
     }
-
-    @Test
-    fun `self accesses the whole model`() {
-        val diff: DiffStrategy<Model> = { p1, p2 -> p2.list == p1?.list }
-
-        val results = testWatcher<List<String>>(
-            listOf(
-                Model(list = listOf("")),
-                Model(list = listOf(""))
-            )
-        ) { updates ->
-            watch(itself(), diff) {
-                updates += it.list
-            }
-        }
-
-        assertEquals(1, results.size)
-    }
 }

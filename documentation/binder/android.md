@@ -1,10 +1,5 @@
 # Lifecycle handling on Android
 
-Previous: [2. Binding Features to the UI (and other reactive components)](binding.md)
-
-[Go up one level](README.md)
-
-
 ## Using AndroidBinderLifecycle directly
 
 You can use `AndroidBinderLifecycle` with any `LifecycleOwner` to automatically end `Binder` lifecycle upon `onDestroy()`
@@ -73,7 +68,3 @@ class MyActivity : AppCompatActivity(), ObservableSource<UiEvent>, Consumer<View
     }
 }
 ```
-
----
-
-[Go up one level](README.md)

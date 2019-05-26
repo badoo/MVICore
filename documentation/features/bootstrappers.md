@@ -1,18 +1,14 @@
 # Bootstrappers
 
-Previous: [4. Going full-featured](fullfeatured.md)
-
-Next: [6. News and inter-feature communication](news.md)
-
-[Go up one level](README.md)
-
 ## Listening to remote sources
 
 So far all of the triggers to our `Feature`s were internal:
+
 - `Wish`es come from client code
 - `Action`s are triggered inside `Feature` in the `PostProcessor`
 
 But what if you need to react to let's say when the server sends you a push? You can of course listen to them outside of your `Feature` and then push `Wish`es, but this has its own disadvantages:
+
 - Part of your business logic is now living outside of your class. If you are passing your component around for others to use, everyone will need to pay attention how to set it up. This is not correct.
 - From outside you can only trigger public `Wish`es, not `Action`s
 
@@ -50,9 +46,3 @@ class MyComplexFeature : BaseFeature<Wish, Action, Effect, State, News>(
 ```
 
 The implementation of `BaseFeature` wires it up for you.
-
----
-
-Next: [6. News and inter-feature communication](news.md)
-
-[Go up one level](README.md)

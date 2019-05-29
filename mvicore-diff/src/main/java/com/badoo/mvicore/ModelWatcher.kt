@@ -10,7 +10,7 @@ class ModelWatcher<T> private constructor(
         watchers.forEach { element ->
             val getter = element.accessor
             val new = getter(newModel)
-            if (oldModel == null || !element.diffStrategy(getter(oldModel), new)) {
+            if (oldModel == null || element.diffStrategy(getter(oldModel), new)) {
                 element.callback(new)
             }
         }
@@ -21,7 +21,7 @@ class ModelWatcher<T> private constructor(
     private class Watcher<T, R>(
         val accessor: (T) -> R,
         val callback: (R) -> Unit,
-        val diffStrategy: (R?, R) -> Boolean
+        val diffStrategy: DiffStrategy<R>
     )
 
     class Builder<T> @PublishedApi internal constructor() {

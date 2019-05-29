@@ -5,17 +5,17 @@ class ModelWatcher<T> private constructor(
 ) {
     private var model: T? = null
 
-    operator fun invoke(value: T) {
-        val state = model
+    operator fun invoke(newModel: T) {
+        val oldModel = model
         watchers.forEach { element ->
             val getter = element.accessor
-            val new = getter(value)
-            if (state == null || !element.diffStrategy(getter(state), new)) {
+            val new = getter(newModel)
+            if (oldModel == null || !element.diffStrategy(getter(oldModel), new)) {
                 element.callback(new)
             }
         }
 
-        model = value
+        model = newModel
     }
 
     private class Watcher<T, R>(

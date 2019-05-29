@@ -3,21 +3,21 @@
 MVICore includes utility classes to observe difference in the received models and prevent redundant view updates.
 
 ```kotlin
-data class Model(
-    val text: String,
-    val action: () -> Unit
+data class ViewModel(
+    val buttonText: String,
+    val buttonAction: () -> Unit
 )
 
-class View: Consumer<Model> {
+class View: Consumer<ViewModel> {
 
     private val button: Button = ...
     
     // Specify the fields to observe and actions to execute
     private val watcher = modelWatcher {
-        watch(Model::text) {
+        watch(ViewModel::buttonText) {
             button.text = it
         }
-        watch(Model::action, diffStrategy = byRef()) {
+        watch(ViewModel::buttonAction, diffStrategy = byRef()) {
             button.setOnClickListener { it() }
         }
     }
@@ -42,13 +42,13 @@ val watcher = modelWatcher {
 The difference can be observed on more than one field with identity function as accessor and custom diff strategy.
 ```kotlin
 fun bothFieldsChange() = { p1, p2 ->
-    p1.text == p2.text && p1.action === p2.action
+    p1.text == p2.text && p1.buttonAction === p2.buttonAction
 }
 
 val watcher = modelWatcher {
     watch({ it }, diffStrategy = bothFieldChange()) { model ->
-        button.text = model.text
-        button.setOnClickListener { model.action() }
+        button.buttonText = model.buttonText
+        button.setOnClickListener { model.buttonAction() }
     }
 }
 ```

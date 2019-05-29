@@ -66,3 +66,4 @@ nav:
 - Extras:
   - Time Travel Debugger UI controls: extras/ttdui.md
   - IntelliJ plugin: extras/intellijplugin.md
+  - Calculating model difference: extras/modelwatcher.md

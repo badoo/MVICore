@@ -6,7 +6,7 @@
 ## Changing reactive chain between input and output
 
 As described [here](../binder/#binding-reactive-endpoints), 
-we use a simple transformer to convert between output and input types.
+we can use a simple transformer to convert between output and input types.
 ```kotlin
 val output: ObservableSource<A> = TODO()
 val input: Consumer<B> = TODO()
@@ -15,10 +15,11 @@ val transformer: (A) -> B? = TODO()
 binder.bind(output to input using transformer)
 ```
 
-However, sometimes it is not enough to convert events one to one. 
-For these cases, we can replace a simple mapper with `Connector<A, B>`, that is able to manipulate the stream if needed.
+However, sometimes this is not enough. 
+
+For more complex cases, we can use a `Connector<A, B>` instead, which is also able to manipulate the stream.
 ```kotlin
-object InputToOutput : Connector<A, B> {
+object OutputToInput : Connector<A, B> {
     override fun invoke(source: ObservableSource<A>): ObservableSource<B> =
         Observable.wrap(source)
             // TODO transform stream
@@ -27,8 +28,12 @@ object InputToOutput : Connector<A, B> {
 val output: ObservableSource<A> = TODO()
 val input: Consumer<B> = TODO()
 
-binder.bind(output to input using InputToOutput)
+binder.bind(output to input using OutputToInput)
 ```
+
+!!! note
+    Try to keep your `Connector` simple.
+    Common use-cases can be to add `.distinctUntilChanged()`, `.debounce()`, etc., but don't overcomplicate it!
 
 ## Naming connections
 

@@ -54,6 +54,20 @@ val transformer: (A) -> B = TODO()
 binder.bind(output to input using transformer)
 ```
 
+You can easily modify the reactive chain between them:
+```kotlin
+object DistinctInputToOutput : Connector<A, B> {
+    override fun invoke(source: ObservableSource<A>): ObservableSource<B> =
+        Observable.wrap(source)
+            .distinctUntilChanged()
+            .map { a -> TODO() }
+}
+val output: ObservableSource<A> = TODO()
+val input: Consumer<B> = TODO()
+
+binder.bind(output to input using DistinctInputToOutput)
+```
+
 And you can optionally give names to any of those connections:
 ```kotlin
 binder.bind(input to output named "MyConnection")

@@ -1,18 +1,14 @@
 # Handling async jobs
 
-Previous: [2. Your first and simplest feature](reducerfeature.md)
-
-Next: [4. Going full-featured](fullfeatured.md)
-
-[Go up one level](README.md)
-
 ## Actor
 
 If you have
+
 - anything asynchronous
 - more complex requirements how some `Wish` will modify the `State`
 
 then now we need to distinguish between
+
 - incoming `Wish`
 - an actual `Effect` that is applied over the `State` using the `Reducer`
 
@@ -24,9 +20,10 @@ typealias Actor<State, Wish, Effect> = (State, Wish) -> Observable<out Effect>
 
 This means that now we can consider an incoming `Wish` and our current `State`, and based on them we can do some operations that will emit `Effect`s to change our `State`.
 
-> _Note: the operations do not have to be asynchronous. You can still use `Observable.just()` to return one or more `Effect`s immediately. The added power here is that you can do that conditionally based on the current `State`_
->
-> _E.g. your `Feature` represents a form, and then based on the result of form validation over the current state, you can emit different `Effect`s to signal validation success or error._
+!!! note
+    The operations do not have to be asynchronous. You can still use `Observable.just()` to return one or more `Effect`s immediately. The added power here is that you can do that conditionally based on the current `State`
+
+    E.g. your `Feature` represents a form, and then based on the result of form validation over the current state, you can emit different `Effect`s to signal validation success or error.
 
 ## Important ##
 
@@ -102,18 +99,13 @@ Under the hood, `ActorReducerFeature` is a subclass of `BaseFeature` giving you 
 
 It will also wire everything up for you (reacting to a `Wish`, calling your `Actor` and subscribing to the `Observable<Effect>` returned by it, and calling your `Reducer` to emit your next `State`).
 
-> _Note: in this example, the error result is not stored in the state. The preferred way in most cases is an event-based approach seen in the chapter [News and inter-feature communication](news.md)_
->
->_But if you need it, you can still add a field in the `State` to store the error, just don't forget to reset it in the `Reducer` upon the next `StartedLoading` or `FinishedWithSuccess` effects._
->
->_Another approach would be to use a Kotlin sealed class, or the functional `Either<A, B>` type for the payload, where `A` would be the error, `B` would be actual data. Really only up to you._
+!!! note
+    In this example, the error result is not stored in the state. The preferred way in most cases is an event-based approach seen in the chapter [News and inter-feature communication](news.md)
+
+    But if you need it, you can still add a field in the `State` to store the error, just don't forget to reset it in the `Reducer` upon the next `StartedLoading` or `FinishedWithSuccess` effects.
+
+    Another approach would be to use a Kotlin sealed class, or the functional `Either<A, B>` type for the payload, where `A` would be the error, `B` would be actual data. Really only up to you.
 
 ### When should you use ActorReducerFeature
 - There are async jobs in your Feature
 - There's some extra business logic involving how to react to a `Wish` conditionally
-
----
-
-Next: [4. Going full-featured](fullfeatured.md)
-
-[Go up one level](README.md)

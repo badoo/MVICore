@@ -1,10 +1,5 @@
 # What is a middleware and why is it good for me?
 
-Next: [2. Automatic wrapping of reactive components with Middlewares](wrapping.md)
-
-[Go up one level](README.md)
-
-
 ## TL;DR
 
 You can extract the cross-cutting concerns of your app (like logging) and put them into `Middlewares` that can be used as generic plugins instead of copy-pasting the same solution over and over and polluting your code.
@@ -116,13 +111,7 @@ wrappedWithMiddlewares.accept("MVICore")
 ```
 
 Explanation: the order in which an element is passing through the `Middleware` layers is from the outermost -> inwards. In the above example this means that the passed in string:
+
 1. gets reversed
 2. gets decorated with Hello %s!
 3. gets logged
-
----
-
-Next: [2. Automatic wrapping of reactive components with Middlewares](wrapping.md)
-
-[Go up one level](README.md)
-

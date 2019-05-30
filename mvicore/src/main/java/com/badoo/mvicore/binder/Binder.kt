@@ -5,8 +5,8 @@ import com.badoo.mvicore.binder.lifecycle.Lifecycle.Event.BEGIN
 import com.badoo.mvicore.binder.lifecycle.Lifecycle.Event.END
 import com.badoo.mvicore.consumer.middleware.base.Middleware
 import com.badoo.mvicore.consumer.wrapWithMiddleware
-import com.badoo.mvicore.extension.mapNotNull
 import io.reactivex.Observable
+import io.reactivex.Observable.wrap
 import io.reactivex.ObservableSource
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -36,7 +36,7 @@ class Binder(
             Connection(
                 from = connection.first,
                 to = connection.second,
-                transformer = null
+                connector = null
             )
         )
     }
@@ -63,8 +63,7 @@ class Binder(
         connection: Connection<Out, In>,
         middleware: Middleware<Out, In>?
     ) {
-        connectionDisposables += Observable
-            .wrap(connection.from)
+        connectionDisposables += wrap(connection.from)
             .subscribeWithMiddleware(connection, middleware)
     }
 
@@ -72,7 +71,7 @@ class Binder(
         connection: Connection<Out, In>,
         middleware: Middleware<Out, In>?
     ) {
-        disposables += Observable.wrap(connection.from)
+        disposables += wrap(connection.from)
             .subscribeWithMiddleware(connection, middleware)
     }
 
@@ -98,8 +97,8 @@ class Binder(
     private fun <Out: Any, In: Any> Observable<Out>.applyTransformer(
         connection: Connection<Out, In>
     ): Observable<In> =
-        connection.transformer?.let {
-            mapNotNull(it)
+        connection.connector?.let {
+            wrap(it.invoke(this))
         } ?: this as Observable<In>
 
     // endregion
@@ -107,7 +106,7 @@ class Binder(
     // region lifecycle
 
     private fun Lifecycle.setupConnections() =
-        Observable.wrap(this)
+        wrap(this)
             .distinctUntilChanged()
             .subscribe {
                 when (it) {

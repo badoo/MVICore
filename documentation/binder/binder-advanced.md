@@ -1,11 +1,12 @@
-# Advanced binder usage
+# Advanced Binder usage
 
 !!! note
     This section describes API that is optional and meant to help in specific cases.
    
 ## Changing reactive chain between input and output
 
-As described [here](./binder/#binding-reactive-endpoints), we use a transformer to convert output to input.
+As described [here](./binder/#binding-reactive-endpoints), 
+we use a simple transformer to convert between output and input types.
 ```kotlin
 val output: ObservableSource<A> = TODO()
 val input: Consumer<B> = TODO()
@@ -15,12 +16,12 @@ binder.bind(output to input using transformer)
 ```
 
 However, sometimes it is not enough to convert events one to one. 
-For these cases, we can replace transformer with `Connector<A, B>`.
+For these cases, we can replace a simple mapper with `Connector<A, B>`, that is able to manipulate the stream if needed.
 ```kotlin
 object InputToOutput : Connector<A, B> {
     override fun invoke(source: ObservableSource<A>): ObservableSource<B> =
         Observable.wrap(source)
-            // TODO modify chain
+            // TODO transform stream
             .map { a -> TODO() }
 }
 val output: ObservableSource<A> = TODO()

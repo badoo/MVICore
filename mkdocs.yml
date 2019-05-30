@@ -55,7 +55,7 @@ nav:
   - Binder usage and lifecycle: binder/binder.md
   - Binding Features to the UI: binder/binding.md
   - Lifecycle handling on Android: binder/android.md
-  - Advanced binder usage: binder/binder-advanced.md
+  - Advanced Binder usage: binder/binder-advanced.md
 - Middlewares and time travel:
   - What is a middleware?: middlewares/middleware.md
   - Automatic wrapping of reactive components with Middlewares: middlewares/wrapping.md

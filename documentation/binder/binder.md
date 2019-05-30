@@ -54,7 +54,9 @@ val transformer: (A) -> B? = TODO()
 binder.bind(output to input using transformer)
 ```
 
-Read more about binder [here](binder-advanced.md).
+!!! note
+    You can return `null` from transformer if the element emitted by an output should not reach the associated input.
+    Binder will guarantee that null values are not forwarded in the stream.
 
 ## Lifecycle handling
 

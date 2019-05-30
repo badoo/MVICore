@@ -5,7 +5,7 @@
    
 ## Changing reactive chain between input and output
 
-As described [here](./binder/#binding-reactive-endpoints), 
+As described [here](../binder/#binding-reactive-endpoints), 
 we use a simple transformer to convert between output and input types.
 ```kotlin
 val output: ObservableSource<A> = TODO()

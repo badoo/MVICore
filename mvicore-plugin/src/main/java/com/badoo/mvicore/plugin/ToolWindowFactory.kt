@@ -19,6 +19,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.JBSplitter
+import com.intellij.ui.TreeSpeedSearch
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.treeStructure.Tree
@@ -37,7 +38,6 @@ import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.TreeNode
 
-
 class ToolWindowFactory : ToolWindowFactory, DumbAware {
 
     private val logger = Logger.getInstance(javaClass)
@@ -45,12 +45,14 @@ class ToolWindowFactory : ToolWindowFactory, DumbAware {
 
     private val connections = Tree()
     private val elements = Tree()
+    private val elementScroll = JBScrollPane(VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_NEVER).apply {
+        setViewportView(elements)
+    }
+    private val search = TreeSpeedSearch(connections)
 
     private val disposables = CompositeDisposable()
     private val activeConnections = ArrayList<Connection>()
-    private val eventsObservable =
-        Observable.wrap(SocketObservable("localhost", 7675))
-            .observeOn(mainThreadScheduler)
+    private lateinit var eventsObservable: Observable<JsonElement>
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val actions = createToolbarActions()
@@ -59,20 +61,26 @@ class ToolWindowFactory : ToolWindowFactory, DumbAware {
             it.add(toolbar.component, BorderLayout.NORTH)
         }
         panel.add(
-            JBScrollPane(connections, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_NEVER)
+            JBScrollPane(VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_NEVER).apply {
+                setViewportView(connections)
+            }
         )
-        connections.addTreeSelectionListener {
-            var path = it.path
-            while (path != null && (path.lastPathComponent as DefaultMutableTreeNode).userObject !is Connection) path = path.parentPath
-            if (path == null) return@addTreeSelectionListener
 
-            val connection = (path.lastPathComponent as DefaultMutableTreeNode).userObject as Connection
-            elements.setJsonList(itemsList.filter { it.connection == connection }.map { it.element })
-        }
+        eventsObservable = Observable.wrap(SocketObservable(project, "localhost", 7675))
+            .observeOn(mainThreadScheduler)
+
+//        connections.addTreeSelectionListener {
+//            var path = it.path
+//            while (path != null && (path.lastPathComponent as DefaultMutableTreeNode).userObject !is Connection) path = path.parentPath
+//            if (path == null) return@addTreeSelectionListener
+//
+//            val connection = (path.lastPathComponent as DefaultMutableTreeNode).userObject as Connection
+//            elements.setJsonList(itemsList.filter { it.connection == connection }.map { it.element })
+//        }
 
         val splitter = JBSplitter()
         splitter.firstComponent = panel
-        splitter.secondComponent = JBScrollPane(elements, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_NEVER)
+        splitter.secondComponent = elementScroll
 
         val contentFactory = ContentFactory.SERVICE.getInstance()
         val content = contentFactory.createContent(splitter, "", false)
@@ -116,6 +124,7 @@ class ToolWindowFactory : ToolWindowFactory, DumbAware {
                     itemsList.add(
                         Item(connection, rootWrapper)
                     )
+                    elements.setJsonList(itemsList.map { it.element })
                 }
                 "complete" -> {
                     val connection = it.get("connection").toConnection()
@@ -203,12 +212,21 @@ class ToolWindowFactory : ToolWindowFactory, DumbAware {
             root.add(rootNode)
         }
 
-        model = DefaultTreeModel(root)
+
         isRootVisible = false
     }
 
     private fun Tree.setJsonList(elements: List<JsonElement>) {
-        model = DefaultTreeModel(JsonRootNode(elements))
+        val isScrolledToBottom = (elementScroll.verticalScrollBar.value + elementScroll.verticalScrollBar.model.extent >= elementScroll.verticalScrollBar.maximum)
+
+        (model as? DefaultTreeModel)?.setRoot(JsonRootNode(elements)) ?: DefaultTreeModel(JsonRootNode(elements)).apply { model = this }
+
+        elementScroll.verticalScrollBar.revalidate()
+
+        if (isScrolledToBottom) {
+            elementScroll.verticalScrollBar.value = elementScroll.verticalScrollBar.maximum
+            elementScroll.verticalScrollBar.revalidate()
+        }
         isRootVisible = false
     }
 

@@ -41,7 +41,7 @@ object TestStore: PluginMiddleware.EventStore {
         )
     }
 
-    class ServerThread(private val source: Observable<Event>): Thread(ThreadGroup("plugin"), "mvicore-plugin-server") {
+    class ServerThread(private val source: Observable<Event>): Thread("mvicore-plugin-server") {
         private lateinit var socket: ServerSocket
         private val events = ConcurrentLinkedDeque<Event>()
 

@@ -1,11 +1,14 @@
 package com.badoo.mvicore.plugin
 
+import com.badoo.mvicore.plugin.utils.showError
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import com.intellij.openapi.project.Project
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import org.jetbrains.android.sdk.AndroidSdkUtils
+import java.io.PrintWriter
+import java.io.StringWriter
 import java.net.Socket
 import kotlin.concurrent.thread
 
@@ -15,7 +18,10 @@ class SocketObservable(
     private val port: Int
 ): ObservableSource<JsonElement> by Observable.create<JsonElement>({ emitter ->
     val parser = JsonParser()
-    forwardPort(project, port)
+    if (!forwardPort(project, port)) {
+        emitter.onComplete()
+        return@create
+    }
 
     val thread = thread(start = true, name = "mvicore-plugin-read") {
         try {
@@ -34,7 +40,32 @@ class SocketObservable(
     emitter.setCancellable { thread.interrupt() }
 })
 
-private fun forwardPort(project: Project, port: Int) {
+private fun forwardPort(project: Project, port: Int): Boolean {
     val bridge = AndroidSdkUtils.getDebugBridge(project)
-    bridge?.devices?.forEach { it.createForward(port, port) }
+    val error = when {
+        bridge == null -> "Could not find adb."
+        bridge.devices == null || bridge.devices.isEmpty() -> "No devices found."
+        bridge.devices.size > 1 -> "Found too many (${bridge.devices.size}) devices."
+        else -> null
+    }
+
+    if (error != null) {
+        project.showError(error)
+        return false
+    }
+
+    try {
+        bridge?.devices?.first()?.createForward(port, port)
+    } catch (e: Exception) {
+        project.showError(
+            "Failed to forward the port:\n" + e.convertToString()
+        )
+        return false
+    }
+
+    return true
 }
+
+private fun Exception.convertToString(): String = StringWriter().also {
+    printStackTrace(PrintWriter(it))
+}.toString()

@@ -18,8 +18,11 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
+import com.intellij.ui.ColoredListCellRenderer
 import com.intellij.ui.JBSplitter
+import com.intellij.ui.ListSpeedSearch
 import com.intellij.ui.TreeSpeedSearch
+import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.treeStructure.Tree
@@ -31,9 +34,12 @@ import java.util.ArrayList
 import java.util.Date
 import java.util.Enumeration
 import java.util.LinkedList
+import javax.swing.DefaultListModel
+import javax.swing.JList
 import javax.swing.JPanel
-import javax.swing.JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
 import javax.swing.JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED
+import javax.swing.ListSelectionModel
+import javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.TreeNode
@@ -41,33 +47,42 @@ import javax.swing.tree.TreeNode
 class ToolWindowFactory : ToolWindowFactory, DumbAware {
 
     private val logger = Logger.getInstance(javaClass)
+    private val elements = JBList(DefaultListModel<Item>()).apply {
+        cellRenderer = object : ColoredListCellRenderer<Item>() {
+            override fun customizeCellRenderer(list: JList<out Item>, value: Item?, index: Int, selected: Boolean, hasFocus: Boolean) {
+                append(value?.element?.asJsonObject?.keySet()?.first().orEmpty())
+            }
+        }
+        addListSelectionListener {
+            val item = this.model.getElementAt(this.selectedIndex)
+            currentElement.model = DefaultTreeModel(JsonRootNode(listOf(item.element))).apply { currentElement.isRootVisible = false }
+        }
+        selectionMode = ListSelectionModel.SINGLE_SELECTION
+    }
     private val itemsList = LinkedList<Item>()
 
     private val connections = Tree()
-    private val elements = Tree()
-    private val elementScroll = JBScrollPane(VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_NEVER).apply {
-        setViewportView(elements)
-    }
-    private val search = TreeSpeedSearch(connections)
+    private val connectionsList = ArrayList<Connection>()
+    private val currentElement = Tree()
+
+    private val search = ListSpeedSearch(elements)
+    private val connectionsSearch = TreeSpeedSearch(connections)
 
     private val disposables = CompositeDisposable()
-    private val activeConnections = ArrayList<Connection>()
     private lateinit var eventsObservable: Observable<JsonElement>
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        val actions = createToolbarActions()
-        val toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.COMMANDER_TOOLBAR, actions, true)
-        val panel = JPanel(BorderLayout()).also {
-            it.add(toolbar.component, BorderLayout.NORTH)
-        }
-        panel.add(
-            JBScrollPane(VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_NEVER).apply {
-                setViewportView(connections)
-            }
-        )
-
+        // Init events
         eventsObservable = Observable.wrap(SocketObservable(project, "localhost", 7675))
             .observeOn(mainThreadScheduler)
+
+        // Left
+        val left = JBScrollPane(elements, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED)
+
+        // Right
+        val right = JBSplitter(true)
+        right.firstComponent = JBScrollPane(connections, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED)
+        right.secondComponent = JBScrollPane(currentElement, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED)
 
 //        connections.addTreeSelectionListener {
 //            var path = it.path
@@ -78,12 +93,20 @@ class ToolWindowFactory : ToolWindowFactory, DumbAware {
 //            elements.setJsonList(itemsList.filter { it.connection == connection }.map { it.element })
 //        }
 
+        // The pane
         val splitter = JBSplitter()
-        splitter.firstComponent = panel
-        splitter.secondComponent = elementScroll
+        splitter.firstComponent = left
+        splitter.secondComponent = right
+
+        val actions = createToolbarActions()
+        val toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.COMMANDER_TOOLBAR, actions, true)
+        val panel = JPanel(BorderLayout()).apply {
+            add(toolbar.component, BorderLayout.NORTH)
+            add(splitter)
+        }
 
         val contentFactory = ContentFactory.SERVICE.getInstance()
-        val content = contentFactory.createContent(splitter, "", false)
+        val content = contentFactory.createContent(panel, "", false)
         toolWindow.contentManager.addContent(content)
     }
 
@@ -112,27 +135,30 @@ class ToolWindowFactory : ToolWindowFactory, DumbAware {
             is JsonObject -> when (val type = it.get("type").asString) {
                 "bind" -> {
                     val connection = it.get("connection").toConnection()
-                    if (connection != null) activeConnections.add(connection)
+                    if (connection != null) connectionsList.add(connection)
                 }
                 "data" -> {
                     val connection = it.get("connection").toConnection()
                     val element = it.getAsJsonObject("element")
                     val rootWrapper = JsonObject().apply {
                         val (timestamp, type, value) = element.parse()
-                        add("${timestamp?.dateString()} $type", value)
+                        add("[${timestamp?.dateString()}] : $type", value)
                     }
                     itemsList.add(
                         Item(connection, rootWrapper)
                     )
-                    elements.setJsonList(itemsList.map { it.element })
+                    (elements.model as DefaultListModel<Item>).clear()
+                    itemsList.forEach {
+                        (elements.model as DefaultListModel<Item>).addElement(it)
+                    }
                 }
                 "complete" -> {
                     val connection = it.get("connection").toConnection()
-                    if (connection != null) activeConnections.remove(connection)
+                    if (connection != null) connectionsList.remove(connection)
                 }
             }
         }
-        connections.setConnectionList(activeConnections)
+        connections.setConnectionList(connectionsList)
     }
 
     private fun JsonElement.toConnection() = when (this) {
@@ -148,7 +174,7 @@ class ToolWindowFactory : ToolWindowFactory, DumbAware {
         is JsonObject -> if (isWrapper) {
             val obj = this
             val type = obj.remove(TYPE).asString
-            val primitive = obj.remove(VALUE)
+            var primitive = obj.remove(VALUE)
             val timestamp = obj.remove(TIMESTAMP)?.asLong
 
             if (primitive == null) {
@@ -157,11 +183,21 @@ class ToolWindowFactory : ToolWindowFactory, DumbAware {
                     Triple(it.key, type, obj)
                 }.forEach {
                     remove(it.first)
-                    add("${it.first} (${it.second})", it.third)
+                    add("${it.first}${it.second?.let {" ($it)"}.orEmpty()}", it.third)
                 }
+            } else if (primitive.isJsonArray) {
+                val array = primitive.asJsonArray
+                val result = JsonObject()
+                array.mapIndexed { i, el ->
+                    val (_, type, obj) = el.parse()
+                  Pair(type, obj)
+                }.forEachIndexed { i, (type, obj) ->
+                    result.add("$i${type?.let {" ($it)"}.orEmpty()}", obj)
+                }
+                primitive = result
             }
 
-            Triple(timestamp, type, primitive ?: this)
+            Triple(timestamp, if (primitive == null) type else null, primitive ?: this)
         } else {
             Triple(null, null, this)
         }
@@ -212,21 +248,12 @@ class ToolWindowFactory : ToolWindowFactory, DumbAware {
             root.add(rootNode)
         }
 
-
+        model = DefaultTreeModel(root)
         isRootVisible = false
     }
 
     private fun Tree.setJsonList(elements: List<JsonElement>) {
-        val isScrolledToBottom = (elementScroll.verticalScrollBar.value + elementScroll.verticalScrollBar.model.extent >= elementScroll.verticalScrollBar.maximum)
-
         (model as? DefaultTreeModel)?.setRoot(JsonRootNode(elements)) ?: DefaultTreeModel(JsonRootNode(elements)).apply { model = this }
-
-        elementScroll.verticalScrollBar.revalidate()
-
-        if (isScrolledToBottom) {
-            elementScroll.verticalScrollBar.value = elementScroll.verticalScrollBar.maximum
-            elementScroll.verticalScrollBar.revalidate()
-        }
         isRootVisible = false
     }
 

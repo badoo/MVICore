@@ -1,0 +1,70 @@
+site_name: MVICore
+
+site_description: MVI framework (not just) for Android, with events, middlewares, and time-travel debugger.
+site_author: Badoo
+site_url: https://badoo.github.io/MVICore
+
+repo_name: MVICore
+repo_url: https://github.com/badoo/MVICore
+edit_uri: edit/master/documentation
+
+copyright: 'Copyright &copy; 2019 Badoo Trading Limited'
+
+theme:
+  name: 'material'
+  favicon: 'https://badoo.com/favicon.ico'
+  logo:
+    icon: 'code'
+  palette:
+    primary: 'deep purple'
+    accent: 'pink'
+  social:
+  - type: 'github'
+    link: 'https://github.com/badoo/MVICore'
+  font:
+    text: 'Fira Sans'
+    code: 'Fira Mono'
+
+markdown_extensions:
+- admonition
+- codehilite
+- footnotes
+- meta
+- toc:
+    permalink: true
+- pymdownx.betterem:
+    smart_enable: all
+- pymdownx.caret
+- pymdownx.inlinehilite
+- pymdownx.magiclink
+- pymdownx.smartsymbols
+- pymdownx.superfences
+
+docs_dir: documentation
+
+nav:
+- Overview: index.md
+- Features:
+  - Core concepts: features/coreconcepts.md
+  - Your first and simplest feature: features/reducerfeature.md
+  - Handling async jobs: features/actorreducerfeature.md
+  - Going full-featured: features/fullfeatured.md
+  - Bootstrappers: features/bootstrappers.md
+  - News and inter-feature communication: features/news.md
+- Binder:
+  - Binder usage and lifecycle: binder/binder.md
+  - Binding Features to the UI: binder/binding.md
+  - Lifecycle handling on Android: binder/android.md
+  - Advanced Binder usage: binder/binder-advanced.md
+- Middlewares and time travel:
+  - What is a middleware?: middlewares/middleware.md
+  - Automatic wrapping of reactive components with Middlewares: middlewares/wrapping.md
+  - Middleware configurations: middlewares/configuration.md
+  - LoggingMiddleware: middlewares/loggingmiddleware.md
+  - PlaybackMiddleware: middlewares/playbackmiddleware.md
+- Example app: demoproject.md
+- Best practices: bestpractices.md
+- Extras:
+  - Time Travel Debugger UI controls: extras/ttdui.md
+  - IntelliJ plugin: extras/intellijplugin.md
+  - Efficient view updates: extras/modelwatcher.md

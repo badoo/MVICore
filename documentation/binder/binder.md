@@ -1,10 +1,5 @@
 # Binder usage and lifecycle
 
-Next: [2. Binding Features to the UI (and other reactive components)](binding.md)
-
-[Go up one level](README.md)
-
-
 ## What is the Binder and why is it good for me?
 
 If you wrote your first `Feature`, now you may wonder how to start using it.
@@ -17,6 +12,7 @@ Remember when in the [Core concepts](../features/coreconcepts.md) we said that
 `Feature` is a `Consumer` of `Wish` and an `ObservableSource` of `State`? And that in general, the framework is working with outputs of type `ObservableSource<T>` and inputs of type `Consumer<T>`?
 
 The `Binder` is a tool that can:
+
 - automatically connect those outputs to those inputs by a subscription using a super simple syntax
 - dispose of this subscription when its lifecycle expires
 - automatically add `Middlewares` around all inputs (logging and time travel debugging, or your custom one)
@@ -53,23 +49,14 @@ Or using a transformer if they are of different types:
 ```kotlin
 val output: ObservableSource<A> = TODO()
 val input: Consumer<B> = TODO()
-val transformer: (A) -> B = TODO()
+val transformer: (A) -> B? = TODO()
 
 binder.bind(output to input using transformer)
 ```
 
-And you can optionally give names to any of those connections:
-```kotlin
-binder.bind(input to output named "MyConnection")
-// or
-binder.bind(input to output using transformer named "MyConnection")
-```
-
-Naming a connection signals that it's important to you. This will make more sense later when we'll add `Middlewares`:
-- You'll see connections with their respective names in the time-travel debug menu
-- You'll see connection names in logs if you use LoggingMiddleware
-- You can opt to dynamically add `Middlewares` only to named connections (if that's what you want)
-
+!!! note
+    You can return `null` from transformer if the element emitted by an output should not reach the associated input.
+    Binder will guarantee that null values are not forwarded in the stream.
 
 ## Lifecycle handling
 
@@ -122,9 +109,3 @@ binder.bind(c to d)
 
 // no need to dispose manually, will be handled automatically
 ```
-
----
-
-Next: [2. Binding Features to the UI (and other reactive components)](binding.md)
-
-[Go up one level](README.md)

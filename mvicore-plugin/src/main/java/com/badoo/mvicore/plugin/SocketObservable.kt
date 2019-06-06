@@ -7,14 +7,13 @@ import com.intellij.openapi.project.Project
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import org.jetbrains.android.sdk.AndroidSdkUtils
-import java.io.PrintWriter
-import java.io.StringWriter
-import java.net.Socket
-import kotlin.concurrent.thread
+import java.io.IOException
+import java.net.InetAddress
+import java.net.ServerSocket
+import java.net.SocketException
 
 class SocketObservable(
     project: Project,
-    private val host: String,
     private val port: Int
 ): ObservableSource<JsonElement> by Observable.create<JsonElement>({ emitter ->
     val parser = JsonParser()
@@ -23,24 +22,38 @@ class SocketObservable(
         return@create
     }
 
-    val thread = thread(start = true, name = "mvicore-plugin-read") {
-        try {
-            val socket = Socket(host, port)
-            val reader = socket.getInputStream().bufferedReader()
+    object : Thread( "mvicore-plugin-server") {
+        override fun run() {
+            val serverSocket = ServerSocket(port, 0, InetAddress.getByName("localhost"))
 
-            while (!Thread.currentThread().isInterrupted) {
-                val line = reader.readLine() ?: continue
-                emitter.onNext(parser.parse(line))
+            emitter.setCancellable {
+                serverSocket.close()
+                interrupt()
             }
-        } catch (e: Exception) {
-            emitter.onError(e)
-        }
-    }
 
-    emitter.setCancellable { thread.interrupt() }
+            while (!isInterrupted) {
+                try {
+                    val socket = serverSocket.accept()
+                    val reader = socket.getInputStream().bufferedReader()
+
+                    while (!socket.isClosed && socket.isConnected) {
+                        val line = reader.readLine() ?: break
+                        emitter.onNext(parser.parse(line))
+                    }
+                }
+                catch (e: SocketException) {
+                }
+                catch (e: Exception) {
+                    project.showError("Error while reading from socket:", e)
+                }
+            }
+            serverSocket.close()
+        }
+    }.start()
 })
 
 private fun forwardPort(project: Project, port: Int): Boolean {
+    val adb = AndroidSdkUtils.getAdb(project)
     val bridge = AndroidSdkUtils.getDebugBridge(project)
     val error = when {
         bridge == null -> "Could not find adb."
@@ -55,17 +68,22 @@ private fun forwardPort(project: Project, port: Int): Boolean {
     }
 
     try {
-        bridge?.devices?.first()?.createForward(port, port)
-    } catch (e: Exception) {
+        //TODO: Select device?
+        val process = Runtime.getRuntime().exec("${adb?.absolutePath} reverse tcp:$port tcp:$port")
+        val exitCode = process.waitFor()
+        if (exitCode != 0) {
+            val error = process.inputStream.bufferedReader().readText()
+            project.showError(
+                "Failed to forward the port:\n$error"
+            )
+            return false
+        }
+    } catch (e: IOException) {
         project.showError(
-            "Failed to forward the port:\n" + e.convertToString()
+            "Failed to forward the port:", e
         )
         return false
     }
 
     return true
 }
-
-private fun Exception.convertToString(): String = StringWriter().also {
-    printStackTrace(PrintWriter(it))
-}.toString()

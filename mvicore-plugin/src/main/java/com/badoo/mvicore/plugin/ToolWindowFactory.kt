@@ -4,6 +4,7 @@ import com.badoo.mvicore.plugin.model.Connection
 import com.badoo.mvicore.plugin.model.Id
 import com.badoo.mvicore.plugin.model.Item
 import com.badoo.mvicore.plugin.utils.mainThreadScheduler
+import com.badoo.mvicore.plugin.utils.showError
 import com.google.gson.JsonElement
 import com.google.gson.JsonNull
 import com.google.gson.JsonObject
@@ -73,7 +74,7 @@ class ToolWindowFactory : ToolWindowFactory, DumbAware {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         // Init events
-        eventsObservable = Observable.wrap(SocketObservable(project, "localhost", 7675))
+        eventsObservable = Observable.wrap(SocketObservable(project, 7675))
             .observeOn(mainThreadScheduler)
 
         // Left
@@ -90,15 +91,21 @@ class ToolWindowFactory : ToolWindowFactory, DumbAware {
 //            if (path == null) return@addTreeSelectionListener
 //
 //            val connection = (path.lastPathComponent as DefaultMutableTreeNode).userObject as Connection
-//            elements.setJsonList(itemsList.filter { it.connection == connection }.map { it.element })
+//            (elements.model as? DefaultListModel<Item>)?.let { model ->
+//                model.clear()
+//                itemsList
+//                    .filter { it.connection == connection }
+//                    .forEach { model.addElement(it) }
+//            }
 //        }
+
 
         // The pane
         val splitter = JBSplitter()
         splitter.firstComponent = left
         splitter.secondComponent = right
 
-        val actions = createToolbarActions()
+        val actions = createToolbarActions(project)
         val toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.COMMANDER_TOOLBAR, actions, true)
         val panel = JPanel(BorderLayout()).apply {
             add(toolbar.component, BorderLayout.NORTH)
@@ -110,17 +117,22 @@ class ToolWindowFactory : ToolWindowFactory, DumbAware {
         toolWindow.contentManager.addContent(content)
     }
 
-    private fun createToolbarActions(): DefaultActionGroup {
+    private fun createToolbarActions(project: Project): DefaultActionGroup {
         val actionManager = ActionManager.getInstance()
         val group = DefaultActionGroup()
 
         val action = object : AnAction(), DumbAware {
             override fun actionPerformed(e: AnActionEvent) {
                 disposables.clear()
+                connectionsList.clear()
                 disposables.add(
-                    eventsObservable.subscribe {
+                    eventsObservable.subscribe({
                         parseEvent(it)
-                    }
+                    }, {
+                        if (it is Exception) {
+                            project.showError("Error connecting to device:", it)
+                        }
+                    })
                 )
             }
         }

@@ -43,11 +43,6 @@ internal class StandaloneMiddleware<In>(
         disposed = true
     }
 
-    // todo decide about it
-    protected fun finalize() {
-        dispose()
-    }
-
     private fun assertSame(connection: Connection<In, In>) {
         if (bound && connection != this.connection) {
             throw IllegalStateException("Middleware was initialised in standalone mode, can't accept other connections")

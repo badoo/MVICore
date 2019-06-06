@@ -1,9 +1,8 @@
 package com.badoo.mvicore.middleware.model
 
 import com.badoo.mvicore.binder.Connection
-import com.google.gson.JsonElement
 
-data class ConnectionData(
+internal data class ConnectionData(
     val from: String,
     val to: String,
     val name: String?
@@ -13,19 +12,4 @@ data class ConnectionData(
         connection.to.toString(),
         connection.name
     )
-}
-
-sealed class Event(val type: String) {
-    data class Bind(
-        val connection: ConnectionData
-    ) : Event("bind")
-
-    data class Data(
-        val connection: ConnectionData,
-        val element: JsonElement
-    ) : Event("data")
-
-    data class Complete(
-        val connection: ConnectionData
-    ) : Event("complete")
 }

@@ -69,4 +69,36 @@ class ModelWatcherTest {
 
         assertEquals(1, results.size)
     }
+
+    @Test
+    fun `invokes callback using dsl`() {
+        val results = testWatcher<Int>(
+            listOf(
+                Model(int = 0), Model(int = 1)
+            )
+        ) { updates ->
+            Model::int {
+                updates += it
+            }
+        }
+
+        assertEquals(2, results.size)
+    }
+
+    @Test
+    fun `invokes callback using dsl with diffStrategy`() {
+        val results = testWatcher<List<String>>(
+            listOf(
+                Model(list = listOf("")),
+                Model(list = listOf(""))
+            )
+        ) { updates ->
+            val byRef = byRef<List<String>>()
+            Model::list using byRef {
+                updates += it
+            }
+        }
+
+        assertEquals(2, results.size)
+    }
 }

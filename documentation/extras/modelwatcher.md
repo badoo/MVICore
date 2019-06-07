@@ -1,6 +1,6 @@
 ## Efficient view updates
 
-MVICore includes utility classes to observe difference in the received models and prevent redundant view updates.
+MVICore includes utility class to observe difference in the received models and prevent redundant view updates.
 
 ```kotlin
 data class ViewModel(
@@ -44,16 +44,44 @@ The difference can be observed on more than one field with custom diff strategy.
 For example, if the click listener should not be set when something is loading, you can do the following:
 ```kotlin
 // Check whether either loading flag or action changed
-fun byLoadingAndAction() = { p1, p2 ->
+val byLoadingAndAction: DiffStrategy<Model> = { p1, p2 ->
     p1.isLoading != p2.isLoading || p1.buttonAction !== p2.buttonAction
 }
 
 val watcher = modelWatcher {
-    watch({ it }, diffStrategy = byLoadingAndAction()) { model ->
+    watch({ it }, diffStrategy = byLoadingAndAction) { model ->
         // Allow action only when not loading
         button.setOnClickListener(
             if (!model.isLoading) model.buttonAction else null
         )
+    }
+}
+```
+
+The watcher also provides an optional DSL to add more clarity to the definitions:
+```kotlin
+val watcher = modelWatcher {
+    // Method call
+    watch(ViewModel::buttonText) {
+        button.text = it
+    }
+    
+    // DSL
+    ViewModel::buttonText {
+       button.text = it
+    }
+}
+```
+The same applies to custom strategies.
+```kotlin
+val watcher = modelWatcher {
+    // Method call
+    watch(Model::buttonAction, diffStrategy = byRef()) { }
+    
+    // DSL
+    val byRef = byRef<() -> Unit>()
+    Model::buttonAction using byRef {
+    
     }
 }
 ```

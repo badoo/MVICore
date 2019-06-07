@@ -39,12 +39,26 @@ class ModelWatcher<T> private constructor(
             ) as Watcher<T, Any?>
         }
 
+        /*
+         * Syntactic sugar around watch (scoped inside the builder)
+         */
+
+        operator fun <R> ((T) -> R).invoke(callback: (R) -> Unit) {
+            watch(this, callback = callback)
+        }
+
+        infix fun <R> ((T) -> R).using(pair: Pair<DiffStrategy<R>, (R) -> Unit>) {
+            watch(this, pair.first, pair.second)
+        }
+
+        operator fun <R> (DiffStrategy<R>).invoke(callback: (R) -> Unit) =
+            this to callback
+
         @PublishedApi
         internal fun build(): ModelWatcher<T> =
             ModelWatcher(watchers)
     }
 }
-
 
 inline fun <T> modelWatcher(init: ModelWatcher.Builder<T>.() -> Unit): ModelWatcher<T> =
     ModelWatcher.Builder<T>()

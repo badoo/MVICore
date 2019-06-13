@@ -8,7 +8,7 @@ data class MiddlewareConfiguration(
     private val factories: List<ConsumerMiddlewareFactory<*>>
 ) {
 
-    fun <T : Any> applyOn(
+    fun <T> applyOn(
         consumerToWrap: Consumer<T>,
         targetToCheck: Any,
         name: String?,

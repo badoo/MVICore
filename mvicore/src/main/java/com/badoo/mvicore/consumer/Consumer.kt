@@ -19,7 +19,7 @@ import io.reactivex.functions.Consumer
  * @param postfix       Passed on to [ConsumerMiddleware], in most cases you shouldn't need to override this.
  * @param wrapperOf     Passed on to [ConsumerMiddleware], in most cases you shouldn't need to override this.
  */
-fun <In : Any> Consumer<In>.wrapWithMiddleware(
+fun <In> Consumer<In>.wrapWithMiddleware(
     standalone: Boolean = true,
     name: String? = null,
     postfix: String? = null,

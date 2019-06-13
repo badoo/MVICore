@@ -31,12 +31,24 @@ class BinderTest {
         consumer.assertValues("0", "1")
     }
 
+    @Test
+    fun `covariant endpoints compile for pair`() {
+        val anyConsumer = TestConsumer<Any>()
+        binder.bind(source to anyConsumer)
+    }
+
+    @Test
+    fun `covariant endpoints compile for connection dsl`() {
+        val anyConsumer = TestConsumer<Any>()
+        binder.bind(source to anyConsumer using IntToString)
+    }
+
     object IntToString: (Int) -> String {
         override fun invoke(it: Int): String = it.toString()
     }
 
     object TestConnector: Connector<Int, String> {
-        override fun invoke(it: ObservableSource<Int>): ObservableSource<String> =
+        override fun invoke(it: ObservableSource<out Int>): ObservableSource<String> =
             wrap(it).flatMap {
                 just(it.toString(), (it + 1).toString())
             }

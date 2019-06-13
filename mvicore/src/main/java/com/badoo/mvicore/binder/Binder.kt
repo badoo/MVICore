@@ -31,7 +31,7 @@ class Binder(
 
     // region bind
 
-    fun <T: Any> bind(connection: Pair<ObservableSource<T>, Consumer<T>>) {
+    fun <T: Any> bind(connection: Pair<ObservableSource<out T>, Consumer<in T>>) {
         bind(
             Connection(
                 from = connection.first,

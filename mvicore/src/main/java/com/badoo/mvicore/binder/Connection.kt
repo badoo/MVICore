@@ -6,8 +6,8 @@ import io.reactivex.ObservableSource
 import io.reactivex.functions.Consumer
 
 data class Connection<Out, In>(
-    val from: ObservableSource<Out>? = null,
-    val to: Consumer<In>,
+    val from: ObservableSource<out Out>? = null,
+    val to: Consumer<in In>,
     val connector: Connector<Out, In>? = null,
     val name: String? = null
 ) {

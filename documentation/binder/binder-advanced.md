@@ -20,7 +20,7 @@ However, sometimes this is not enough.
 For more complex cases, we can use a `Connector<A, B>` instead, which is also able to manipulate the stream.
 ```kotlin
 object OutputToInput : Connector<A, B> {
-    override fun invoke(source: ObservableSource<A>): ObservableSource<B> =
+    override fun invoke(source: ObservableSource<out A>): ObservableSource<B> =
         Observable.wrap(source)
             // TODO transform stream
             .map { a -> TODO() }

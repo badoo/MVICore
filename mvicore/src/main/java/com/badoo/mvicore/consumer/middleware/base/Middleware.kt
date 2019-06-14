@@ -26,8 +26,8 @@ abstract class Middleware<Out, In>(
     private inline fun Consumer<In>.applyIfMiddleware(
         block: Middleware<Out, In>.() -> Unit
     ) {
-        if (wrapped is Middleware<*, *>) {
-            (wrapped as Middleware<Out, In>).block()
+        if (this is Middleware<*, *>) {
+            (this as Middleware<Out, In>).block()
         }
     }
 

@@ -31,7 +31,7 @@ class Binder(
 
     // region bind
 
-    fun <T: Any> bind(connection: Pair<ObservableSource<T>, Consumer<T>>) {
+    fun <T: Any> bind(connection: Pair<ObservableSource<out T>, Consumer<in T>>) {
         bind(
             Connection(
                 from = connection.first,
@@ -59,7 +59,7 @@ class Binder(
         }
     }
 
-    private fun <Out: Any, In: Any> subscribeWithLifecycle(
+    private fun <Out, In> subscribeWithLifecycle(
         connection: Connection<Out, In>,
         middleware: Middleware<Out, In>?
     ) {
@@ -67,7 +67,7 @@ class Binder(
             .subscribeWithMiddleware(connection, middleware)
     }
 
-    private fun <Out: Any, In: Any> subscribe(
+    private fun <Out, In> subscribe(
         connection: Connection<Out, In>,
         middleware: Middleware<Out, In>?
     ) {
@@ -75,7 +75,7 @@ class Binder(
             .subscribeWithMiddleware(connection, middleware)
     }
 
-    private fun <Out: Any, In: Any> Observable<Out>.subscribeWithMiddleware(
+    private fun <Out, In> Observable<out Out>.subscribeWithMiddleware(
         connection: Connection<Out, In>,
         middleware: Middleware<Out, In>?
     ): Disposable =
@@ -94,7 +94,7 @@ class Binder(
                 }
             }
 
-    private fun <Out: Any, In: Any> Observable<Out>.applyTransformer(
+    private fun <Out, In> Observable<out Out>.applyTransformer(
         connection: Connection<Out, In>
     ): Observable<In> =
         connection.connector?.let {

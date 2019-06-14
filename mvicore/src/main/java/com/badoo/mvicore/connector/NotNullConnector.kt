@@ -5,7 +5,7 @@ import io.reactivex.Observable.wrap
 import io.reactivex.ObservableSource
 
 internal class NotNullConnector<Out, In>(private val mapper: (Out) -> In?): Connector<Out, In> {
-    override fun invoke(element: ObservableSource<Out>): ObservableSource<In> =
+    override fun invoke(element: ObservableSource<out Out>): ObservableSource<In> =
         wrap(element)
             .flatMap {
                 mapper(it)

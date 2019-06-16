@@ -9,11 +9,18 @@ import com.google.gson.internal.Streams
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
+import java.util.IdentityHashMap
+import kotlin.concurrent.getOrSet
 
-internal class MviPluginTypeAdapterFactory : TypeAdapterFactory {
+internal class MviPluginTypeAdapterFactory(private val ignoreValues: (Any?) -> Boolean) : TypeAdapterFactory {
+
+    private val map: ThreadLocal<IdentityHashMap<Any, Any>> = ThreadLocal()
 
     private fun <T> Gson.getDelegate(typeToken: TypeToken<T>) =
-        getDelegateAdapter(this@MviPluginTypeAdapterFactory, typeToken)
+        getDelegateAdapter(
+            this@MviPluginTypeAdapterFactory,
+            typeToken
+        )
 
     override fun <R : Any> create(gson: Gson, type: TypeToken<R>): TypeAdapter<R> =
         object : TypeAdapter<R>() {
@@ -21,11 +28,30 @@ internal class MviPluginTypeAdapterFactory : TypeAdapterFactory {
                 gson.getDelegate(type)
                     .fromJsonTree(Streams.parse(reader))
 
-            override fun write(out: JsonWriter, value: R) {
+            override fun write(out: JsonWriter, value: R?) {
+                when (value) {
+                    null -> out.nullValue()
+                    else -> writeObj(out, value)
+                }
+            }
+
+            private fun writeObj(out: JsonWriter, value: R) {
+                val values = map.getOrSet { IdentityHashMap() }
+
                 val srcType = value.javaClass
-                val label = srcType.canonicalName
+                val label = srcType.name
                 val delegate = gson.getDelegate(TypeToken.get(srcType))
-                val jsonObject = delegate.toJsonTree(value).let {
+                val jsonObject = when {
+                    value is Class<*> -> JsonPrimitive(value.name)
+                    ignoreValues(value) -> JsonPrimitive(value.toString())
+                    values.containsKey(value) -> JsonPrimitive("Recursive: $label")
+                    else -> {
+                        values[value] = value
+                        val tree = delegate.toJsonTree(value)
+                        values.remove(value)
+                        tree
+                    }
+                }.let {
                     if (it.isJsonObject) {
                         it.asJsonObject
                     } else {
@@ -38,7 +64,7 @@ internal class MviPluginTypeAdapterFactory : TypeAdapterFactory {
                 jsonObject.add(TIMESTAMP_FIELD, JsonPrimitive(System.currentTimeMillis()))
                 Streams.write(jsonObject, out)
             }
-        }.nullSafe()
+        }
 
     companion object {
         private const val TYPE_FIELD = "\$type"

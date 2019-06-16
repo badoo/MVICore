@@ -3,30 +3,43 @@ package com.badoo.mvicore.middleware
 import com.badoo.mvicore.binder.Connection
 import com.badoo.mvicore.middleware.gc.QueueWatcher
 import com.badoo.mvicore.middleware.gson.MviPluginTypeAdapterFactory
+import com.badoo.mvicore.middleware.gson.SuperclassExclusionStrategy
 import com.badoo.mvicore.middleware.model.ConnectionData
 import com.badoo.mvicore.middleware.model.Event
 import com.badoo.mvicore.middleware.socket.PluginSocketThread
 import com.google.gson.GsonBuilder
 import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import java.lang.ref.ReferenceQueue
-import java.util.ArrayDeque
+import java.util.concurrent.ConcurrentLinkedDeque
+import java.util.concurrent.CopyOnWriteArrayList
 
-class DefaultPluginStore(private val name: String, port: Int = 7675): PluginMiddleware.EventStore {
+class DefaultPluginStore(
+    private val name: String,
+    port: Int = 7675,
+    ignoreOnSerialization: (Any?) -> Boolean,
+    private val disposables: CompositeDisposable = CompositeDisposable()
+): PluginMiddleware.EventStore, Disposable by disposables {
     private val events = PublishSubject.create<Event>()
     private val socket = PluginSocketThread(port, events)
     private val queueWatcher = QueueWatcher(ReferenceQueue(), ::connectionComplete)
 
+    private val typeAdapterFactory = MviPluginTypeAdapterFactory(ignoreOnSerialization)
     private val typeAwareGson = GsonBuilder()
-        .registerTypeAdapterFactory(MviPluginTypeAdapterFactory())
+        .registerTypeAdapterFactory(typeAdapterFactory)
+        .setExclusionStrategies(SuperclassExclusionStrategy())
         .create()
 
-    private val activeConnections = mutableListOf<ConnectionData>()
-    private val lastElements = ArrayDeque<Event.Data>(512)
+    private val activeConnections = CopyOnWriteArrayList<ConnectionData>()
+    private val lastElements = ConcurrentLinkedDeque<Event.Data>()
 
     init {
-        Observable.wrap(socket)
+        disposables += Observable.wrap(socket)
             .observeOn(Schedulers.single())
             .subscribe { onSocketEvent(it) }
 
@@ -35,32 +48,38 @@ class DefaultPluginStore(private val name: String, port: Int = 7675): PluginMidd
     }
 
     override fun onBind(connection: Connection<out Any, out Any>) {
-        val data = ConnectionData(connection)
-        activeConnections += data
-        events.onNext(Event.Bind(data))
+        runInBackground(connection) { connection ->
+            val data = ConnectionData(connection)
+            activeConnections += data
+            events.onNext(Event.Bind(data))
 
-        if (connection.from == null) {
-            queueWatcher.add(connection, data)
+            if (connection.from == null) {
+                queueWatcher.add(connection, data)
+            }
         }
     }
 
     override fun <T: Any> onElement(connection: Connection<out Any, out Any>, element: T) {
-        val event = Event.Data(
-            connection = ConnectionData(connection),
-            element = typeAwareGson.toJsonTree(element)
-        )
-        lastElements.add(event)
+        runInBackground(connection to element) { (connection, element) ->
+            val event = Event.Data(
+                connection = ConnectionData(connection),
+                element = typeAwareGson.toJsonTree(element)
+            )
+            lastElements.add(event)
 
-        if (lastElements.size > 512) {
-            lastElements.removeFirst()
+            if (lastElements.size > 512) {
+                lastElements.removeFirst()
+            }
+
+            events.onNext(event)
         }
-
-        events.onNext(event)
     }
 
     override fun onComplete(connection: Connection<out Any, out Any>) {
-        val event = ConnectionData(connection)
-        connectionComplete(event)
+        runInBackground(connection) { connection ->
+            val event = ConnectionData(connection)
+            connectionComplete(event)
+        }
     }
 
     private fun connectionComplete(event: ConnectionData) {
@@ -84,5 +103,13 @@ class DefaultPluginStore(private val name: String, port: Int = 7675): PluginMidd
         lastElements.forEach {
             events.onNext(it)
         }
+    }
+
+    private fun <T> runInBackground(element: T, block: (T) -> Unit) {
+        disposables += Single.just(element)
+            .observeOn(Schedulers.computation())
+            .subscribe(block, {
+                // TODO: log?
+            })
     }
 }

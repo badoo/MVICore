@@ -19,7 +19,7 @@ class EventListModel : ListModel<Item> {
         filteredItems = items.filter(filter)
         dataListeners.forEach {
             it.contentsChanged(
-                ListDataEvent(this, CONTENTS_CHANGED, 0, oldSize)
+                ListDataEvent(this, CONTENTS_CHANGED, 0, filteredItems.size)
             )
         }
     }

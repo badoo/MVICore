@@ -17,7 +17,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.IdeActions
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
@@ -35,14 +34,14 @@ import javax.swing.JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED
 import javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED
 import javax.swing.tree.DefaultTreeModel
 
-class ToolWindowFactory : ToolWindowFactory, DumbAware {
+class ToolWindowFactory : ToolWindowFactory {
 
     private val logger = Logger.getInstance(javaClass)
     private val selectedConnections = mutableListOf<Connection>()
 
     private val events = EventList().apply {
         setItemSelectionListener {
-            currentElement.setJsonList(listOf(it.element))
+            currentElement.setItem(it)
         }
     }
     private val connections = ConnectionList().apply {
@@ -101,7 +100,11 @@ class ToolWindowFactory : ToolWindowFactory, DumbAware {
         val actionManager = ActionManager.getInstance()
         val group = DefaultActionGroup()
 
-        val action = object : AnAction(), DumbAware {
+        val run = object : AnAction() {
+            init {
+                templatePresentation.icon = actionManager.iconFrom(IdeActions.ACTION_DEFAULT_RUNNER)
+            }
+
             override fun actionPerformed(e: AnActionEvent) {
                 disposables.clear()
                 connections.clear()
@@ -116,11 +119,26 @@ class ToolWindowFactory : ToolWindowFactory, DumbAware {
                 )
             }
         }
-        action.copyFrom(actionManager.getAction(IdeActions.ACTION_DEFAULT_RUNNER))
-        group.add(action)
+
+        val stop = object : AnAction() {
+            init {
+                templatePresentation.icon = actionManager.iconFrom(IdeActions.ACTION_STOP_PROGRAM)
+            }
+
+            override fun actionPerformed(e: AnActionEvent) {
+                disposables.clear()
+                connections.clear()
+            }
+        }
+
+        group.add(run)
+        group.add(stop)
 
         return group
     }
+
+    private fun ActionManager.iconFrom(actionId: String) =
+        getAction(actionId).templatePresentation.icon
 
     private fun parseEvent(it: JsonElement) {
         when (it) {
@@ -130,7 +148,7 @@ class ToolWindowFactory : ToolWindowFactory, DumbAware {
                     if (connection != null) connections.add(connection)
                 }
                 "data" -> {
-                    val connection = it.get("connection").toConnection()
+                    val connection = it.get("connection").toConnection() ?: return
                     val element = it.getAsJsonObject("element")
                     val rootWrapper = JsonObject().apply {
                         val (timestamp, type, value) = element.parse()
@@ -164,25 +182,26 @@ class ToolWindowFactory : ToolWindowFactory, DumbAware {
 
             if (primitive == null) {
                 this.entrySet().map {
-                    val (_, type, obj) = it.value.parse()
-                    Triple(it.key, type, obj)
-                }.forEach {
-                    remove(it.first)
-                    add("${it.first}${it.second?.let {" ($it)"}.orEmpty()}", it.third)
+                    it to it.value.parse()
+                }.forEach { (entry, result) ->
+                    val (key, _) = entry
+                    val (_, type, child) = result
+                    val typeDesc = type?.let {" ($it)"}.orEmpty()
+                    obj.remove(key)
+                    obj.add("$key$typeDesc", child)
                 }
             } else if (primitive.isJsonArray) {
                 val array = primitive.asJsonArray
                 val result = JsonObject()
-                array.mapIndexed { i, el ->
+                array.forEachIndexed { i, el ->
                     val (_, type, obj) = el.parse()
-                  Pair(type, obj)
-                }.forEachIndexed { i, (type, obj) ->
-                    result.add("$i${type?.let {" ($it)"}.orEmpty()}", obj)
+                    val typeDesc = type?.let {" ($it)"}.orEmpty()
+                    result.add("$i$typeDesc", obj)
                 }
                 primitive = result
             }
 
-            Triple(timestamp, if (primitive == null) type else null, primitive ?: this)
+            Triple(timestamp, type, primitive ?: this)
         } else {
             Triple(null, null, this)
         }
@@ -213,8 +232,11 @@ class ToolWindowFactory : ToolWindowFactory, DumbAware {
             if (it == "null") null else it
         }
 
-    private fun Tree.setJsonList(elements: List<JsonElement>) {
-        (model as? DefaultTreeModel)?.setRoot(JsonRootNode(elements)) ?: DefaultTreeModel(JsonRootNode(elements)).apply { model = this }
+    private fun Tree.setItem(item: Item) {
+        val node = JsonRootNode(item)
+        val model =  (model as? DefaultTreeModel) ?: DefaultTreeModel(node).apply { model = this }
+        model.setRoot(node)
+
         isRootVisible = false
     }
 }

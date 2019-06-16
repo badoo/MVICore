@@ -2,6 +2,7 @@ package com.badoo.mvicore.plugin
 
 import com.badoo.mvicore.plugin.utils.forwardPort
 import com.badoo.mvicore.plugin.utils.showError
+import com.badoo.mvicore.plugin.utils.stopForwarding
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import com.intellij.openapi.project.Project
@@ -27,6 +28,7 @@ class SocketObservable(
 
             emitter.setCancellable {
                 serverSocket.close()
+                stopForwarding(project, port)
                 interrupt()
             }
 

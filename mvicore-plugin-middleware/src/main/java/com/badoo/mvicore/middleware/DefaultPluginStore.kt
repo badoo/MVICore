@@ -22,8 +22,8 @@ import java.util.concurrent.CopyOnWriteArrayList
 class DefaultPluginStore(
     private val name: String,
     port: Int = 7675,
-    ignoreOnSerialization: (Any?) -> Boolean,
-    private val disposables: CompositeDisposable = CompositeDisposable()
+    private val disposables: CompositeDisposable = CompositeDisposable(),
+    ignoreOnSerialization: (Any?) -> Boolean
 ): PluginMiddleware.EventStore, Disposable by disposables {
     private val events = PublishSubject.create<Event>()
     private val socket = PluginSocketThread(port, events)

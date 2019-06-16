@@ -1,6 +1,7 @@
 package com.badoo.mvicore.plugin.ui
 
 import com.badoo.mvicore.plugin.model.Connection
+import com.badoo.mvicore.plugin.utils.toTreeNode
 import com.intellij.ui.TreeSpeedSearch
 import com.intellij.ui.treeStructure.Tree
 import java.util.ArrayList
@@ -46,22 +47,7 @@ class ConnectionList : Tree() {
 
     fun add(connection: Connection) {
         connectionsList.add(connection)
-
-        val connectionNode = DefaultMutableTreeNode(connection)
-        connection.from?.shortName?.let {
-            connectionNode.add(
-                DefaultMutableTreeNode("from: $it")
-            )
-        }
-
-        connection.to?.shortName?.let {
-            connectionNode.add(
-                DefaultMutableTreeNode("to: $it")
-            )
-        }
-        connectionNode.userObject = connection
-
-        rootNode.add(connectionNode)
+        rootNode.add(connection.toTreeNode())
         reload()
     }
 
@@ -82,6 +68,7 @@ class ConnectionList : Tree() {
     }
 
     fun clear() {
+        connectionsList.clear()
         rootNode.removeAllChildren()
         reload()
     }

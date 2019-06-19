@@ -3,8 +3,7 @@ apply plugin: 'maven'
 apply plugin: 'kotlin'
 apply plugin: 'org.jetbrains.dokka'
 
-group = 'com.github.badoo'
-version = System.getenv("VERSION")
+group = 'com.github.badoo.mvicore'
 
 dependencies {
     def deps = rootProject.ext.deps

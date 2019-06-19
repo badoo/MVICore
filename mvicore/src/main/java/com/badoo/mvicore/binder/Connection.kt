@@ -32,7 +32,7 @@ infix fun <Out, In> Pair<ObservableSource<out Out>, Consumer<in In>>.using(conne
         connector = connector
     )
 
-infix fun <T> Pair<ObservableSource<T>, Consumer<T>>.named(name: String): Connection<T, T> =
+infix fun <T> Pair<ObservableSource<out T>, Consumer<in T>>.named(name: String): Connection<T, T> =
     Connection(
         from = first,
         to = second,

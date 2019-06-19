@@ -22,10 +22,10 @@ data class Connection<Out, In>(
         "<${name ?: ANONYMOUS}> (${from ?: "?"} --> $to${connector?.let { " using $it" } ?: ""})"
 }
 
-infix fun <Out, In> Pair<ObservableSource<Out>, Consumer<In>>.using(transformer: (Out) -> In?): Connection<Out, In> =
+infix fun <Out, In> Pair<ObservableSource<out Out>, Consumer<in In>>.using(transformer: (Out) -> In?): Connection<Out, In> =
     using(NotNullConnector(transformer))
 
-infix fun <Out, In> Pair<ObservableSource<Out>, Consumer<In>>.using(connector: Connector<Out, In>): Connection<Out, In> =
+infix fun <Out, In> Pair<ObservableSource<out Out>, Consumer<in In>>.using(connector: Connector<Out, In>): Connection<Out, In> =
     Connection(
         from = first,
         to = second,

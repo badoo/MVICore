@@ -10,6 +10,7 @@ import com.badoo.mvicore.plugin.utils.mainThreadScheduler
 import com.badoo.mvicore.plugin.utils.showError
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
+import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.AnAction
@@ -73,7 +74,12 @@ class ToolWindowFactory : ToolWindowFactory {
             .observeOn(mainThreadScheduler)
 
         // Left
-        val left = JBScrollPane(events, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED)
+        val sideActions = createSidePanelActions()
+        val sideActionsBar = ActionManager.getInstance().createActionToolbar(ActionPlaces.COMMANDER_TOOLBAR, sideActions, false)
+        val left = JPanel(BorderLayout()).apply {
+            add(sideActionsBar.component, BorderLayout.WEST)
+            add(JBScrollPane(events, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED))
+        }
 
         // Right
         val right = JBSplitter(true)
@@ -131,6 +137,26 @@ class ToolWindowFactory : ToolWindowFactory {
 
         group.add(run)
         group.add(stop)
+
+        return group
+    }
+
+    private fun createSidePanelActions() : ActionGroup {
+        val actionManager = ActionManager.getInstance()
+        val group = DefaultActionGroup()
+
+        val clear = object : AnAction() {
+            init {
+                templatePresentation.icon = actionManager.iconFrom(IdeActions.CONSOLE_CLEAR_ALL)
+            }
+
+            override fun actionPerformed(e: AnActionEvent) {
+                events.clear()
+                currentElement.model = null
+            }
+        }
+
+        group.add(clear)
 
         return group
     }

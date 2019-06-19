@@ -15,6 +15,7 @@ class EventList: JBList<Item>() {
         model = items
         cellRenderer = CellRenderer()
         addListSelectionListener {
+            if (it.valueIsAdjusting || selectedIndex < 0) return@addListSelectionListener
             val item = model.getElementAt(selectedIndex)
             itemSelectionListener?.invoke(item)
         }
@@ -28,14 +29,17 @@ class EventList: JBList<Item>() {
     }
 
     fun clear() {
+        clearSelection()
         items.clear()
     }
 
     fun setFilter(filter: (Item) -> Boolean) {
+        clearSelection()
         items.setFilter(filter)
     }
 
     fun resetFilter() {
+        clearSelection()
         items.resetFilter()
     }
 

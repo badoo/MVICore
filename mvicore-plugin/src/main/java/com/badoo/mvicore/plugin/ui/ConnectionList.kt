@@ -32,16 +32,22 @@ class ConnectionList : Tree() {
             }
             if (path == null) return
 
-            if (event.isAddedPath(i) && path != eventPath) {
-                removeSelectionPath(event.path)
-                addSelectionPath(path)
+            if (path != eventPath) {
+                if (event.isAddedPath(i)) {
+                    if (!isPathSelected(path)) {
+                        addSelectionPath(path)
+                    } else {
+                        removeSelectionPath(path)
+                    }
+
+                    removeSelectionPath(eventPath)
+                }
                 return
             }
 
-            if (path == eventPath) {
-                val connection = (path.lastPathComponent as DefaultMutableTreeNode).userObject as Connection
-                listener?.invoke(connection, event.isAddedPath(i))
-            }
+
+            val connection = (path.lastPathComponent as DefaultMutableTreeNode).userObject as Connection
+            listener?.invoke(connection, event.isAddedPath(i))
         }
     }
 

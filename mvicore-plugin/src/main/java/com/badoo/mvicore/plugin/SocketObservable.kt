@@ -23,23 +23,32 @@ class SocketObservable(
     }
 
     object : Thread( "mvicore-plugin-server") {
-        override fun run() {
-            val serverSocket = ServerSocket(port, 0, InetAddress.getByName("localhost"))
+        private var cancellables: MutableList<() -> Unit> = mutableListOf(
+            { stopForwarding(project, port).ignore() }
+        )
 
+        init {
             emitter.setCancellable {
-                serverSocket.close()
-                stopForwarding(project, port)
+                cancellables.forEach { it() }
                 interrupt()
             }
+        }
+
+        override fun run() {
+            val serverSocket = ServerSocket(port, 0, InetAddress.getByName("localhost"))
+            cancellables.add({ serverSocket.close() })
 
             while (!isInterrupted) {
                 try {
                     val socket = serverSocket.accept()
-                    val reader = socket.getInputStream().bufferedReader()
 
-                    while (!socket.isClosed && socket.isConnected) {
-                        val line = reader.readLine() ?: break
-                        emitter.onNext(parser.parse(line))
+                    cancellables.add(socket::close)
+
+                    socket.getInputStream().bufferedReader().use {
+                        while (!socket.isClosed && socket.isConnected) {
+                            val line = it.readLine() ?: break
+                            emitter.onNext(parser.parse(line))
+                        }
                     }
                 }
                 catch (e: SocketException) {
@@ -52,3 +61,5 @@ class SocketObservable(
         }
     }.start()
 })
+
+private fun Any.ignore() { }

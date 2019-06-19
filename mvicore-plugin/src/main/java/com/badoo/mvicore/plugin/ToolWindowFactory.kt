@@ -26,6 +26,7 @@ import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.treeStructure.Tree
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
 import java.awt.BorderLayout
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -106,17 +107,14 @@ class ToolWindowFactory : ToolWindowFactory {
             }
 
             override fun actionPerformed(e: AnActionEvent) {
-                disposables.clear()
-                connections.clear()
-                disposables.add(
-                    eventsObservable.subscribe({
-                        parseEvent(it)
-                    }, {
-                        if (it is Exception) {
-                            project.showError("Error connecting to device:", it)
-                        }
-                    })
-                )
+                if (disposables.size() > 0) return
+                disposables += eventsObservable.subscribe({
+                    parseEvent(it)
+                }, {
+                    if (it is Exception) {
+                        project.showError("Error connecting to device:", it)
+                    }
+                })
             }
         }
 

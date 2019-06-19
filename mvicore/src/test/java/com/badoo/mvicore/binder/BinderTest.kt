@@ -39,7 +39,7 @@ class BinderTest {
 
     @Test
     fun `covariant endpoints compile for connection dsl`() {
-        val anyConsumer = TestConsumer<Any>()
+        val anyConsumer = TestConsumer<Any?>()
         binder.bind(source to anyConsumer using IntToString)
     }
 

@@ -24,6 +24,7 @@ class EventList: JBList<Item>() {
 
     fun add(item: Item) {
         items.add(item)
+        scrollToBottom()
     }
 
     fun clear() {
@@ -40,6 +41,12 @@ class EventList: JBList<Item>() {
 
     fun setItemSelectionListener(itemSelected: (Item) -> Unit) {
         itemSelectionListener = itemSelected
+    }
+
+    private fun scrollToBottom() {
+        if (lastVisibleIndex == model.size - 2) {
+            ensureIndexIsVisible(model.size - 1)
+        }
     }
 
     private class CellRenderer : ColoredListCellRenderer<Item>() {

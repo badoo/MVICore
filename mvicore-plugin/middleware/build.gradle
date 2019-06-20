@@ -1,0 +1,63 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'kotlin'
+apply plugin: 'org.jetbrains.dokka'
+
+group = 'com.github.badoo'
+
+dependencies {
+    def deps = rootProject.ext.deps
+
+    implementation deps('io.reactivex.rxjava2:rxjava')
+    implementation deps('io.reactivex.rxjava2:rxkotlin')
+    implementation deps('com.google.code.gson:gson')
+    implementation project(':mvicore')
+    implementation project(':mvicore-plugin:common')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+}
+
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"
+
+repositories {
+    jcenter()
+}
+
+sourceSets {
+    main {
+        java {}
+    }
+}
+
+task packageSources(type: Jar, dependsOn: 'classes') {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task packageJavadoc(type: Jar, dependsOn: javadoc) {
+    from javadoc.outputDirectory
+    classifier = 'javadoc'
+}
+
+artifacts {
+    archives packageSources
+    archives packageJavadoc
+}
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$rootProject.ext.kotlinVersion"
+    }
+}
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}

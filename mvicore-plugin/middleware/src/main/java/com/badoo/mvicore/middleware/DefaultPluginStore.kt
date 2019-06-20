@@ -91,20 +91,10 @@ class DefaultPluginStore(
 
     private fun onSocketEvent(event: PluginSocketThread.Connected) {
         events.onNext(Event.Connect(name))
-        reportActiveConnections()
-        sendLastElements()
-    }
-
-    private fun reportActiveConnections() {
-        activeConnections.forEach {
-            events.onNext(Event.Bind(it))
-        }
-    }
-
-    private fun sendLastElements() {
-        lastElements.forEach {
-            events.onNext(it)
-        }
+        events.onNext(Event.Init(
+            activeConnections.toList(),
+            lastElements.toList()
+        ))
     }
 
     private fun <T> runInBackground(element: T, block: (T) -> Unit) {

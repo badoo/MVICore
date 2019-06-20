@@ -168,18 +168,26 @@ class ToolWindowFactory : ToolWindowFactory {
     private fun parseEvent(it: JsonElement) {
         when (it) {
             is JsonObject -> when (it.get("type").asString) {
+                "init" -> {
+                    val connections = it.get("connections").asJsonArray.mapNotNull { it.toConnection() }
+                    val items = it.get("items").asJsonArray.mapNotNull { it.asJsonObject?.toItem() }
+                    this.connections.clear()
+                    connections.forEach {
+                        this.connections.add(it)
+                    }
+                    this.events.clear()
+                    items.forEach {
+                        this.events.add(it)
+                    }
+                }
                 "bind" -> {
                     val connection = it.get("connection").toConnection()
                     if (connection != null) connections.add(connection)
                 }
                 "data" -> {
-                    val connection = it.get("connection").toConnection() ?: return
-                    val element = it.getAsJsonObject("element")
-                    val rootWrapper = JsonObject().apply {
-                        val (timestamp, type, value) = element.parse()
-                        add("[${timestamp?.dateString()}] : $type", value)
+                    it.asJsonObject?.toItem()?.let {
+                        events.add(it)
                     }
-                    events.add(Item(connection, rootWrapper))
                 }
                 "complete" -> {
                     val connection = it.get("connection").toConnection()
@@ -192,6 +200,16 @@ class ToolWindowFactory : ToolWindowFactory {
     private fun JsonElement.toConnection() = when (this) {
         is JsonObject -> gson.fromJson(this, ConnectionData::class.java)
         else -> null
+    }
+
+    private fun JsonObject.toItem(): Item? {
+        val connection = get("connection").toConnection() ?: return null
+        val element = getAsJsonObject("element")
+        val parsedElement = JsonObject().apply {
+            val (timestamp, type, value) = element.parse()
+            add("[${timestamp?.dateString()}] : $type", value)
+        }
+        return Item(connection, parsedElement)
     }
 
     private fun JsonElement.parse(): Triple<Long?, String?, JsonElement> = when (this) {

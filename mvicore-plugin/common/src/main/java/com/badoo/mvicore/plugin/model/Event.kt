@@ -3,6 +3,11 @@ package com.badoo.mvicore.plugin.model
 import com.google.gson.JsonElement
 
 sealed class Event(val type: String) {
+    data class Init(
+        val connections: List<ConnectionData>,
+        val items: List<Item>
+    ) : Event("init")
+
     data class Bind(
         val connection: ConnectionData
     ) : Event("bind")

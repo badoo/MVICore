@@ -15,7 +15,7 @@ import java.net.SocketException
 class SocketObservable(
     project: Project,
     private val port: Int
-): ObservableSource<JsonElement> by Observable.create<JsonElement>({ emitter ->
+): ObservableSource<JsonElement> by Observable.create({ emitter ->
     val parser = JsonParser()
     if (!forwardPort(project, port)) {
         emitter.onComplete()

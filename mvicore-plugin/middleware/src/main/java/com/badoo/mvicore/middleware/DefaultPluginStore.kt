@@ -25,7 +25,7 @@ class DefaultPluginStore(
     port: Int = 7675,
     private val elementsCacheSize: Int = 512,
     private val disposables: CompositeDisposable = CompositeDisposable(),
-    ignoreOnSerialization: (Any?) -> Boolean
+    ignoreOnSerialization: (Any?) -> Boolean = { false }
 ): PluginMiddleware.EventStore, Disposable by disposables {
     private val events = PublishSubject.create<Event>()
     private val socket = PluginSocketThread(port, elementsCacheSize * 2, events)

@@ -20,9 +20,7 @@ class App : Application() {
 
     @Inject lateinit var recordStore: RecordStore
 
-    private val defaultStore = DefaultPluginStore("") {
-        false
-    }
+    private val defaultStore = DefaultPluginStore(BuildConfig.APPLICATION_ID)
 
     companion object {
         @SuppressLint("StaticFieldLeak")

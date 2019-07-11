@@ -36,7 +36,7 @@ import javax.swing.JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED
 import javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED
 import javax.swing.tree.DefaultTreeModel
 
-class ToolWindowFactory : ToolWindowFactory {
+class MviPluginToolWindowFactory : ToolWindowFactory {
 
     private val logger = Logger.getInstance(javaClass)
     private val gson = Gson()
@@ -67,6 +67,7 @@ class ToolWindowFactory : ToolWindowFactory {
     private val currentElement = Tree()
 
     private val disposables = CompositeDisposable()
+    private var isRunning = false
     private lateinit var eventsObservable: Observable<JsonElement>
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
@@ -114,14 +115,18 @@ class ToolWindowFactory : ToolWindowFactory {
             }
 
             override fun actionPerformed(e: AnActionEvent) {
-                if (disposables.size() > 0) return
-                disposables += eventsObservable.subscribe({
-                    parseEvent(it)
-                }, {
-                    if (it is Exception) {
-                        project.showError("Error connecting to device:", it)
-                    }
-                })
+                if (isRunning) return
+                isRunning = true
+                disposables += eventsObservable
+                    .doOnDispose { isRunning = false }
+                    .doOnTerminate { isRunning = false }
+                    .subscribe({
+                        parseEvent(it)
+                    }, {
+                        if (it is Exception) {x
+                            project.showError("Error connecting to device:", it)
+                        }
+                    })
             }
         }
 

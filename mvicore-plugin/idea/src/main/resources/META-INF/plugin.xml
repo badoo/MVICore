@@ -19,7 +19,7 @@
         <toolWindow
             id="MVICore"
             anchor="right"
-            factoryClass="com.badoo.mvicore.plugin.ToolWindowFactory"/>
+            factoryClass="com.badoo.mvicore.plugin.MviPluginToolWindowFactory"/>
     </extensions>
 
     <application-components>

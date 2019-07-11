@@ -11,6 +11,7 @@ import io.reactivex.ObservableSource
 import java.net.InetAddress
 import java.net.ServerSocket
 import java.net.SocketException
+import java.util.Collections
 
 class SocketObservable(
     project: Project,
@@ -23,14 +24,17 @@ class SocketObservable(
     }
 
     object : Thread( "mvicore-plugin-server") {
-        private var cancellables: MutableList<() -> Unit> = mutableListOf(
-            { stopForwarding(project, port).ignore() }
+        private var cancellables = Collections.synchronizedList(
+            mutableListOf({ stopForwarding(project, port).ignore() })
         )
 
         init {
             emitter.setCancellable {
-                cancellables.forEach { it() }
                 interrupt()
+                synchronized(cancellables) {
+                    cancellables.forEach { it() }
+                }
+                // join() // Can affect responsiveness
             }
         }
 

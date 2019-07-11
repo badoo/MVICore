@@ -33,6 +33,7 @@ dependencies {
 
     implementation deps('com.android.support:appcompat-v7')
     implementation deps('android.arch.lifecycle:common-java8')
+    implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
 
     implementation deps('io.reactivex.rxjava2:rxjava')
     implementation deps('io.reactivex.rxjava2:rxkotlin')

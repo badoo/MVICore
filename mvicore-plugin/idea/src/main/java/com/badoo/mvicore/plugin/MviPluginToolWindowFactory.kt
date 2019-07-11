@@ -123,7 +123,7 @@ class MviPluginToolWindowFactory : ToolWindowFactory {
                     .subscribe({
                         parseEvent(it)
                     }, {
-                        if (it is Exception) {x
+                        if (it is Exception) {
                             project.showError("Error connecting to device:", it)
                         }
                     })

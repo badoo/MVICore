@@ -101,4 +101,38 @@ class ModelWatcherTest {
 
         assertEquals(2, results.size)
     }
+
+    @Test
+    fun `invokes callback with combined diffStrategy using "or"`() {
+        val results = testWatcher<Model>(
+            listOf(
+                Model(list = listOf(""), int = 1),
+                Model(list = listOf(""), int = 1, nullable = false),
+                Model(list = listOf(""), int = 2)
+            )
+        ) { updates ->
+            (Model::list or Model::int) {
+                updates += it
+            }
+        }
+
+        assertEquals(2, results.size)
+    }
+
+    @Test
+    fun `invokes callback with combined diffStrategy using "and"`() {
+        val results = testWatcher<Model>(
+            listOf(
+                Model(list = listOf(""), int = 1),
+                Model(int = 1),
+                Model(list = listOf(""), int = 2)
+            )
+        ) { updates ->
+            (Model::list and Model::int) {
+                updates += it
+            }
+        }
+
+        assertEquals(2, results.size)
+    }
 }

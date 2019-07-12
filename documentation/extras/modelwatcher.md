@@ -43,13 +43,13 @@ val watcher = modelWatcher {
 The difference can be observed on more than one field with custom diff strategy. 
 For example, if the click listener should not be set when something is loading, you can do the following:
 ```kotlin
-// Check whether either loading flag or action changed
-val byLoadingAndAction: DiffStrategy<Model> = { p1, p2 ->
+// Trigger when either loading flag or action changed
+val loadingOrAction: DiffStrategy<Model> = { p1, p2 ->
     p1.isLoading != p2.isLoading || p1.buttonAction !== p2.buttonAction
 }
 
 val watcher = modelWatcher {
-    watch({ it }, diffStrategy = byLoadingAndAction) { model ->
+    watch({ it }, diffStrategy = loadingOrAction) { model ->
         // Allow action only when not loading
         button.setOnClickListener(
             if (!model.isLoading) model.buttonAction else null
@@ -82,6 +82,23 @@ val watcher = modelWatcher {
     val byRef = byRef<() -> Unit>()
     Model::buttonAction using byRef {
     
+    }
+}
+```
+Common strategies on two fields can be defined in a simpler way.
+```kotlin
+val watcher = modelWatcher {
+    // Method call
+    val loadingOrAction: DiffStrategy<Model> = { p1, p2 ->
+        p1.isLoading != p2.isLoading || p1.buttonAction !== p2.buttonAction
+    }
+    watch({ it }, loadingOrAction) {
+    
+    }
+
+    // DSL
+    (Model::isLoading or Model::buttonAction) {
+        
     }
 }
 ```

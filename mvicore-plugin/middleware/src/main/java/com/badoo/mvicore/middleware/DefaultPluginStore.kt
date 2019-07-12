@@ -26,7 +26,7 @@ class DefaultPluginStore(
     private val elementsCacheSize: Int = 512,
     private val disposables: CompositeDisposable = CompositeDisposable(),
     ignoreOnSerialization: (Any?) -> Boolean = { false }
-): PluginMiddleware.EventStore, Disposable by disposables {
+): IdeaPluginMiddleware.EventStore, Disposable by disposables {
     private val events = PublishSubject.create<Event>()
     private val socket = PluginSocketThread(port, elementsCacheSize * 2, events)
     private val queueWatcher = QueueWatcher(ReferenceQueue(), ::connectionComplete)

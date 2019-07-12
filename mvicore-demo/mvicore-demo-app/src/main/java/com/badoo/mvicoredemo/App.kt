@@ -9,7 +9,7 @@ import com.badoo.mvicore.consumer.middlewareconfig.MiddlewareConfiguration
 import com.badoo.mvicore.consumer.middlewareconfig.Middlewares
 import com.badoo.mvicore.consumer.middlewareconfig.WrappingCondition
 import com.badoo.mvicore.middleware.DefaultPluginStore
-import com.badoo.mvicore.middleware.PluginMiddleware
+import com.badoo.mvicore.middleware.IdeaPluginMiddleware
 import com.badoo.mvicoredemo.di.appscope.component.AppScopedComponent
 import io.palaima.debugdrawer.timber.data.LumberYard
 import timber.log.Timber
@@ -69,7 +69,7 @@ class App : Application() {
             MiddlewareConfiguration(
                 condition = WrappingCondition.Always,
                 factories = listOf(
-                    { consumer -> PluginMiddleware(consumer, defaultStore) }
+                    { consumer -> IdeaPluginMiddleware(consumer, defaultStore) }
                 )
             )
         )

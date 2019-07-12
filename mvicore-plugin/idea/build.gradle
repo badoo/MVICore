@@ -8,6 +8,7 @@ apply plugin: 'org.jetbrains.intellij'
 apply plugin: 'idea'
 
 group = 'com.github.badoo.mvicore'
+archivesBaseName = 'mvicore-plugin-idea'
 version = '0.0.1'
 
 intellij {

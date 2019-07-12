@@ -4,7 +4,7 @@ import com.badoo.mvicore.binder.Connection
 import com.badoo.mvicore.consumer.middleware.base.Middleware
 import io.reactivex.functions.Consumer
 
-class PluginMiddleware<Out: Any, In: Any>(
+class IdeaPluginMiddleware<Out: Any, In: Any>(
     wrapped: Consumer<In>,
     private val store: EventStore
 ): Middleware<Out, In>(wrapped) {

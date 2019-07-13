@@ -10,6 +10,7 @@ import com.badoo.mvicore.plugin.utils.showError
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
@@ -19,6 +20,7 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.IdeActions
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.JBSplitter
@@ -67,13 +69,14 @@ class MviPluginToolWindowFactory : ToolWindowFactory {
     private val currentElement = Tree()
 
     private val disposables = CompositeDisposable()
-    private var isRunning = false
     private lateinit var eventsObservable: Observable<JsonElement>
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         // Init events
         eventsObservable = Observable.wrap(SocketObservable(project, 7675))
             .observeOn(mainThreadScheduler)
+
+        Disposer.register(project, Disposable { disposables.clear() })
 
         // Left
         val sideActions = createSidePanelActions()
@@ -110,39 +113,35 @@ class MviPluginToolWindowFactory : ToolWindowFactory {
         val group = DefaultActionGroup()
 
         val run = object : AnAction() {
+            private var isRunning = false
             init {
                 templatePresentation.icon = actionManager.iconFrom(IdeActions.ACTION_DEFAULT_RUNNER)
             }
 
             override fun actionPerformed(e: AnActionEvent) {
-                if (isRunning) return
-                isRunning = true
-                disposables += eventsObservable
-                    .doOnDispose { isRunning = false }
-                    .doOnTerminate { isRunning = false }
-                    .subscribe({
-                        parseEvent(it)
-                    }, {
-                        if (it is Exception) {
-                            project.showError("Error connecting to device:", it)
-                        }
-                    })
+                if (isRunning) {
+                    disposables.clear()
+                    connections.clear()
+                    isRunning = false
+                } else {
+                    isRunning = true
+                    disposables += eventsObservable
+                        .doOnDispose { isRunning = false }
+                        .doOnTerminate { isRunning = false }
+                        .subscribe({
+                            parseEvent(it)
+                        }, {
+                            if (it is Exception) {
+                                project.showError("Error connecting to device:", it)
+                            }
+                        })
+                }
+                e.presentation.icon = actionManager.iconFrom(
+                    if (isRunning) IdeActions.ACTION_STOP_PROGRAM else IdeActions.ACTION_DEFAULT_RUNNER
+                )
             }
         }
-
-        val stop = object : AnAction() {
-            init {
-                templatePresentation.icon = actionManager.iconFrom(IdeActions.ACTION_STOP_PROGRAM)
-            }
-
-            override fun actionPerformed(e: AnActionEvent) {
-                disposables.clear()
-                connections.clear()
-            }
-        }
-
         group.add(run)
-        group.add(stop)
 
         return group
     }

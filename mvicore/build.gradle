@@ -10,10 +10,12 @@ dependencies {
 
     implementation deps('io.reactivex.rxjava2:rxjava')
     implementation deps('io.reactivex.rxjava2:rxkotlin')
+    implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
 
     testImplementation deps('junit:junit')
     testImplementation deps('org.jetbrains.kotlin:kotlin-test-junit')
     testImplementation deps('org.amshove.kluent:kluent')
+    testImplementation deps('com.nhaarman:mockito-kotlin')
 }
 
 sourceCompatibility = "1.7"

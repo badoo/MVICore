@@ -8,7 +8,7 @@ group='com.github.badoo'
 android {
     compileSdkVersion 27
     defaultConfig {
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
@@ -31,7 +31,10 @@ dependencies {
     implementation deps('io.reactivex.rxjava2:rxjava')
     implementation deps('io.reactivex.rxjava2:rxkotlin')
 
+    implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
+
     debugImplementation deps('io.palaima.debugdrawer:debugdrawer')
+    debugImplementation deps('io.palaima.debugdrawer:debugdrawer-base')
     debugImplementation deps('io.palaima.debugdrawer:debugdrawer-view')
     releaseImplementation deps('io.palaima.debugdrawer:debugdrawer-no-op')
     releaseImplementation deps('io.palaima.debugdrawer:debugdrawer-view-no-op')

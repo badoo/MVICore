@@ -22,7 +22,7 @@ android {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+    implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
     implementation deps('com.android.support:appcompat-v7')
 
     implementation deps('io.reactivex.rxjava2:rxjava')

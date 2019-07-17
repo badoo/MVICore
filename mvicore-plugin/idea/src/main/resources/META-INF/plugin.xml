@@ -1,0 +1,37 @@
+<idea-plugin>
+    <id>com.badoo.mvicore.plugin</id>
+    <name>MVICore</name>
+    <version>0.0.1</version>
+    <vendor email="andrei.shikov@corp.badoo.com" url="http://www.tech.badoo.com">Badoo</vendor>
+
+    <description><![CDATA[
+    ]]></description>
+
+    <change-notes><![CDATA[
+    ]]>
+    </change-notes>
+
+    <depends>com.intellij.modules.lang</depends>
+    <depends>org.jetbrains.android</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+        <toolWindow
+            id="MVICore"
+            anchor="right"
+            factoryClass="com.badoo.mvicore.plugin.MviPluginToolWindowFactory"/>
+    </extensions>
+
+    <application-components>
+        <!-- Add your application components here -->
+    </application-components>
+
+    <project-components>
+        <!-- Add your project components here -->
+    </project-components>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+
+</idea-plugin>

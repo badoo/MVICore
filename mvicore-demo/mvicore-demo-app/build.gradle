@@ -35,6 +35,7 @@ dependencies {
     implementation project(":mvicore-debugdrawer")
     implementation project(':mvicore-demo:mvicore-demo-feature1')
     implementation project(':mvicore-demo:mvicore-demo-feature2')
+    implementation project(':mvicore-plugin:middleware')
 
     // Kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"

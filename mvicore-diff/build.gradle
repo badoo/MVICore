@@ -17,7 +17,7 @@ group = 'com.github.badoo'
 
 dependencies {
     def deps = rootProject.ext.deps
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$rootProject.ext.kotlinVersion"
+    implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
 
     testImplementation deps('junit:junit')
     testImplementation deps('org.jetbrains.kotlin:kotlin-test-junit')

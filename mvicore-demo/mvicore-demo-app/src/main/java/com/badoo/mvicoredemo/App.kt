@@ -8,6 +8,8 @@ import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore
 import com.badoo.mvicore.consumer.middlewareconfig.MiddlewareConfiguration
 import com.badoo.mvicore.consumer.middlewareconfig.Middlewares
 import com.badoo.mvicore.consumer.middlewareconfig.WrappingCondition
+import com.badoo.mvicore.middleware.DefaultPluginStore
+import com.badoo.mvicore.middleware.IdeaPluginMiddleware
 import com.badoo.mvicoredemo.di.appscope.component.AppScopedComponent
 import io.palaima.debugdrawer.timber.data.LumberYard
 import timber.log.Timber
@@ -17,6 +19,8 @@ import javax.inject.Inject
 class App : Application() {
 
     @Inject lateinit var recordStore: RecordStore
+
+    private val defaultStore = DefaultPluginStore(BuildConfig.APPLICATION_ID)
 
     companion object {
         @SuppressLint("StaticFieldLeak")
@@ -57,6 +61,15 @@ class App : Application() {
                 ),
                 factories = listOf(
                     { consumer -> PlaybackMiddleware(consumer, recordStore, { Timber.d(it) }) }
+                )
+            )
+        )
+
+        Middlewares.configurations.add(
+            MiddlewareConfiguration(
+                condition = WrappingCondition.Always,
+                factories = listOf(
+                    { consumer -> IdeaPluginMiddleware(consumer, defaultStore) }
                 )
             )
         )

@@ -35,9 +35,10 @@ dependencies {
     implementation project(":mvicore-debugdrawer")
     implementation project(':mvicore-demo:mvicore-demo-feature1')
     implementation project(':mvicore-demo:mvicore-demo-feature2')
+    implementation project(':mvicore-plugin:middleware')
 
     // Kotlin
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+    implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
 
     // Android
     implementation deps('com.android.support:appcompat-v7')
@@ -63,6 +64,7 @@ dependencies {
     implementation deps('io.palaima.debugdrawer:debugdrawer-commons')
     implementation deps('io.palaima.debugdrawer:debugdrawer-actions')
     implementation deps('io.palaima.debugdrawer:debugdrawer-scalpel')
+    implementation deps('io.palaima.debugdrawer:debugdrawer-base')
     implementation deps('io.palaima.debugdrawer:debugdrawer-timber')
     implementation deps('io.palaima.debugdrawer:debugdrawer-network-quality')
 

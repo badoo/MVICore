@@ -1,14 +1,14 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlinVersion = '1.2.60'
+    ext.kotlinVersion = '1.3.40'
 
     repositories {
         google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.4'
+        classpath 'com.android.tools.build:gradle:3.4.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.9.17"
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
@@ -20,13 +20,13 @@ buildscript {
 ext {
     // Android
     androidArchLifecycleVersion = '1.1.1'
-    androidSupportLibVersion = '28.0.0-rc01'
+    androidSupportLibVersion = '28.0.0'
     constraintLayoutVersion = '1.1.2'
 
     // Rx
-    rxJavaVersion = '2.2.0'
+    rxJavaVersion = '2.2.10'
     rxKotlinVersion = '2.2.0'
-    rxAndroidVersion = '2.1.0'
+    rxAndroidVersion = '2.1.1'
 
     // DI
     daggerVersion = '2.14.1'
@@ -40,13 +40,18 @@ ext {
     // Network
     okhttpVersion = '3.10.0'
     retrofitVersion = '2.4.0'
+    gsonVersion = '2.8.5'
 
     // Testing
     junitVersion = '4.12'
     kluentVersion = '1.23'
     supportTestVersion = '1.0.2'
+    mockitoKotlinVersion = '1.3.0'
 
     depsWithVersion = [
+            // Kotlin
+            "org.jetbrains.kotlin:kotlin-stdlib-jdk7"           : kotlinVersion,
+
             // Android
             "android.arch.lifecycle:common-java8"               : androidArchLifecycleVersion,
             "com.android.support:appcompat-v7"                  : androidSupportLibVersion,
@@ -67,6 +72,7 @@ ext {
 
             // DebugDrawer
             "io.palaima.debugdrawer:debugdrawer"                : debugDrawerVersion,
+            "io.palaima.debugdrawer:debugdrawer-base"           : debugDrawerVersion,
             "io.palaima.debugdrawer:debugdrawer-view"           : debugDrawerVersion,
             "io.palaima.debugdrawer:debugdrawer-no-op"          : debugDrawerVersion,
             "io.palaima.debugdrawer:debugdrawer-view-no-op"     : debugDrawerVersion,
@@ -87,11 +93,13 @@ ext {
             "com.squareup.retrofit2:retrofit"                   : retrofitVersion,
             "com.squareup.retrofit2:adapter-rxjava2"            : retrofitVersion,
             "com.squareup.retrofit2:converter-simplexml"        : retrofitVersion,
+            "com.google.code.gson:gson"                         : gsonVersion,
 
             // Testing
             "junit:junit"                                       : junitVersion,
             "org.jetbrains.kotlin:kotlin-test-junit"            : kotlinVersion,
             "org.amshove.kluent:kluent"                         : kluentVersion,
+            "com.nhaarman:mockito-kotlin"                       : mockitoKotlinVersion,
             "com.android.support.test:runner"                   : supportTestVersion,
             "com.android.support.test:orchestrator"             : supportTestVersion,
             "com.android.support.test:rules"                    : supportTestVersion,

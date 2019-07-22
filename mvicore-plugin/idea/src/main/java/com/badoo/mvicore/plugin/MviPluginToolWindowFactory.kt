@@ -1,5 +1,6 @@
 package com.badoo.mvicore.plugin
 
+import com.badoo.mvicore.plugin.action.ClearAction
 import com.badoo.mvicore.plugin.action.RunAction
 import com.badoo.mvicore.plugin.model.ConnectionData
 import com.badoo.mvicore.plugin.model.Event.Item
@@ -12,10 +13,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
-import com.intellij.openapi.actionSystem.AnAction
-import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.openapi.actionSystem.IdeActions
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
@@ -114,19 +112,12 @@ class MviPluginToolWindowFactory : ToolWindowFactory {
     }
 
     private fun createSidePanelActions() : ActionGroup {
-        val actionManager = ActionManager.getInstance()
         val group = DefaultActionGroup()
 
-        val clear = object : AnAction() {
-            init {
-                templatePresentation.icon = actionManager.iconFrom(IdeActions.CONSOLE_CLEAR_ALL)
-            }
-
-            override fun actionPerformed(e: AnActionEvent) {
-                events.clear()
-                currentElement.model = null
-            }
-        }
+        val clear = ClearAction(
+            events,
+            currentElement
+        )
 
         group.add(clear)
 

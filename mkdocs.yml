@@ -69,3 +69,4 @@ nav:
   - Efficient view updates: extras/modelwatcher.md
   - Time Travel Debugger UI controls: extras/ttdui.md
   - Template generator plugin: extras/templategeneratorplugin.md
+  - Inspector plugin: extras/inspectorplugin.md

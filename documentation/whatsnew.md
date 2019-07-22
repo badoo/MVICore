@@ -21,7 +21,7 @@ Allows transformer to access to the stream between `Source` and `Consumer`. See 
 Organized way of diffing fields in model to provide more efficient view updates. More information [here](../extras/modelwatcher/).
 
 ([#77](https://github.com/badoo/MVICore/pull/77)):
-Idea plugin to observe elements of connections based on middlewares. Read about it [here](../extras/intellijplugin/#android-studio-plugin-to-observe-elements-of-connections).
+Idea plugin to observe elements of connections based on middlewares. Read about it [here](../extras/inspectorplugin/#android-studio-plugin-to-observe-elements-of-connections).
 
 
 

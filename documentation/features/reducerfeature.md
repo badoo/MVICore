@@ -22,7 +22,7 @@ Invocations of the reducer must always happen on the same thread to ensure that 
 !!! warning ""
     If two threads were to read State<sup>n</sup>, then apply some `Effect` over it, one would derive State<sup>n+1'</sup>, while the other would derive  State<sup>n+1''</sup> from it, and depending on the order of execution, one or the other would be lost. By enforcing the single-thread policy, all `Effect`s are always applied to the latest state.
 
-## Excercise #1
+## Exercise #1
 ### Task
 - Let's store a counter in our state
 - Let's make it possible to increment this counter by a `Wish`
@@ -54,8 +54,6 @@ class Feature1 : ReducerFeature<Wish, State, Nothing>(
     }
 }
 ```
-
-
 
 Under the hood, `ReducerFeature` is a subclass of `BaseFeature` giving you a subset of all the possibilities there.
 

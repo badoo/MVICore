@@ -1,4 +1,4 @@
-## Time Travel Debugger UI controls
+# Time Travel Debugger UI controls
 
 If you are on Android and using [DebugDrawer](https://github.com/palaima/DebugDrawer), you can find a UI control module you can add to it in the `mvicore-debugdrawer` dependency.
 

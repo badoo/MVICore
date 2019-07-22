@@ -1,4 +1,4 @@
-## Efficient view updates
+# Efficient view updates
 
 MVICore includes utility class to observe difference in the received models and prevent redundant view updates.
 

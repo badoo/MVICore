@@ -13,7 +13,7 @@ buildscript {
 }
 
 
-group = 'com.github.badoo'
+group = 'com.github.badoo.mvicore'
 
 dependencies {
     def deps = rootProject.ext.deps

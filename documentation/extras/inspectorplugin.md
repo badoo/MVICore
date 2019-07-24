@@ -9,7 +9,7 @@ Allows to record elements passed through middlewares and inspect their values.
 1. Download [MVICoreInspector.zip](https://github.com/badoo/MVICore/blob/master/mvicore-plugin/idea/artifacts/MVICoreInspector.zip?raw=true)
 2. Inside the IDE go to "Install plugin from disk..."
 3. Install the .zip file and restart the IDE
-4. Add plugin middleware artifact to your dependencies: `implementation "com.github.badoo:mvicore-plugin-middleware:$VERSION"`
+4. Add plugin middleware artifact to your dependencies: `implementation "com.github.badoo.mvicore:mvicore-plugin-middleware:$VERSION"`
 5. Setup middleware configuration:
     ```kotlin
     // Create store

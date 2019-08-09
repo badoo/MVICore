@@ -14,7 +14,7 @@ class View: Consumer<ViewModel> {
     private val button: Button = ...
     
     // Specify the fields to observe and actions to execute
-    private val watcher = modelWatcher {
+    private val watcher = modelWatcher<ViewModel> {
         watch(ViewModel::buttonText) {
             button.text = it
         }
@@ -34,7 +34,7 @@ By default, the difference is calculated by value (using `equals`). It is config
 The library also includes a couple of commonly used defaults.
 
 ```kotlin
-val watcher = modelWatcher {
+val watcher = modelWatcher<Model> {
     watch(Model::field, diffStrategy = byValue()) {  } // Compare using equals (default strategy)
     watch(Model::field, diffStrategy = byRef()) { }    // Compare using referential equality   
 }
@@ -44,11 +44,11 @@ The difference can be observed on more than one field with custom diff strategy.
 For example, if the click listener should not be set when something is loading, you can do the following:
 ```kotlin
 // Trigger when either loading flag or action changed
-val loadingOrAction: DiffStrategy<Model> = { p1, p2 ->
+val loadingOrAction: DiffStrategy<ViewModel> = { p1, p2 ->
     p1.isLoading != p2.isLoading || p1.buttonAction !== p2.buttonAction
 }
 
-val watcher = modelWatcher {
+val watcher = modelWatcher<ViewModel> {
     watch({ it }, diffStrategy = loadingOrAction) { model ->
         // Allow action only when not loading
         button.setOnClickListener(
@@ -60,7 +60,7 @@ val watcher = modelWatcher {
 
 The watcher also provides an optional DSL to add more clarity to the definitions:
 ```kotlin
-val watcher = modelWatcher {
+val watcher = modelWatcher<ViewModel> {
     // Method call
     watch(ViewModel::buttonText) {
         button.text = it
@@ -74,22 +74,22 @@ val watcher = modelWatcher {
 ```
 The same applies to custom strategies.
 ```kotlin
-val watcher = modelWatcher {
+val watcher = modelWatcher<ViewModel> {
     // Method call
     watch(Model::buttonAction, diffStrategy = byRef()) { }
     
     // DSL
     val byRef = byRef<() -> Unit>()
-    Model::buttonAction using byRef {
+    ViewModel::buttonAction using byRef {
     
     }
 }
 ```
 Common strategies on two fields can be defined in a simpler way.
 ```kotlin
-val watcher = modelWatcher {
+val watcher = modelWatcher<ViewModel> {
     // Method call
-    val loadingOrAction: DiffStrategy<Model> = { p1, p2 ->
+    val loadingOrAction: DiffStrategy<ViewModel> = { p1, p2 ->
         p1.isLoading != p2.isLoading || p1.buttonAction !== p2.buttonAction
     }
     watch({ it }, loadingOrAction) {
@@ -97,7 +97,7 @@ val watcher = modelWatcher {
     }
 
     // DSL
-    (Model::isLoading or Model::buttonAction) {
+    (ViewModel::isLoading or ViewModel::buttonAction) {
         
     }
 }

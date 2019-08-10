@@ -18,7 +18,7 @@ class View: Consumer<ViewModel> {
         watch(ViewModel::buttonText) {
             button.text = it
         }
-        watch(ViewModel::buttonAction, diffStrategy = byRef()) {
+        watch(ViewModel::buttonAction, diff = byRef()) {
             button.setOnClickListener { it() }
         }
     }
@@ -30,13 +30,13 @@ class View: Consumer<ViewModel> {
 }
 ```
     
-By default, the difference is calculated by value (using `equals`). It is configurable through `diffStrategy` parameter.
+By default, the difference is calculated by value (using `equals`). It is configurable through `diff` parameter.
 The library also includes a couple of commonly used defaults.
 
 ```kotlin
 val watcher = modelWatcher<Model> {
-    watch(Model::field, diffStrategy = byValue()) {  } // Compare using equals (default strategy)
-    watch(Model::field, diffStrategy = byRef()) { }    // Compare using referential equality   
+    watch(Model::field, diff = byValue()) {  } // Compare using equals (default strategy)
+    watch(Model::field, diff = byRef()) { }    // Compare using referential equality   
 }
 ```
 
@@ -49,7 +49,7 @@ val loadingOrAction: DiffStrategy<ViewModel> = { p1, p2 ->
 }
 
 val watcher = modelWatcher<ViewModel> {
-    watch({ it }, diffStrategy = loadingOrAction) { model ->
+    watch({ it }, diff = loadingOrAction) { model ->
         // Allow action only when not loading
         button.setOnClickListener(
             if (!model.isLoading) model.buttonAction else null
@@ -76,7 +76,7 @@ The same applies to custom strategies.
 ```kotlin
 val watcher = modelWatcher<ViewModel> {
     // Method call
-    watch(Model::buttonAction, diffStrategy = byRef()) { }
+    watch(Model::buttonAction, diff = byRef()) { }
     
     // DSL
     val byRef = byRef<() -> Unit>()

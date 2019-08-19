@@ -112,26 +112,3 @@ class Executor2 {
     }
 }
 ```
-
-### IV. Feature to Feature binding
-
-If one of your `Features` should always react to when something happens in another, you can use the `Bootstrapper` for this:
-
-```kotlin
-class Feature2(
-    feature1: Feature1
-) : ActorReducerFeature<Wish, Effect, State, Nothing>(
-    bootstrapper = BootstrapperImpl(feature1),
-    // remainder omitted
-) {
-    class BootstrapperImpl(
-        private val feature1: Feature1
-    ) : Bootstrapper<Wish> {
-        override fun invoke(): Observable<Wish> =
-            feature1.news.map { SomeWishOfFeature2  }
-    }
-
-    // remainder omitted
-```
-
-This assumes that `Feature1` lives longer than `Feature2`. If this is not the case, you could still connect them with `Binder.bind()`.

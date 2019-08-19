@@ -69,6 +69,7 @@ nav:
   - Keep your Reducers dumb: bestpractices/dumbreducers.md
   - Effects only in Actor: bestpractices/effectsinactor.md
   - Feature to Feature communication: bestpractices/f2f.md
+  - Efficient view updates: bestpractices/efficientviewupdates.md
 - Extras:
   - Efficient view updates: extras/modelwatcher.md
   - Time Travel Debugger UI controls: extras/ttdui.md

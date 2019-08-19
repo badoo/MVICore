@@ -65,7 +65,10 @@ nav:
   - LoggingMiddleware: middlewares/loggingmiddleware.md
   - PlaybackMiddleware: middlewares/playbackmiddleware.md
 - Example app: demoproject.md
-- Best practices: bestpractices.md
+- Best practices:
+  - Feature disposal: bestpractices/featuredisposal.md
+  - Keep your Reducers dumb: bestpractices/dumbreducers.md
+  - Effects only in Actor: bestpractices/effectsinactor.md
 - Extras:
   - Efficient view updates: extras/modelwatcher.md
   - Time Travel Debugger UI controls: extras/ttdui.md

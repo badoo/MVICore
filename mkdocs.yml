@@ -52,7 +52,6 @@ nav:
   - Going full-featured: features/fullfeatured.md
   - Bootstrappers: features/bootstrappers.md
   - Events that should only be consumed only once≥: features/news.md
-  - Inter-feature communication: features/f2f.md
 - Binder:
   - Binder usage and lifecycle: binder/binder.md
   - Binding Features to the UI: binder/binding.md
@@ -69,6 +68,7 @@ nav:
   - Feature disposal: bestpractices/featuredisposal.md
   - Keep your Reducers dumb: bestpractices/dumbreducers.md
   - Effects only in Actor: bestpractices/effectsinactor.md
+  - Feature to Feature communication: bestpractices/f2f.md
 - Extras:
   - Efficient view updates: extras/modelwatcher.md
   - Time Travel Debugger UI controls: extras/ttdui.md

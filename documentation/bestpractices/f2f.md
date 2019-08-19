@@ -4,7 +4,7 @@
 
 At the initial launch of this library, the suggested way to make two `Features` communicate with each other was to inject one in the constructor of the other.
 
-This was before we elaborated on the `Binder`, and it's not just no longer suggested, but is straight out considered an **anti-pattern**.
+This was before we elaborated on the `Binder`, and it's not just no longer suggested, but it's straight out considered an **anti-pattern**.
 
 !!! warning ""
     Injecting them has many disadvantages:
@@ -16,7 +16,7 @@ This was before we elaborated on the `Binder`, and it's not just no longer sugge
 
 ## Do
 
-Use `Binder` bindings to connect `Features` as described in the [next chapter](../../binder/binder/):
+Use `Binder` bindings to connect `Features` as described in the [relevant chapter](../../binder/binder/):
 
 ```kotlin
 binder.bind(feature1.news to feature2 using NewsToWish)
@@ -29,7 +29,7 @@ binder.bind(feature1.news to feature2 using NewsToWish)
     2. Scoping is automatically handled by `Binder`
     3. `Binder` can even resubscribe a connection automatically if needed
     4. In the case of a two-way connection, you can do it without a circular dependency, by adding a second binding. 
-```
+
 
 
   

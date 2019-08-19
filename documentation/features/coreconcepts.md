@@ -28,7 +28,7 @@ interface Store<Wish : Any, State : Any> : Consumer<Wish>, ObservableSource<Stat
 
 ## Features
 
-A `Feature` is really only a `Store` with the addition of:
+A `Feature` is a `Store` with the addition of:
 
 - being `Disposable`, as it might hold subscriptions
 - being a source of `News`
@@ -45,15 +45,18 @@ interface Feature<Wish : Any, State : Any, News: Any> : Store<Wish, State>, Disp
 
 More about that in the chapter [Events that should be consumed only once](news.md).
 
-## Feature lifecycle
+## Features as hot observables
 
-Most probably you want your `Feature` to live longer than the current screen. This has many benefits:
+`Features` are not cold observables: they do not wait for subscriptions to start working, and they are not scoped by subscriptions to them. They are push-based (pushing out new states automatically) and not pull-based (producing something upon a subscription). 
 
-- You don't need to override `onSaveInstanceState` and `onRestoreInstanceState` in your Android `Activity`. The `Feature` holds on to the state, the `Activity` connects to it in its `onCreate` method, and because the stream of `State`s inside is a `BehaviorSubject`, it will replay the latest one to your `Activity` upon subscription.
-- Rotating the screen? Not an issue, your state is automatically there.
-- Your `Feature` is not on screen because the user navigated away to some other screen? Not a problem. It's still alive and listening in the background to update its state if needed, so when the user comes back to the screen where it's visible, it immediately shows the most up-to-date state.
+This is a designed feature of the library.
 
-This probably implies that your `Feature` is living in some kind of a DI scope, and it's your responsibility to call `.dispose()` on it once this scope goes away, so that any asynchronous jobs still executing are properly disposed of.
+`Features` are supposed to be able to be active in the background, and have possibly many, differently scoped inputs / outputs to them. 
+
+Two things follow from this:
+
+1. A `Feature` starts working immediately on creation, and emits its initial state.
+2. A `Feature` always needs to be disposed of when its lifecycle should end. That means it's your responsibility to call `.dispose()` on it, so that any asynchronous jobs still executing are properly disposed of.
 
 !!! bug "Bottom line"
     Don't forget to call `.dispose()` at the end of the `Feature`'s lifecycle

@@ -45,7 +45,7 @@ interface Feature<Wish : Any, State : Any, News: Any> : Store<Wish, State>, Disp
 
 More about that in the chapter [Events that should be consumed only once](news.md).
 
-## Features as hot observables
+## Features are hot observables
 
 `Features` are not cold observables: they do not wait for subscriptions to start working, and they are not scoped by subscriptions to them. They are push-based (pushing out new states automatically) and not pull-based (producing something upon a subscription). 
 

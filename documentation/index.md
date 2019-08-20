@@ -3,6 +3,7 @@
 ## What's this?
 
 MVICore is a modern, Kotlin-based MVI framework:
+
 - **Scaling with complexity**: operate with a single Reducer if needed, with the option of having the full power of additional components to handle more complex cases
 - **Event handling**: A solution to handling events that you don’t want to store in the state
 - **Reactive component binding**: A super simple API to bind your reactive endpoints to each other with automatic lifecycle handling

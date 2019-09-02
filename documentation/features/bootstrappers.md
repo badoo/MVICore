@@ -46,3 +46,14 @@ class MyComplexFeature : BaseFeature<Wish, Action, Effect, State, News>(
 ```
 
 The implementation of `BaseFeature` wires it up for you.
+
+
+## Bootstrapping is immediate by default
+
+As noted in the [core concepts](../coreconcepts/) section, `Features` are essentially hot observables. It's worth to repeat this here, because there's an important aspect of it here: `Bootstrapper` is invoked immediately on `Feature` creation and by default will not wait for anything else.
+
+You can picture the `Feature` as if it was a glorified `BehaviourSubject`: when you create that with `createDefault`, it emits its first state straight away and continues to emit whatever is put into it after creation.
+
+## Delaying bootstrapping 
+
+If you need to delay bootstrapping for any reason, you can refer to the corresponding best practices section: [delaying bootstrapping](../../bestpractices/delayingbootstrapping/)

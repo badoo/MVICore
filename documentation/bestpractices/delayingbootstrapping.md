@@ -31,7 +31,7 @@ Rather, you can achieve the delay by injecting an `Observable` through the const
 ```kotlin
 // Feature
 class SomeFeature(
-    startSignal: Observable<Unit>
+    startSignal: Single<Unit>
     // ...
 ) : BaseFeature<Wish, Action, Effect, State, News>(
     // ...
@@ -41,11 +41,11 @@ class SomeFeature(
     // ...
 
     class BootStrapperImpl(
-        private val startSignal: Observable<Unit>
+        private val startSignal: Single<Unit>
     ) : Bootstrapper<Action> {
         override fun invoke(): Observable<Action> = 
             just(Action.BootstrappingAction)
-                .delaySubscription(startSignal)
+                .delaySubscription(startSignal.toObservable())
                 
     // ...
 }

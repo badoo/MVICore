@@ -25,8 +25,9 @@ Allows to record elements passed through middlewares and inspect their values.
          )
     )
     ```
-6. Connect device, so it is visible to the IDE.
-7. Press Run icon in the MVICore panel.
+6. Don't forget to add permission in AndroidManifest.xml: `<uses-permission android:name="android.permission.INTERNET" />`. The plugin uses socket connection, which will not work without it.
+7. Connect device, so it is visible to the IDE. Run your app.
+8. Once app is running, press Run icon in the MVICore panel.
 
 ![Screenshot](https://i.imgur.com/Vjk0NZl.png)
 

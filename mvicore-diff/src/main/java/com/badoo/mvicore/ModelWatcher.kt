@@ -41,18 +41,23 @@ class ModelWatcher<Model : Any> private constructor(
         if (selectedChild == null) {
             // Clear children only
             childWatchers.values.forEach {
-                it.model = null
+                clear()
             }
         } else {
             // Clear children and self
             childWatchers.values.forEach {
                 if (it !== selectedChild) {
-                    it.model = null
+                    clear()
                 }
             }
             model = null
         }
         return
+    }
+
+    fun clear() {
+        model = null
+        childWatchers.values.forEach { it.clear() }
     }
 
     private class Watcher<Model, Field>(

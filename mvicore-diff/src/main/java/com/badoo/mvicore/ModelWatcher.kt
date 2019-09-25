@@ -51,7 +51,7 @@ class ModelWatcher<Model : Any> private constructor(
     )
 
     @ModelWatcherDsl
-    class Builder<Model : Any> @PublishedApi internal constructor() : WatchDsl<Model> {
+    class Builder<Model : Any> @PublishedApi internal constructor() : BuilderBase<Model>, WatchDsl<Model> {
         private val watchers = mutableListOf<Watcher<Model, Any?>>()
         @PublishedApi
         internal val childWatchers = hashMapOf<Class<Any>, ModelWatcher<Any>>()
@@ -84,6 +84,9 @@ class ModelWatcher<Model : Any> private constructor(
             ModelWatcher(watchers, childWatchers)
     }
 }
+
+@DslMarker
+annotation class ModelWatcherDsl
 
 internal interface BuilderBase<Model> {
     fun <Field> watch(

@@ -9,7 +9,6 @@ internal interface WatchDsl<Model> : BuilderBase<Model> {
     /*
      * Syntactic sugar around watch (scoped inside the builder)
      */
-
     operator fun <Field> ((Model) -> Field).invoke(callback: (Field) -> Unit) {
         watch(this, callback = callback)
     }
@@ -35,6 +34,3 @@ internal interface WatchDsl<Model> : BuilderBase<Model> {
         )
     }
 }
-
-@DslMarker
-annotation class ModelWatcherDsl

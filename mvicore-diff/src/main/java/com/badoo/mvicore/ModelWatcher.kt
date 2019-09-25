@@ -7,13 +7,13 @@ class ModelWatcher<Model : Any> private constructor(
     private var model: Model? = null
 
     operator fun invoke(newModel: Model) {
-        if (!checkChildren(newModel)) {
-            checkSelf(newModel)
-            model = newModel
-        }
+        triggerChildren(newModel)
+
+        triggerSelf(newModel)
+        model = newModel
     }
 
-    private fun checkSelf(newModel: Model) {
+    private fun triggerSelf(newModel: Model) {
         val oldModel = model
         watchers.forEach { element ->
             val getter = element.accessor
@@ -24,35 +24,19 @@ class ModelWatcher<Model : Any> private constructor(
         }
     }
 
-    private fun checkChildren(newModel: Model): Boolean {
+    private fun triggerChildren(newModel: Model) {
         val recordedClass = childWatchers.keys.firstOrNull { it.isInstance(newModel) }
-        if (recordedClass != null) {
-            val targetWatcher = childWatchers[recordedClass]
-            targetWatcher?.invoke(newModel)
-            clearModels(targetWatcher)
-            return true
-        }
-
-        clearModels(selectedChild = null)
-        return false
+        val targetWatcher = childWatchers[recordedClass]
+        targetWatcher?.invoke(newModel)
+        clearChildren(selectedChild = targetWatcher)
     }
 
-    private fun clearModels(selectedChild: ModelWatcher<Any>?) {
-        if (selectedChild == null) {
-            // Clear children only
-            childWatchers.values.forEach {
-                clear()
+    private fun clearChildren(selectedChild: ModelWatcher<Any>?) {
+        childWatchers.values.forEach {
+            if (it !== selectedChild) {
+                it.clear()
             }
-        } else {
-            // Clear children and self
-            childWatchers.values.forEach {
-                if (it !== selectedChild) {
-                    clear()
-                }
-            }
-            model = null
         }
-        return
     }
 
     fun clear() {
@@ -81,6 +65,17 @@ class ModelWatcher<Model : Any> private constructor(
                 callback,
                 diff
             ) as Watcher<Model, Any?>
+        }
+
+        inline fun <reified SubModel : Model> type(block: ModelWatcher.Builder<SubModel>.() -> Unit) {
+            val childWatcher = modelWatcher(block)
+            childWatchers[SubModel::class.java as Class<Any>] = childWatcher as ModelWatcher<Any>
+        }
+
+        inline fun <reified SubModel : Model> objectType(noinline block: (SubModel) -> Unit) {
+            type<SubModel> {
+                watch({ it }, byRef(), block)
+            }
         }
 
         @PublishedApi

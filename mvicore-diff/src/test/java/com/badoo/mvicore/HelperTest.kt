@@ -8,7 +8,7 @@ import kotlin.test.assertEquals
 class HelperTest {
     @Test
     fun `by value strategy compares by value`() {
-        val results = testWatcher<List<String>>(
+        val results = testWatcher<List<String>, Model>(
             listOf(
                 Model(list = listOf("")),
                 Model(list = listOf(""))
@@ -24,7 +24,7 @@ class HelperTest {
 
     @Test
     fun `by ref strategy compares by reference`() {
-        val results = testWatcher<List<String>>(
+        val results = testWatcher<List<String>, Model>(
             listOf(
                 Model(list = listOf("")),
                 Model(list = listOf(""))

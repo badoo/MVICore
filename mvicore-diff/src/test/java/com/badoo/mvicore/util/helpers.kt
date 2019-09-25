@@ -3,7 +3,7 @@ package com.badoo.mvicore.util
 import com.badoo.mvicore.ModelWatcher
 import com.badoo.mvicore.modelWatcher
 
-fun <T> testWatcher(
+fun <T, Model : Any> testWatcher(
     models: List<Model>,
     init: ModelWatcher.Builder<Model>.(result: MutableList<T>) -> Unit
 ): List<T> {

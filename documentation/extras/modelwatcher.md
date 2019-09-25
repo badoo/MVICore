@@ -58,6 +58,47 @@ val watcher = modelWatcher<ViewModel> {
 }
 ```
 
+Models based on the sealed classes are supported with `type` and `objectType` functions.
+```kotlin
+sealed class Model {
+    data class A(val list: List<String>): Model()
+    object B : Model()
+}
+
+val watcher = modelWatcher<Model> {
+    type<A> {
+        watch(Model.A::list) { }
+    }
+    
+    objectType<B> { modelB ->
+        
+    }
+}
+```
+If sealed class has a common property defined in the base class, its changes can be observed as well.
+```kotlin
+sealed class Model {
+    abstract val list: List<String>
+
+    data class A(val list: List<String>): Model()
+    object B : Model() {
+        override val list: List<String> = emptyList()
+    }
+}
+
+val watcher = modelWatcher<Model> {
+    type<A> {
+        watch(Model.A::list) { 
+            // Property of Model.A only
+        }
+    }
+ 
+    watch(Model::list) {
+        // Common property
+    }
+}
+```
+
 The watcher also provides an optional DSL to add more clarity to the definitions:
 ```kotlin
 val watcher = modelWatcher<ViewModel> {

@@ -50,6 +50,7 @@ class ModelWatcher<Model : Any> private constructor(
         val diff: DiffStrategy<Field>
     )
 
+    @ModelWatcherDsl
     class Builder<Model : Any> @PublishedApi internal constructor() : WatchDsl<Model> {
         private val watchers = mutableListOf<Watcher<Model, Any?>>()
         @PublishedApi

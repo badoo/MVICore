@@ -35,3 +35,6 @@ internal interface WatchDsl<Model> : BuilderBase<Model> {
         )
     }
 }
+
+@DslMarker
+annotation class ModelWatcherDsl

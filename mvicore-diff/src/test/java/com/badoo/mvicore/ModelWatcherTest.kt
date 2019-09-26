@@ -135,4 +135,20 @@ class ModelWatcherTest {
 
         assertEquals(2, results.size)
     }
+
+    @Test
+    fun `invokes callback after clear`() {
+        val results = mutableListOf<List<String>>()
+        val watcher = modelWatcher<Model> {
+            Model::list {
+                results += it
+            }
+        }
+
+        watcher.invoke(Model(list = listOf("")))
+        watcher.clear()
+        watcher.invoke(Model(list = listOf("")))
+
+        assertEquals(2, results.size)
+    }
 }

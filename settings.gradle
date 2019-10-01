@@ -1,3 +1,6 @@
+include ':mvicore-base'
+
+
 include ':mvicore'
 include ':mvicore-diff'
 include ':mvicore-android'

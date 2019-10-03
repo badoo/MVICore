@@ -76,6 +76,7 @@ val watcher = modelWatcher<Model> {
 }
 ```
 If sealed class has a common property defined in the base class, its changes can be observed as well.
+In the example below, `Model::list` selector is triggered when the property is changed independently on model type.
 ```kotlin
 sealed class Model {
     abstract val list: List<String>

@@ -2,7 +2,7 @@ package com.badoo.mvicore
 
 class ModelWatcher<Model : Any> private constructor(
     private val watchers: List<Watcher<Model, Any?>>,
-    private val childWatchers: HashMap<Class<Any>, ModelWatcher<Any>>
+    private val childWatchers: HashMap<Class<out Model>, ModelWatcher<out Model>>
 ) {
     private var model: Model? = null
 
@@ -26,12 +26,12 @@ class ModelWatcher<Model : Any> private constructor(
 
     private fun triggerChildren(newModel: Model) {
         val recordedClass = childWatchers.keys.firstOrNull { it.isInstance(newModel) }
-        val targetWatcher = childWatchers[recordedClass]
+        val targetWatcher = childWatchers[recordedClass] as? ModelWatcher<Model>
         targetWatcher?.invoke(newModel)
         clearChildren(selectedChild = targetWatcher)
     }
 
-    private fun clearChildren(selectedChild: ModelWatcher<Any>?) {
+    private fun clearChildren(selectedChild: ModelWatcher<Model>?) {
         childWatchers.values.forEach {
             if (it !== selectedChild) {
                 it.clear()
@@ -54,7 +54,7 @@ class ModelWatcher<Model : Any> private constructor(
     class Builder<Model : Any> @PublishedApi internal constructor() : BuilderBase<Model>, WatchDsl<Model> {
         private val watchers = mutableListOf<Watcher<Model, Any?>>()
         @PublishedApi
-        internal val childWatchers = hashMapOf<Class<Any>, ModelWatcher<Any>>()
+        internal val childWatchers = hashMapOf<Class<out Model>, ModelWatcher<out Model>>()
 
         override fun <Field> watch(
             accessor: (Model) -> Field,
@@ -70,7 +70,7 @@ class ModelWatcher<Model : Any> private constructor(
 
         inline fun <reified SubModel : Model> type(block: ModelWatcher.Builder<SubModel>.() -> Unit) {
             val childWatcher = modelWatcher(block)
-            childWatchers[SubModel::class.java as Class<Any>] = childWatcher as ModelWatcher<Any>
+            childWatchers[SubModel::class.java] = childWatcher
         }
 
         inline fun <reified SubModel : Model> objectType(noinline block: (SubModel) -> Unit) {

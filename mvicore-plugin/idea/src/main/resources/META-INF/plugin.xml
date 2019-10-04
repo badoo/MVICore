@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.badoo.mvicore.plugin</id>
     <name>MVICore</name>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <vendor email="andrei.shikov@corp.badoo.com" url="http://www.tech.badoo.com">Badoo</vendor>
 
     <description><![CDATA[
@@ -10,9 +10,6 @@
     <change-notes><![CDATA[
     ]]>
     </change-notes>
-
-    <depends>com.intellij.modules.lang</depends>
-    <depends>org.jetbrains.android</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->

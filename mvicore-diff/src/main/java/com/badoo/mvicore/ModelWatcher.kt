@@ -2,7 +2,7 @@ package com.badoo.mvicore
 
 class ModelWatcher<Model : Any> private constructor(
     private val watchers: List<Watcher<Model, Any?>>,
-    private val childWatchers: HashMap<Class<out Model>, ModelWatcher<out Model>>
+    private val childWatchers: Map<Class<out Model>, ModelWatcher<out Model>>
 ) {
     private var model: Model? = null
 
@@ -28,10 +28,10 @@ class ModelWatcher<Model : Any> private constructor(
         val recordedClass = childWatchers.keys.firstOrNull { it.isInstance(newModel) }
         val targetWatcher = childWatchers[recordedClass] as? ModelWatcher<Model>
         targetWatcher?.invoke(newModel)
-        clearChildren(selectedChild = targetWatcher)
+        clearNotSelectedChildren(selectedChild = targetWatcher)
     }
 
-    private fun clearChildren(selectedChild: ModelWatcher<Model>?) {
+    private fun clearNotSelectedChildren(selectedChild: ModelWatcher<Model>?) {
         childWatchers.values.forEach {
             if (it !== selectedChild) {
                 it.clear()

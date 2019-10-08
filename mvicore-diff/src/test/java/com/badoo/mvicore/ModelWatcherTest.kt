@@ -9,7 +9,7 @@ class ModelWatcherTest {
 
     @Test
     fun `invokes callback when field changes`() {
-        val results = testWatcher<Int>(
+        val results = testWatcher<Int, Model>(
             listOf(
                 Model(int = 0),
                 Model(int = 1)
@@ -25,7 +25,7 @@ class ModelWatcherTest {
 
     @Test
     fun `does not invoke callback when field does not change`() {
-        val results = testWatcher<Int>(
+        val results = testWatcher<Int, Model>(
             listOf(
                 Model(int = 0),
                 Model(int = 0)
@@ -41,7 +41,7 @@ class ModelWatcherTest {
 
     @Test
     fun `emits nullable fields on start`() {
-        val results = testWatcher<Boolean?>(
+        val results = testWatcher<Boolean?, Model>(
             listOf(
                 Model(nullable = null)
             )
@@ -56,7 +56,7 @@ class ModelWatcherTest {
 
     @Test
     fun `by default compares by value`() {
-        val results = testWatcher<List<String>>(
+        val results = testWatcher<List<String>, Model>(
             listOf(
                 Model(list = listOf("")),
                 Model(list = listOf(""))
@@ -72,7 +72,7 @@ class ModelWatcherTest {
 
     @Test
     fun `invokes callback using dsl`() {
-        val results = testWatcher<Int>(
+        val results = testWatcher<Int, Model>(
             listOf(
                 Model(int = 0), Model(int = 1)
             )
@@ -87,7 +87,7 @@ class ModelWatcherTest {
 
     @Test
     fun `invokes callback using dsl with diffStrategy`() {
-        val results = testWatcher<List<String>>(
+        val results = testWatcher<List<String>, Model>(
             listOf(
                 Model(list = listOf("")),
                 Model(list = listOf(""))
@@ -104,7 +104,7 @@ class ModelWatcherTest {
 
     @Test
     fun `invokes callback with combined diffStrategy using "or"`() {
-        val results = testWatcher<Model>(
+        val results = testWatcher<Model, Model>(
             listOf(
                 Model(list = listOf(""), int = 1),
                 Model(list = listOf(""), int = 1, nullable = false),
@@ -121,7 +121,7 @@ class ModelWatcherTest {
 
     @Test
     fun `invokes callback with combined diffStrategy using "and"`() {
-        val results = testWatcher<Model>(
+        val results = testWatcher<Model, Model>(
             listOf(
                 Model(list = listOf(""), int = 1),
                 Model(int = 1),
@@ -132,6 +132,22 @@ class ModelWatcherTest {
                 updates += it
             }
         }
+
+        assertEquals(2, results.size)
+    }
+
+    @Test
+    fun `invokes callback after clear`() {
+        val results = mutableListOf<List<String>>()
+        val watcher = modelWatcher<Model> {
+            Model::list {
+                results += it
+            }
+        }
+
+        watcher.invoke(Model(list = listOf("")))
+        watcher.clear()
+        watcher.invoke(Model(list = listOf("")))
 
         assertEquals(2, results.size)
     }

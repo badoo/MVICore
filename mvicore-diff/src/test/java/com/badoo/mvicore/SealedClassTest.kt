@@ -1,5 +1,6 @@
 package com.badoo.mvicore
 
+import com.badoo.mvicore.util.Nested
 import com.badoo.mvicore.util.SealedModel
 import com.badoo.mvicore.util.testWatcher
 import org.junit.Test
@@ -20,6 +21,7 @@ class SealedClassTest {
                     updates += it
                 }
             }
+
             objectType<SealedModel.Nothing> {
                 updates += emptyList<String>()
             }
@@ -69,5 +71,32 @@ class SealedClassTest {
         }
 
         assertEquals(4, results.size)
+    }
+
+    @Test
+    fun `deeply sealed class subtypes are triggered every time type has changed`() {
+        val results = testWatcher<List<String>, Nested>(
+            listOf(
+                Nested.SubNested.Value(emptyList()),
+                Nested.SubNested.Value(emptyList()),
+                Nested.Something,
+                Nested.SubNested.Nothing,
+                Nested.SubNested.Value(emptyList())
+            )
+        ) { updates ->
+            type<Nested.SubNested> {
+                type<Nested.SubNested.Value> {
+                    Nested.SubNested.Value::list {
+                        updates += it
+                    }
+                }
+            }
+
+            objectType<Nested.Something> {
+                updates += emptyList<String>()
+            }
+        }
+
+        assertEquals(3, results.size)
     }
 }

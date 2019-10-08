@@ -28,10 +28,10 @@ class ModelWatcher<Model : Any> private constructor(
         val recordedClass = childWatchers.keys.firstOrNull { it.isInstance(newModel) }
         val targetWatcher = childWatchers[recordedClass] as? ModelWatcher<Model>
         targetWatcher?.invoke(newModel)
-        clearNotSelectedChildren(selectedChild = targetWatcher)
+        clearNotMatchedChildren(selectedChild = targetWatcher)
     }
 
-    private fun clearNotSelectedChildren(selectedChild: ModelWatcher<Model>?) {
+    private fun clearNotMatchedChildren(selectedChild: ModelWatcher<Model>?) {
         childWatchers.values.forEach {
             if (it !== selectedChild) {
                 it.clear()

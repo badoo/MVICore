@@ -12,7 +12,9 @@ interface Binder : Cancellable {
     fun <Out, In> bind(connection: Connection<Out, In>)
 }
 
+@Suppress("FunctionName")
 fun Binder(): Binder = SimpleBinder()
+@Suppress("FunctionName")
 fun Binder(lifecycle: Lifecycle): Binder = LifecycleBinder(lifecycle)
 
 internal class SimpleBinder : Binder {

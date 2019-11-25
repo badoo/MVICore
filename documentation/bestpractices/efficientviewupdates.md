@@ -4,4 +4,4 @@ If you have complex view models, you probably don't want to re-render the whole 
  
 MVICore comes with a tool called `ModelWatcher` that addresses this issue. It allows you to split your view model stream by fields and update only relevant parts of your UI, when those fields have actually changed.
 
-See more info in [relevant section under extras](../../extras/modelwatcher).
+See more info in [relevant section under extras](../extras/modelwatcher.md).

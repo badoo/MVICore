@@ -197,4 +197,16 @@ class BinderTest {
 
         sink.assertValues(0)
     }
+
+    @Test
+    fun binder_messages_sent_on_initialize_are_not_lost() {
+        val passThroughSource = source<Int>()
+        val binder = binder {
+            bind(source to passThroughSource)
+            source.invoke(0)
+            bind(passThroughSource to sink)
+        }
+
+        sink.assertValues(0)
+    }
 }

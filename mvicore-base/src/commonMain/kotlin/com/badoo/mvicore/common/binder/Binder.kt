@@ -8,13 +8,14 @@ import com.badoo.mvicore.common.lifecycle.Lifecycle
 import com.badoo.mvicore.common.lifecycle.Lifecycle.Event.BEGIN
 import com.badoo.mvicore.common.lifecycle.Lifecycle.Event.END
 import com.badoo.mvicore.common.source
+import com.badoo.mvicore.common.sources.DelayUntilSource
 
 abstract class Binder : Cancellable {
     internal abstract fun <Out, In> connect(connection: Connection<Out, In>)
 }
 
-fun binder(): Binder = SimpleBinder()
-fun binder(lifecycle: Lifecycle): Binder = LifecycleBinder(lifecycle)
+fun binder(init: Binder.() -> Unit = { }): Binder = SimpleBinder(init)
+fun binder(lifecycle: Lifecycle, init: Binder.() -> Unit = { }): Binder = LifecycleBinder(lifecycle, init)
 
 fun <In> Binder.bind(connection: Pair<Source<In>, Sink<In>>) {
     val (from, to) = connection
@@ -25,18 +26,44 @@ fun <Out, In> Binder.bind(connection: Connection<Out, In>) {
     connect(connection)
 }
 
-internal class SimpleBinder : Binder() {
+internal class SimpleBinder(init: Binder.() -> Unit) : Binder() {
     private val cancellables = mutableListOf<Cancellable>()
+
+    /**
+     * Stores internal end of every `emitter` connected through binder
+     * Allows for propagation of events in case emission disposes the binder
+     * E.g.:
+     * from -> internalSource -> to // Events from `from` are propagated to `to`
+     * #dispose()
+     * from xx internalSource -> to // Remaining events from `internalSource` are propagated to `to`
+     */
     private val fromToInternalSource = mutableMapOf<Source<*>, SimpleSource<*>>()
+
+    /**
+     * Delay events emitted on subscribe until `init` lambda is executed
+     */
+    private val initialized = source(initialValue = false)
+
+    init {
+        init()
+        initialized(true)
+    }
 
     override fun <Out, In> connect(connection: Connection<Out, In>) {
         val internalSource = getInternalSourceFor(connection.from!!)
-        val outSource = if (connection.connector != null) {
+        val transformedSource = if (connection.connector != null) {
             connection.connector.invoke(internalSource)
         } else {
             internalSource as Source<In>
         }
-        outSource.connect(connection.to)
+
+        val delayInitialize = if (initialized.value!!) {
+            transformedSource
+        } else {
+            DelayUntilSource(initialized, transformedSource)
+        }
+
+        delayInitialize.connect(connection.to)
     }
 
     private fun <T> getInternalSourceFor(from: Source<T>): SimpleSource<T> =
@@ -51,10 +78,10 @@ internal class SimpleBinder : Binder() {
     }
 }
 
-internal class LifecycleBinder(lifecycle: Lifecycle) : Binder() {
+internal class LifecycleBinder(lifecycle: Lifecycle, init: Binder.() -> Unit) : Binder() {
     private var lifecycleActive = false
     private val cancellables = mutableListOf<Cancellable>()
-    private val innerBinder = SimpleBinder()
+    private val innerBinder = SimpleBinder(init)
     private val connections = mutableListOf<Connection<*, *>>()
 
     init {

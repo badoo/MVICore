@@ -1,5 +1,9 @@
 package com.badoo.mvicore.common
 
+/**
+ * NOTE: in conversions from other frameworks you need to override equals and hashCode
+ * to support binder "emit after dispose" functionality
+ */
 interface Source<T> : Cancellable {
     fun connect(sink: Sink<T>): Cancellable
 }

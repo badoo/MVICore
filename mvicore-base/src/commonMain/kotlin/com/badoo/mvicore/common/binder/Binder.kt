@@ -10,20 +10,12 @@ import com.badoo.mvicore.common.lifecycle.Lifecycle.Event.END
 import com.badoo.mvicore.common.source
 import com.badoo.mvicore.common.sources.DelayUntilSource
 
+/**
+ * Establishes connections between [Source] and [Sink] endpoints
+ * NOTE: binder is not thread safe. All the emissions should happen on single thread (preferably main).
+ */
 abstract class Binder : Cancellable {
     internal abstract fun <Out, In> connect(connection: Connection<Out, In>)
-}
-
-fun binder(init: Binder.() -> Unit = { }): Binder = SimpleBinder(init)
-fun binder(lifecycle: Lifecycle, init: Binder.() -> Unit = { }): Binder = LifecycleBinder(lifecycle, init)
-
-fun <In> Binder.bind(connection: Pair<Source<In>, Sink<In>>) {
-    val (from, to) = connection
-    connect(Connection(from = from, to = to))
-}
-
-fun <Out, In> Binder.bind(connection: Connection<Out, In>) {
-    connect(connection)
 }
 
 internal class SimpleBinder(init: Binder.() -> Unit) : Binder() {

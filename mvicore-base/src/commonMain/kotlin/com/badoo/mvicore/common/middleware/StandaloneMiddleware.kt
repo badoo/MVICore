@@ -10,7 +10,7 @@ internal class StandaloneMiddleware<In>(
 ): Middleware<In, In>(wrappedMiddleware), Cancellable {
     private val connection = Connection<In, In>(
         to = innerMost,
-        name = "${name ?: innerMost::class.qualifiedName}.${postfix ?: "input"}" // FIXME wtf
+        name = "${name ?: ""}.${postfix ?: "input"}" // FIXME wtf
     )
 
     init {

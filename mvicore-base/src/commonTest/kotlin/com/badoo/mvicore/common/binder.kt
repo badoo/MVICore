@@ -1,7 +1,8 @@
 package com.badoo.mvicore.common
 
-import com.badoo.mvicore.common.binder.Binder
 import com.badoo.mvicore.common.binder.NotNullConnector
+import com.badoo.mvicore.common.binder.bind
+import com.badoo.mvicore.common.binder.binder
 import com.badoo.mvicore.common.binder.using
 import com.badoo.mvicore.common.lifecycle.Lifecycle
 import kotlin.test.Test
@@ -12,7 +13,7 @@ class BinderTest {
 
     @Test
     fun binder_without_lifecycle_connects_source_and_sink() {
-        Binder().apply {
+        binder().apply {
             bind(source to sink)
         }
 
@@ -22,7 +23,7 @@ class BinderTest {
 
     @Test
     fun binder_without_lifecycle_does_not_connect_source_and_sink_after_cancel() {
-        val binder = Binder().apply {
+        val binder = binder().apply {
             bind(source to sink)
         }
 
@@ -34,7 +35,7 @@ class BinderTest {
 
     @Test
     fun binder_without_lifecycle_connects_source_and_sink_using_mapper() {
-        Binder().apply {
+        binder().apply {
             bind(source to sink using { it + 1 })
         }
 
@@ -44,7 +45,7 @@ class BinderTest {
 
     @Test
     fun binder_without_lifecycle_connects_source_and_sink_skips_nulls_from_mapper() {
-        Binder().apply {
+        binder().apply {
             bind(source to sink using { if (it % 2 == 0) null else it })
         }
 
@@ -57,7 +58,7 @@ class BinderTest {
     @Test
     fun binder_without_lifecycle_connects_source_and_sink_using_connector() {
         val connector = NotNullConnector<Int, Int> { it }
-        Binder().apply {
+        binder().apply {
             bind(source to sink using connector)
         }
 
@@ -68,7 +69,7 @@ class BinderTest {
     @Test
     fun binder_with_lifecycle_connects_source_and_sink_when_active() {
         val lifecycle = Lifecycle.manual()
-        Binder(lifecycle).apply {
+        binder(lifecycle).apply {
             bind(source to sink)
         }
 
@@ -81,7 +82,7 @@ class BinderTest {
     @Test
     fun binder_with_lifecycle_does_not_connect_source_and_sink_before_active() {
         val lifecycle = Lifecycle.manual()
-        Binder(lifecycle).apply {
+        binder(lifecycle).apply {
             bind(source to sink)
         }
 
@@ -94,7 +95,7 @@ class BinderTest {
     @Test
     fun binder_with_lifecycle_disconnect_source_and_sink_after_end() {
         val lifecycle = Lifecycle.manual()
-        Binder(lifecycle).apply {
+        binder(lifecycle).apply {
             bind(source to sink)
         }
 
@@ -109,7 +110,7 @@ class BinderTest {
     @Test
     fun binder_with_lifecycle_reconnect_source_and_sink_after_begin() {
         val lifecycle = Lifecycle.manual()
-        Binder(lifecycle).apply {
+        binder(lifecycle).apply {
             bind(source to sink)
         }
 
@@ -126,7 +127,7 @@ class BinderTest {
     @Test
     fun binder_with_lifecycle_does_not_reconnect_source_and_sink_after_cancel() {
         val lifecycle = Lifecycle.manual()
-        Binder(lifecycle).apply {
+        binder(lifecycle).apply {
             bind(source to sink)
         }
 
@@ -145,7 +146,7 @@ class BinderTest {
         val lifecycle = Lifecycle.manual()
         lifecycle.begin()
 
-        Binder(lifecycle).apply {
+        binder(lifecycle).apply {
             bind(source to sink)
         }
 
@@ -158,7 +159,7 @@ class BinderTest {
     fun binder_with_lifecycle_does_not_reconnect_on_duplicated_lifecycle_events() {
         val lifecycle = Lifecycle.manual()
 
-        Binder(lifecycle).apply {
+        binder(lifecycle).apply {
             bind(source to sink)
         }
 
@@ -173,13 +174,27 @@ class BinderTest {
     @Test
     fun binder_covariant_endpoints_compile_for_pair() {
         val sink = { it: Any -> /* no-op */ }
-        Binder().bind(source to sink)
+        binder().bind(source to sink)
     }
 
     @Test
     fun binder_covariant_endpoints_compile_for_connection() {
         val sink = { it: Any -> /* no-op */ }
         val intToString: (Int) -> String = { it.toString() }
-        Binder().bind(source to sink using intToString)
+        binder().bind(source to sink using intToString)
+    }
+
+    @Test
+    fun binder_delivers_message_to_all_sinks_on_dispose() {
+        val binder = binder()
+
+        val sink2 = { it: Int -> binder.cancel() }
+
+        binder.bind(source to sink2)
+        binder.bind(source to sink)
+
+        source.invoke(0)
+
+        sink.assertValues(0)
     }
 }

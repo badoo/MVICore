@@ -1,5 +1,6 @@
 package com.badoo.mvicore.common.feature
 
+import com.badoo.mvicore.common.CompositeCancellable
 import com.badoo.mvicore.common.Sink
 import com.badoo.mvicore.common.Source
 import com.badoo.mvicore.common.element.Actor
@@ -12,25 +13,25 @@ import com.badoo.mvicore.common.source
 
 open class BaseFeature<Action : Any, Wish : Any, Effect : Any, State : Any, News : Any> (
     initialState: State,
-    private val bootstrapper: Bootstrapper<Action>? = null,
     private val wishToAction: (Wish) -> Action,
     private val actor: Actor<State, Action, Effect>,
     private val reducer: Reducer<State, Effect>,
+    private val bootstrapper: Bootstrapper<Action>? = null,
     private val newsPublisher: NewsPublisher<Action, Effect, State, News>? = null,
     private val postProcessor: PostProcessor<Action, Effect, State>? = null
 ): Feature<Wish, State, News> {
     private val actionSource = source<Action>()
-    internal val effectSource = source<Effect>()
     private val stateSource = source(initialState)
     private val newsSource = source<News>()
+    private val cancellables = CompositeCancellable()
 
     init {
-        bootstrapper?.invoke()?.connect(actionSource)
-        actionSource.connect { action ->
+        cancellables += bootstrapper?.invoke()?.connect(actionSource)
+        cancellables += actionSource.connect { action ->
             val oldState = state
-            actor.invoke(oldState, action)
+            cancellables += actor.invoke(oldState, action)
                 .connect { effect ->
-                    val newState = reducer(this.state, effect)
+                    val newState = reducer(state, effect)
                     stateSource(newState)
                     newsPublisher?.invoke(oldState, action, effect, newState)?.let {
                         newsSource(it)
@@ -47,8 +48,11 @@ open class BaseFeature<Action : Any, Wish : Any, Effect : Any, State : Any, News
 
     override fun connect(sink: Sink<State>) = stateSource.connect(sink)
 
+    override val isCancelled: Boolean
+        get() = cancellables.isCancelled
+
     override fun cancel() {
-        // TODO
+        cancellables.cancel()
     }
 
     val state: State

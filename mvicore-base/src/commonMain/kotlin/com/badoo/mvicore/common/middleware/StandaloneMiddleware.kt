@@ -35,6 +35,8 @@ internal class StandaloneMiddleware<In>(
         onComplete(this.connection)
     }
 
+    override val isCancelled: Boolean = false
+
     private fun assertSame(connection: Connection<In, In>) {
         if (connection !== this.connection) {
             throw IllegalStateException("Middleware was initialised in standalone mode, can't accept other connections")

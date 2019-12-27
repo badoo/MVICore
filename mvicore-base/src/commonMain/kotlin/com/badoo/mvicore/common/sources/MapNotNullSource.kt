@@ -13,4 +13,7 @@ internal class MapNotNullSource<Out, In>(private val delegate: Source<Out>, priv
     override fun cancel() {
         delegate.cancel()
     }
+
+    override val isCancelled: Boolean
+        get() = delegate.isCancelled
 }

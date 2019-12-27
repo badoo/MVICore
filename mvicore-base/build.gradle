@@ -4,8 +4,25 @@ plugins {
 
 kotlin {
     jvm()
-    js()
-    //TODO native
+    js("js") {
+        browser {
+            testTask {
+                useKarma {
+                    useChromeHeadless()
+                }
+            }
+        }
+        nodejs {
+            testTask {
+                useCommonJs()
+            }
+        }
+    }
+    macosX64 {
+        binaries {
+            framework()
+        }
+    }
 
     sourceSets {
         commonMain {
@@ -24,11 +41,26 @@ kotlin {
                 implementation kotlin('stdlib-js')
             }
         }
+        jsTest {
+            dependencies {
+                implementation kotlin('test-js')
+            }
+        }
         jvmMain {
             dependencies {
                 implementation kotlin('stdlib')
+            }
+        }
+        jvmTest {
+            dependencies {
                 implementation kotlin('test-junit')
             }
         }
-    }
+        nativeMain { dependsOn commonMain }
+        // Empty source set is required in order to have native tests task
+        nativeTest { }
+
+        macosX64Main { dependsOn nativeMain }
+        macosX64Test { dependsOn nativeTest }
+     }
 }

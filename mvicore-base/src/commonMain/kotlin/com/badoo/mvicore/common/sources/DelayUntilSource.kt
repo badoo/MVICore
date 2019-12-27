@@ -23,6 +23,9 @@ internal class DelayUntilSource<T>(
         delegate.cancel()
     }
 
+    override val isCancelled: Boolean
+        get() = delegate.isCancelled
+
     private class DelayedSink<T>(private val delegate: Sink<T>) : Sink<T> {
         private var passThrough = false
         private val events = mutableListOf<T>()

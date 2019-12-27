@@ -16,6 +16,9 @@ fun <T> source(): SimpleSource<T> =
 
 class SimpleSource<T>(initialValue: T?, private val emitOnConnect: Boolean): Source<T>, Sink<T> {
     private val sinks = AtomicRef(listOf<Sink<T>>())
+    private val internalCancellable = CompositeCancellable(
+        cancellableOf { sinks.update { emptyList() } }
+    )
     var value: T? = initialValue
         private set
 
@@ -35,10 +38,16 @@ class SimpleSource<T>(initialValue: T?, private val emitOnConnect: Boolean): Sou
 
         return cancellableOf {
             sinks.update { it - sink }
+            internalCancellable -= this
+        }.also {
+            internalCancellable += it
         }
     }
 
+    override val isCancelled: Boolean
+        get() = internalCancellable.isCancelled
+
     override fun cancel() {
-        sinks.update { emptyList() }
+        internalCancellable.cancel()
     }
 }

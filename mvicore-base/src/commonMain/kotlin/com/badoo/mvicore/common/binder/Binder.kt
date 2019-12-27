@@ -1,6 +1,7 @@
 package com.badoo.mvicore.common.binder
 
 import com.badoo.mvicore.common.Cancellable
+import com.badoo.mvicore.common.CompositeCancellable
 import com.badoo.mvicore.common.SimpleSource
 import com.badoo.mvicore.common.Sink
 import com.badoo.mvicore.common.Source
@@ -19,7 +20,7 @@ abstract class Binder : Cancellable {
 }
 
 internal class SimpleBinder(init: Binder.() -> Unit) : Binder() {
-    private val cancellables = mutableListOf<Cancellable>()
+    private val cancellables = CompositeCancellable()
 
     /**
      * Stores internal end of every `emitter` connected through binder
@@ -64,15 +65,17 @@ internal class SimpleBinder(init: Binder.() -> Unit) : Binder() {
         } as SimpleSource<T>
 
     override fun cancel() {
-        cancellables.forEach { it.cancel() }
+        cancellables.cancel()
         fromToInternalSource.clear()
-        cancellables.clear()
     }
+
+    override val isCancelled: Boolean
+        get() = cancellables.isCancelled
 }
 
 internal class LifecycleBinder(lifecycle: Lifecycle, init: Binder.() -> Unit) : Binder() {
     private var lifecycleActive = false
-    private val cancellables = mutableListOf<Cancellable>()
+    private val cancellables = CompositeCancellable()
     private val innerBinder = SimpleBinder(init)
     private val connections = mutableListOf<Connection<*, *>>()
 
@@ -108,8 +111,11 @@ internal class LifecycleBinder(lifecycle: Lifecycle, init: Binder.() -> Unit) : 
     }
 
     override fun cancel() {
-        cancellables.forEach { it.cancel() }
+        cancellables.cancel()
         connections.clear()
     }
+
+    override val isCancelled: Boolean
+        get() = cancellables.isCancelled
 
 }

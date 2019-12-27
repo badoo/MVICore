@@ -26,7 +26,6 @@ open class BaseFeature<Action : Any, Wish : Any, Effect : Any, State : Any, News
     private val cancellables = CompositeCancellable()
 
     init {
-        cancellables += bootstrapper?.invoke()?.connect(actionSource)
         cancellables += actionSource.connect { action ->
             val oldState = state
             cancellables += actor.invoke(oldState, action)
@@ -39,6 +38,7 @@ open class BaseFeature<Action : Any, Wish : Any, Effect : Any, State : Any, News
                     postProcessor?.invoke(oldState, action, effect, newState)?.let(actionSource::invoke)
                 }
         }
+        cancellables += bootstrapper?.invoke()?.connect(actionSource)
     }
 
     override fun invoke(wish: Wish) {

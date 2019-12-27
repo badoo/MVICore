@@ -173,13 +173,13 @@ class BinderTest {
 
     @Test
     fun binder_covariant_endpoints_compile_for_pair() {
-        val sink = { it: Any -> /* no-op */ }
+        val sink = { _: Any -> /* no-op */ }
         binder().bind(source to sink)
     }
 
     @Test
     fun binder_covariant_endpoints_compile_for_connection() {
-        val sink = { it: Any -> /* no-op */ }
+        val sink = { _: Any -> /* no-op */ }
         val intToString: (Int) -> String = { it.toString() }
         binder().bind(source to sink using intToString)
     }
@@ -188,7 +188,7 @@ class BinderTest {
     fun binder_delivers_message_to_all_sinks_on_dispose() {
         val binder = binder()
 
-        val sink2 = { it: Int -> binder.cancel() }
+        val sink2 = { _: Int -> binder.cancel() }
 
         binder.bind(source to sink2)
         binder.bind(source to sink)
@@ -201,7 +201,7 @@ class BinderTest {
     @Test
     fun binder_messages_sent_on_initialize_are_not_lost() {
         val passThroughSource = source<Int>()
-        val binder = binder {
+        binder {
             bind(source to passThroughSource)
             source.invoke(0)
             bind(passThroughSource to sink)

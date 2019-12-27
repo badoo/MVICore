@@ -1,5 +1,93 @@
 package com.badoo.mvicore.common
 
-class ReducerFeatureTest {
+import com.badoo.mvicore.common.feature.ReducerFeature
+import kotlin.test.Test
 
+class ReducerFeatureTest {
+    @Test
+    fun reducer_feature_emits_initial_state_on_connect() {
+        val feature = TestReducerFeature()
+        val sink = TestSink<String>()
+
+        feature.connect(sink)
+
+        sink.assertValues("")
+    }
+
+    @Test
+    fun reducer_feature_emits_new_state_on_new_wish() {
+        val feature = TestReducerFeature()
+        val sink = TestSink<String>()
+
+        feature.connect(sink)
+
+        feature.invoke(0)
+        sink.assertValues("", "0")
+    }
+
+    @Test
+    fun reducer_feature_emits_new_state_on_new_wish_2() {
+        val feature = TestReducerFeature()
+        val sink = TestSink<String>()
+
+        feature.connect(sink)
+
+        feature.invoke(0)
+        feature.invoke(1)
+        sink.assertValues("", "0", "01")
+    }
+
+    @Test
+    fun reducer_feature_emits_new_state_on_bootstrapper_action() {
+        val feature = TestReducerFeatureWBootstrapper()
+        val sink = TestSink<String>()
+
+        feature.connect(sink)
+
+        feature.invoke(1)
+        sink.assertValues("0", "01")
+    }
+
+    @Test
+    fun reducer_feature_emits_news_on_wish() {
+        val feature = TestReducerFeatureWNews()
+        val sink = TestSink<Int>()
+
+        feature.news.connect(sink)
+
+        feature.invoke(1)
+        feature.invoke(1)
+        sink.assertValues(1, 2)
+    }
+
+    class TestReducerFeature(initialState: String = ""): ReducerFeature<Int, String, Nothing>(
+        initialState = initialState,
+        reducer = { state, wish ->
+            state + wish.toString()
+        }
+    )
+
+    class TestReducerFeatureWBootstrapper(initialState: String = ""): ReducerFeature<Int, String, Nothing>(
+        initialState = initialState,
+        bootstrapper = {
+            source(initialValue = 0)
+        },
+        reducer = { state, wish ->
+            state + wish.toString()
+        }
+    )
+
+    class TestReducerFeatureWNews(initialState: String = ""): ReducerFeature<Int, String, Int>(
+        initialState = initialState,
+        reducer = { state, wish ->
+            state + wish.toString()
+        },
+        newsPublisher = { _: String, _: Int, state: String ->
+            if (state.isNotEmpty()) {
+                state.length
+            } else {
+                null
+            }
+        }
+    )
 }

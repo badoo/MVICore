@@ -11,9 +11,9 @@ actual class AtomicRef<V : Any> actual constructor(initialValue: V) {
     actual fun get(): V = delegate.value
 
     actual fun compareAndSet(expect: V, update: V): Boolean =
-        delegate.compareAndSet(expect, update.freezeIfNeeded())
+        delegate.compareAndSet(expect, update.freezeIfFrozen())
 
-    private fun V.freezeIfNeeded(): V {
+    private fun V.freezeIfFrozen(): V {
         if (delegate.isFrozen) {
             freeze()
         }

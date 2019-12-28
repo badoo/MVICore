@@ -3,6 +3,7 @@ package com.badoo.mvicore.common.feature
 import com.badoo.mvicore.common.CompositeCancellable
 import com.badoo.mvicore.common.Sink
 import com.badoo.mvicore.common.Source
+import com.badoo.mvicore.common.connect
 import com.badoo.mvicore.common.element.Actor
 import com.badoo.mvicore.common.element.Bootstrapper
 import com.badoo.mvicore.common.element.Feature

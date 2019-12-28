@@ -5,7 +5,7 @@ import com.badoo.mvicore.common.element.Actor
 import com.badoo.mvicore.common.element.Bootstrapper
 import com.badoo.mvicore.common.element.NewsPublisher
 import com.badoo.mvicore.common.element.Reducer
-import com.badoo.mvicore.common.source
+import com.badoo.mvicore.common.sources.ValueSource
 
 open class ReducerFeature<Wish : Any, State : Any, News : Any>(
     initialState: State,
@@ -21,7 +21,7 @@ open class ReducerFeature<Wish : Any, State : Any, News : Any>(
 ) {
     private class PassthroughActor<State : Any, Wish : Any> : Actor<State, Wish, Wish> {
         override fun invoke(state: State, wish: Wish): Source<out Wish> =
-            source(wish)
+            ValueSource(wish)
     }
 
     private class NoEffectNewsPublisher<Wish : Any, State : Any, News: Any>(

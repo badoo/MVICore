@@ -4,6 +4,7 @@ import com.badoo.mvicore.common.Cancellable
 import com.badoo.mvicore.common.Sink
 import com.badoo.mvicore.common.Source
 import com.badoo.mvicore.common.cancellableOf
+import com.badoo.mvicore.common.connect
 
 internal class DelayUntilSource<T>(
     private val signal: Source<Boolean>,

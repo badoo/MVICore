@@ -2,9 +2,10 @@ package com.badoo.mvicore.common.binder
 
 import com.badoo.mvicore.common.Cancellable
 import com.badoo.mvicore.common.CompositeCancellable
-import com.badoo.mvicore.common.SimpleSource
 import com.badoo.mvicore.common.Sink
 import com.badoo.mvicore.common.Source
+import com.badoo.mvicore.common.SourceImpl
+import com.badoo.mvicore.common.connect
 import com.badoo.mvicore.common.lifecycle.Lifecycle
 import com.badoo.mvicore.common.lifecycle.Lifecycle.Event.BEGIN
 import com.badoo.mvicore.common.lifecycle.Lifecycle.Event.END
@@ -30,7 +31,7 @@ internal class SimpleBinder(init: Binder.() -> Unit) : Binder() {
      * #dispose()
      * from xx internalSource -> to // Remaining events from `internalSource` are propagated to `to`
      */
-    private val fromToInternalSource = mutableMapOf<Source<*>, SimpleSource<*>>()
+    private val fromToInternalSource = mutableMapOf<Source<*>, SourceImpl<*>>()
 
     /**
      * Delay events emitted on subscribe until `init` lambda is executed
@@ -56,13 +57,13 @@ internal class SimpleBinder(init: Binder.() -> Unit) : Binder() {
             DelayUntilSource(initialized, transformedSource)
         }
 
-        delayInitialize.connect(connection.to)
+        delayInitialize.connect(connection.to as Sink<In>)
     }
 
-    private fun <T> getInternalSourceFor(from: Source<T>): SimpleSource<T> =
+    private fun <T> getInternalSourceFor(from: Source<T>): SourceImpl<T> =
         fromToInternalSource.getOrPut(from) {
             source<T>().also { cancellables += from.connect(it) }
-        } as SimpleSource<T>
+        } as SourceImpl<T>
 
     override fun cancel() {
         cancellables.cancel()

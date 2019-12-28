@@ -3,6 +3,7 @@ package com.badoo.mvicore.common.sources
 import com.badoo.mvicore.common.Cancellable
 import com.badoo.mvicore.common.Sink
 import com.badoo.mvicore.common.Source
+import com.badoo.mvicore.common.connect
 
 internal class MapNotNullSource<Out, In>(private val delegate: Source<Out>, private val mapper: (Out) -> In?): Source<In> {
     override fun connect(sink: Sink<In>): Cancellable =

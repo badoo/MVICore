@@ -1,6 +1,9 @@
 package com.badoo.mvicore.common
 
+import com.badoo.mvicore.common.element.Bootstrapper
+import com.badoo.mvicore.common.element.Reducer
 import com.badoo.mvicore.common.feature.ReducerFeature
+import com.badoo.mvicore.common.sources.ValueSource
 import kotlin.test.Test
 
 class ReducerFeatureTest {
@@ -62,24 +65,25 @@ class ReducerFeatureTest {
 
     class TestReducerFeature(initialState: String = ""): ReducerFeature<Int, String, Nothing>(
         initialState = initialState,
-        reducer = { state, wish ->
+        reducer = reducer { state, wish ->
             state + wish.toString()
         }
     )
 
     class TestReducerFeatureWBootstrapper(initialState: String = ""): ReducerFeature<Int, String, Nothing>(
         initialState = initialState,
-        bootstrapper = {
-            source(initialValue = 0)
+        bootstrapper = object : Bootstrapper<Int> {
+            override fun invoke(): Source<Int> =
+                ValueSource(0)
         },
-        reducer = { state, wish ->
+        reducer = reducer { state, wish ->
             state + wish.toString()
         }
     )
 
     class TestReducerFeatureWNews(initialState: String = ""): ReducerFeature<Int, String, Int>(
         initialState = initialState,
-        reducer = { state, wish ->
+        reducer = reducer { state, wish ->
             state + wish.toString()
         },
         newsPublisher = { _: String, _: Int, state: String ->
@@ -91,3 +95,8 @@ class ReducerFeatureTest {
         }
     )
 }
+
+fun <State, Effect> reducer(block: (state: State, effect: Effect) -> State) =
+    object : Reducer<State, Effect> {
+        override fun invoke(state: State, effect: Effect): State = block(state, effect)
+    }

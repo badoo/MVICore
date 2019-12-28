@@ -7,7 +7,7 @@ import com.badoo.mvicore.common.lifecycle.Lifecycle
 fun binder(init: Binder.() -> Unit = { }): Binder = SimpleBinder(init)
 fun binder(lifecycle: Lifecycle, init: Binder.() -> Unit = { }): Binder = LifecycleBinder(lifecycle, init)
 
-fun <In> Binder.bind(connection: Pair<Source<In>, Sink<In>>) {
+fun <In> Binder.bind(connection: Pair<Source<out In>, Sink<in In>>) {
     val (from, to) = connection
     connect(Connection(from = from, to = to))
 }

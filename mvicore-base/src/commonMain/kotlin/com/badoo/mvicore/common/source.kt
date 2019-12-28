@@ -8,13 +8,16 @@ interface Source<T> : Cancellable {
     fun connect(sink: Sink<T>): Cancellable
 }
 
-fun <T> source(initialValue: T): SimpleSource<T> =
-    SimpleSource(initialValue, true)
+fun <T> source(initialValue: T): SourceImpl<T> =
+    SourceImpl(initialValue, true)
 
-fun <T> source(): SimpleSource<T> =
-    SimpleSource(null, false)
+fun <T> source(): SourceImpl<T> =
+    SourceImpl(null, false)
 
-class SimpleSource<T>(initialValue: T?, private val emitOnConnect: Boolean): Source<T>, Sink<T> {
+fun <T> Source<T>.connect(action: (T) -> Unit) =
+    connect(sinkOf(action))
+
+class SourceImpl<T>(initialValue: T?, private val emitOnConnect: Boolean): Source<T>, Sink<T> {
     private val sinks = AtomicRef(listOf<Sink<T>>())
     private val internalCancellable = CompositeCancellable(
         cancellableOf { sinks.update { emptyList() } }

@@ -24,13 +24,6 @@ internal class SourceAdapter<T>(internal val delegate: Observable<T>): Source<T>
         }
     }
 
-    override fun cancel() {
-        disposable.dispose()
-    }
-
-    override val isCancelled: Boolean
-        get() = disposable.isDisposed
-
     override fun equals(other: Any?): Boolean =
         other is SourceAdapter<*> && super.equals(other.delegate)
 

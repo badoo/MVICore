@@ -3,12 +3,12 @@ package com.badoo.mvicore.common
 import kotlin.test.assertEquals
 
 class TestSink<T>: Sink<T> {
-    private val _values: MutableList<T> = mutableListOf()
+    private val _values = AtomicRef<List<T>>(emptyList())
     val values: List<T>
-        get() = _values
+        get() = _values.get()
 
     override fun invoke(value: T) {
-        _values += value
+        _values.update { it + value }
     }
 }
 

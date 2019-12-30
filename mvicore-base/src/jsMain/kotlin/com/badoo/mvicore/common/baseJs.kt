@@ -1,6 +1,6 @@
 package com.badoo.mvicore.common
 
-actual class AtomicRef<V : Any> actual constructor(initialValue: V) {
+actual class AtomicRef<V> actual constructor(initialValue: V) {
     private var value: V = initialValue
 
     actual fun compareAndSet(expect: V, update: V): Boolean {

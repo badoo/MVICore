@@ -19,11 +19,12 @@ fun <T> Source<T>.connect(action: (T) -> Unit) =
 
 class SourceImpl<T>(initialValue: T?, private val emitOnConnect: Boolean): Source<T>, Sink<T> {
     private val sinks = AtomicRef(listOf<Sink<T>>())
-    var value: T? = initialValue
-        private set
+    private val _value = AtomicRef(initialValue)
+    val value: T?
+        get() = _value.get()
 
     override fun invoke(value: T) {
-        this.value = value
+        _value.update { value }
         val sinks = sinks.get()
         sinks.forEach { it.invoke(value) }
     }

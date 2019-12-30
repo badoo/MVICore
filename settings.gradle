@@ -1,4 +1,5 @@
 include ':mvicore-base'
+include ':mvicore-rx'
 
 
 include ':mvicore'

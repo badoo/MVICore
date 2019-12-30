@@ -1,4 +1,4 @@
-package com.badoo.mvicore.common.element
+package com.badoo.mvicore.common.feature
 
 import com.badoo.mvicore.common.Cancellable
 import com.badoo.mvicore.common.Sink

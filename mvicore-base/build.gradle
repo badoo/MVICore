@@ -24,6 +24,10 @@ kotlin {
         }
     }
 
+    targets {
+        fromPreset(presets.macosX64, 'native')
+    }
+
     sourceSets {
         commonMain {
             dependencies {

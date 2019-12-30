@@ -6,13 +6,12 @@ import com.badoo.mvicore.common.Source
 import com.badoo.mvicore.common.connect
 import com.badoo.mvicore.common.element.Actor
 import com.badoo.mvicore.common.element.Bootstrapper
-import com.badoo.mvicore.common.element.Feature
 import com.badoo.mvicore.common.element.NewsPublisher
 import com.badoo.mvicore.common.element.PostProcessor
 import com.badoo.mvicore.common.element.Reducer
 import com.badoo.mvicore.common.source
 
-open class BaseFeature<Action : Any, Wish : Any, Effect : Any, State : Any, News : Any> (
+abstract class BaseFeature<Action : Any, Wish : Any, Effect : Any, State : Any, News : Any> (
     initialState: State,
     private val wishToAction: (Wish) -> Action,
     private val actor: Actor<State, Action, Effect>,

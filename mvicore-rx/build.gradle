@@ -1,0 +1,57 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'kotlin'
+apply plugin: 'org.jetbrains.dokka'
+
+group = 'com.github.badoo.mvicore'
+
+dependencies {
+    def deps = rootProject.ext.deps
+
+    implementation deps('io.reactivex.rxjava2:rxjava')
+    implementation project(':mvicore-base')
+    implementation deps('io.reactivex.rxjava2:rxkotlin')
+    implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
+
+    testImplementation deps('junit:junit')
+    testImplementation deps('org.jetbrains.kotlin:kotlin-test-junit')
+    testImplementation deps('org.amshove.kluent:kluent')
+    testImplementation deps('com.nhaarman:mockito-kotlin')
+}
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$rootProject.ext.kotlinVersion"
+    }
+}
+
+repositories {
+    jcenter()
+}
+
+sourceSets {
+    main {
+        java {}
+    }
+}
+
+task packageSources(type: Jar, dependsOn: 'classes') {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task packageJavadoc(type: Jar, dependsOn: javadoc) {
+    from javadoc.outputDirectory
+    classifier = 'javadoc'
+}
+
+artifacts {
+    archives packageSources
+    archives packageJavadoc
+}

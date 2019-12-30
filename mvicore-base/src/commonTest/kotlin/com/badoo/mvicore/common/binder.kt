@@ -127,14 +127,14 @@ class BinderTest {
     @Test
     fun binder_with_lifecycle_does_not_reconnect_source_and_sink_after_cancel() {
         val lifecycle = Lifecycle.manual()
-        binder(lifecycle).apply {
+        val binder = binder(lifecycle).apply {
             bind(source to sink)
         }
 
         lifecycle.begin()
         source.invoke(0)
         lifecycle.end()
-        lifecycle.cancel()
+        binder.cancel()
         lifecycle.begin()
         source.invoke(2)
 

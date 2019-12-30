@@ -1,13 +1,13 @@
-package com.badoo.mvicore.common.element
+package com.badoo.mvicore.rx.element
 
-import com.badoo.mvicore.common.Source
+import io.reactivex.ObservableSource
 
 interface Bootstrapper<Action> {
-    operator fun invoke(): Source<Action>
+    operator fun invoke(): ObservableSource<Action>
 }
 
 interface Actor<State, Action, Effect> {
-    operator fun invoke(state: State, action: Action): Source<out Effect>
+    operator fun invoke(state: State, action: Action): ObservableSource<out Effect>
 }
 
 interface Reducer<State, Effect> {

@@ -4,7 +4,7 @@ package com.badoo.mvicore.common
  * NOTE: in conversions from other frameworks you need to override equals and hashCode
  * to support binder "emit after dispose" functionality
  */
-interface Source<T> : Cancellable {
+interface Source<T> {
     fun connect(sink: Sink<T>): Cancellable
 }
 
@@ -19,9 +19,6 @@ fun <T> Source<T>.connect(action: (T) -> Unit) =
 
 class SourceImpl<T>(initialValue: T?, private val emitOnConnect: Boolean): Source<T>, Sink<T> {
     private val sinks = AtomicRef(listOf<Sink<T>>())
-    private val internalCancellable = CompositeCancellable(
-        cancellableOf { sinks.update { emptyList() } }
-    )
     var value: T? = initialValue
         private set
 
@@ -41,16 +38,13 @@ class SourceImpl<T>(initialValue: T?, private val emitOnConnect: Boolean): Sourc
 
         return cancellableOf {
             sinks.update { it - sink }
-            internalCancellable -= this
-        }.also {
-            internalCancellable += it
         }
     }
 
-    override val isCancelled: Boolean
-        get() = internalCancellable.isCancelled
-
-    override fun cancel() {
-        internalCancellable.cancel()
-    }
+//    override val isCancelled: Boolean
+//        get() = internalCancellable.isCancelled
+//
+//    override fun cancel() {
+//        internalCancellable.cancel()
+//    }
 }

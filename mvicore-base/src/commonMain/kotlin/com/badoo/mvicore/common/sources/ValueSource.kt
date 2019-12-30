@@ -17,11 +17,11 @@ internal class ValueSource<T>(vararg values: T) : Source<T> {
         return cancelled()
     }
 
-    override fun cancel() {
-        cancellable.cancel()
-    }
-
-    override val isCancelled: Boolean
-        get() = cancellable.isCancelled
+//    override fun cancel() {
+//        cancellable.cancel()
+//    }
+//
+//    override val isCancelled: Boolean
+//        get() = cancellable.isCancelled
 }
 

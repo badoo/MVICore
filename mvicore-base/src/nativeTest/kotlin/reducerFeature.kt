@@ -18,6 +18,19 @@ class ReducerFeatureTest {
         sink.assertValues("", "0")
     }
 
+    @Test
+    fun reducer_feature_stops_emitting_after_cancel_when_frozen() {
+        val feature = TestReducerFeature().freeze()
+        val sink = TestSink<String>()
+
+        feature.connect(sink)
+
+        feature.cancel()
+
+        feature.invoke(0)
+        sink.assertValues("")
+    }
+
     class TestReducerFeature(initialState: String = ""): ReducerFeature<Int, String, Nothing>(
         initialState = initialState,
         reducer = reducer { state, wish ->

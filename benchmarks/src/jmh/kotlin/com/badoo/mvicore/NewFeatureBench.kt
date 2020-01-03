@@ -5,6 +5,7 @@ import com.badoo.mvicore.rx.element.Reducer
 import com.badoo.mvicore.rx.feature.ActorReducerFeature
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
+import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.annotations.Level
 import org.openjdk.jmh.annotations.Scope
 import org.openjdk.jmh.annotations.Setup
@@ -23,7 +24,7 @@ open class NewFeatureBench {
         },
         reducer = object : Reducer<String, Int> {
             override fun invoke(state: String, effect: Int): String =
-                state
+                state + effect
         }
     )
 
@@ -36,7 +37,7 @@ open class NewFeatureBench {
         disposable = Observable.wrap(feature).subscribe { blackhole.consume(it) }
     }
 
-//    @Benchmark
+    @Benchmark
     fun feature() {
         feature.accept(1)
     }

@@ -14,7 +14,7 @@ dependencies {
 }
 
 jmh {
-    benchmarkMode = ['thrpt']
+    benchmarkMode = ['avgt']
     timeUnit = 'ms'
     fork = 1
     warmup = '2s'

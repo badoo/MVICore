@@ -24,7 +24,7 @@ open class NewFeatureBench {
         },
         reducer = object : Reducer<String, Int> {
             override fun invoke(state: String, effect: Int): String =
-                state + effect
+                state
         }
     )
 

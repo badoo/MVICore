@@ -1,6 +1,7 @@
-include ':mvicore-base'
+include ':mvicore-common'
 include ':mvicore-rx'
 
+include ':benchmarks'
 
 include ':mvicore'
 include ':mvicore-diff'

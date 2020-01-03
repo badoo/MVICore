@@ -9,7 +9,7 @@ dependencies {
     def deps = rootProject.ext.deps
 
     implementation deps('io.reactivex.rxjava2:rxjava')
-    implementation project(':mvicore-base')
+    implementation project(':mvicore-common')
     implementation deps('io.reactivex.rxjava2:rxkotlin')
     implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
 

@@ -1,0 +1,70 @@
+plugins {
+    id 'org.jetbrains.kotlin.multiplatform'
+}
+
+kotlin {
+    jvm()
+    js {
+        browser {
+            testTask {
+                useKarma {
+                    useChromeHeadless()
+                }
+            }
+        }
+        nodejs {
+            testTask {
+                useCommonJs()
+            }
+        }
+    }
+    macosX64 {
+        binaries {
+            framework()
+        }
+    }
+
+    targets {
+        fromPreset(presets.macosX64, 'native') // remove when multiple targets are setup
+    }
+
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation kotlin('stdlib-common')
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation kotlin('test-common')
+                implementation kotlin('test-annotations-common')
+            }
+        }
+        jsMain {
+            dependencies {
+                implementation kotlin('stdlib-js')
+            }
+        }
+        jsTest {
+            dependencies {
+                implementation kotlin('test-js')
+            }
+        }
+        jvmMain {
+            dependencies {
+                implementation kotlin('stdlib')
+            }
+        }
+        jvmTest {
+            dependencies {
+                implementation kotlin('test-junit')
+            }
+        }
+        nativeMain { dependsOn commonMain }
+        // Empty source set is required in order to have native tests task
+        nativeTest { }
+
+        macosX64Main { dependsOn nativeMain }
+        macosX64Test { dependsOn nativeTest }
+     }
+}

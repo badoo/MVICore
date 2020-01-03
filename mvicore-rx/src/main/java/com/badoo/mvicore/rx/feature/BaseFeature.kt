@@ -27,10 +27,10 @@ abstract class BaseFeature<Action : Any, Wish : Any, Effect : Any, State : Any, 
         initialState = initialState,
         wishToAction = wishToAction,
         actor = ActorAdapter(actor),
-        reducer = ReducerAdapter(reducer),
+        reducer = reducer,
         bootstrapper = bootstrapper?.let { BootstrapperAdapter(it) },
-        newsPublisher = newsPublisher?.let { NewsPublisherAdapter(it) },
-        postProcessor = postProcessor?.let { PostProcessorAdapter(it) }
+        newsPublisher = newsPublisher,
+        postProcessor = postProcessor
     ) {  }
 
     override fun accept(wish: Wish) {
@@ -53,14 +53,6 @@ abstract class BaseFeature<Action : Any, Wish : Any, Effect : Any, State : Any, 
     ) : com.badoo.mvicore.common.element.Actor<State, Action, Effect> {
         override fun invoke(state: State, action: Action): Source<out Effect> =
             delegate.invoke(state, action).toSource()
-
-    }
-
-    private class ReducerAdapter<State, Wish>(
-        private val delegate: Reducer<State, Wish>
-    ): com.badoo.mvicore.common.element.Reducer<State, Wish> {
-        override fun invoke(state: State, effect: Wish): State =
-            delegate.invoke(state, effect)
     }
 
     private class BootstrapperAdapter<Action>(
@@ -68,19 +60,5 @@ abstract class BaseFeature<Action : Any, Wish : Any, Effect : Any, State : Any, 
     ): com.badoo.mvicore.common.element.Bootstrapper<Action> {
         override fun invoke(): Source<Action> =
             delegate.invoke().toSource()
-    }
-
-    private class NewsPublisherAdapter<Action, Effect, State, News>(
-        private val delegate: NewsPublisher<Action, Effect, State, News>
-    ): com.badoo.mvicore.common.element.NewsPublisher<Action, Effect, State, News> {
-        override fun invoke(old: State, action: Action, effect: Effect, new: State): News? =
-            delegate.invoke(old, action, effect, new)
-    }
-
-    private class PostProcessorAdapter<Action, Effect, State>(
-        private val delegate: PostProcessor<Action, Effect, State>
-    ): com.badoo.mvicore.common.element.PostProcessor<Action, Effect, State>{
-        override fun invoke(old: State, action: Action, effect: Effect, new: State): Action? =
-            delegate.invoke(old, action, effect, new)
     }
 }

@@ -1,5 +1,8 @@
 package com.badoo.mvicore.rx.element
 
+import com.badoo.mvicore.common.element.NewsPublisher
+import com.badoo.mvicore.common.element.PostProcessor
+import com.badoo.mvicore.common.element.Reducer
 import io.reactivex.ObservableSource
 
 interface Bootstrapper<Action> {
@@ -10,14 +13,8 @@ interface Actor<State, Action, Effect> {
     operator fun invoke(state: State, action: Action): ObservableSource<out Effect>
 }
 
-interface Reducer<State, Effect> {
-    operator fun invoke(state: State, effect: Effect): State
-}
+typealias Reducer<State, Effect> = Reducer<State, Effect>
 
-interface NewsPublisher<Action, Effect, State, News> {
-    operator fun invoke(old: State, action: Action, effect: Effect, new: State): News?
-}
+typealias NewsPublisher<Action, Effect, State, News> = NewsPublisher<Action, Effect, State, News>
 
-interface PostProcessor<Action, Effect, State> {
-    operator fun invoke(old: State, action: Action, effect: Effect, new: State): Action?
-}
+typealias PostProcessor<Action, Effect, State> = PostProcessor<Action, Effect, State>

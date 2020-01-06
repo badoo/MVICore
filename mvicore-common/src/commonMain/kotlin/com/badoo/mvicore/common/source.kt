@@ -20,7 +20,7 @@ fun <T> Source<T>.connect(sink: Sink<T>) =
 
 
 class PublishSource<T> internal constructor(): Source<T>, Sink<T> {
-    private val observers: AtomicRef<Array<Observer<T>>> = AtomicRef(emptyArray())
+    private val observers: AtomicRef<List<Observer<T>>> = AtomicRef(emptyList())
 
     override fun connect(observer: Observer<T>): Cancellable {
         observers.update { it + observer }
@@ -40,7 +40,7 @@ class PublishSource<T> internal constructor(): Source<T>, Sink<T> {
 }
 
 class BehaviourSource<T> internal constructor(initialValue: Any? = NoValue) : Source<T>, Sink<T> {
-    private val observers: AtomicRef<Array<Observer<T>>> = AtomicRef(emptyArray())
+    private val observers: AtomicRef<List<Observer<T>>> = AtomicRef(emptyList())
     private val _value = AtomicRef(initialValue)
 
     override fun connect(observer: Observer<T>): Cancellable {

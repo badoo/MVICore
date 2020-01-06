@@ -45,4 +45,38 @@ class SourceTest {
 
         assertEquals(emptyList(), sink.values)
     }
+
+    @Test
+    fun source_calls_on_subscribe_with_cancellable() {
+        val source = source<Int>()
+        val observer = TestObserver<Int>()
+
+        source.connect(observer)
+
+        assertEquals(observer.onSubscribeEvents.size, 1)
+    }
+
+    @Test
+    fun source_sends_correct_cancellable_downstream() {
+        val source = source<Int>()
+        val observer = TestObserver<Int>()
+
+        source.connect(observer)
+
+        val cancellable = observer.onSubscribeEvents.first()
+        cancellable.cancel()
+        assertEquals(observer.onCompleteEvents.size, 1)
+    }
+
+
+    @Test
+    fun source_completes_observer_on_cancel() {
+        val source = source<Int>()
+        val observer = TestObserver<Int>()
+
+        val cancellable = source.connect(observer)
+        cancellable.cancel()
+
+        assertEquals(observer.onCompleteEvents.size, 1)
+    }
 }

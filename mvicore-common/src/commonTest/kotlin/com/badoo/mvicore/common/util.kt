@@ -6,7 +6,7 @@ import com.badoo.mvicore.common.element.NewsPublisher
 import com.badoo.mvicore.common.element.Reducer
 import kotlin.test.assertEquals
 
-class TestSink<T>: Sink<T> {
+open class TestSink<T>: Sink<T> {
     private val _values = AtomicRef<List<T>>(emptyList())
     val values: List<T>
         get() = _values.get()
@@ -21,6 +21,25 @@ fun <T> TestSink<T>.assertValues(vararg values: T) =
 
 fun <T> TestSink<T>.assertNoValues() =
     assertEquals(emptyList(), this.values)
+
+class TestObserver<T>: TestSink<T>(), Observer<T> {
+    val onSubscribeEvents = mutableListOf<Cancellable>()
+    val onCompleteEvents = mutableListOf<Unit>()
+    val onErrorEvents = mutableListOf<Throwable>()
+
+    override fun onSubscribe(cancellable: Cancellable) {
+        onSubscribeEvents += cancellable
+    }
+
+    override fun onComplete() {
+        onCompleteEvents += Unit
+    }
+
+    override fun onError(throwable: Throwable) {
+        onErrorEvents += throwable
+    }
+
+}
 
 fun <State, Effect> reducer(block: (state: State, effect: Effect) -> State) =
     object : Reducer<State, Effect> {

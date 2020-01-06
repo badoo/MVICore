@@ -28,7 +28,7 @@ class BaseFeatureTest {
         val sink = TestSink<String>()
 
         feature.connect(sink)
-        feature.invoke(0)
+        feature.invoke("0")
 
         sink.assertValues("", "0")
     }
@@ -39,7 +39,7 @@ class BaseFeatureTest {
         val sink = TestSink<String>()
 
         feature.connect(sink)
-        feature.invoke(1)
+        feature.invoke("1")
 
         sink.assertValues("", "1", "12")
     }
@@ -56,14 +56,14 @@ class BaseFeatureTest {
 
     @Test
     fun feature_emits_news_for_each_state_update() {
-        val feature = TestActorReducerFeatureWNews()
+        val feature = TestBaseFeatureWNews()
         val stateSink = TestSink<String>()
         val newsSink = TestSink<Int>()
 
         feature.news.connect(newsSink)
         feature.connect(stateSink)
-        feature.invoke(0)
-        feature.invoke(1)
+        feature.invoke("0")
+        feature.invoke("1")
 
         stateSink.assertValues("", "0", "01", "012")
         newsSink.assertValues(0, 2)
@@ -71,17 +71,17 @@ class BaseFeatureTest {
 
     @Test
     fun feature_stops_emitting_after_cancel() {
-        val feature = TestActorReducerFeatureWNews()
+        val feature = TestBaseFeatureWNews()
         val stateSink = TestSink<String>()
         val newsSink = TestSink<Int>()
 
         feature.news.connect(newsSink)
         feature.connect(stateSink)
 
-        feature.invoke(0)
+        feature.invoke("0")
         feature.cancel()
 
-        feature.invoke(1)
+        feature.invoke("1")
 
         stateSink.assertValues("", "0")
         newsSink.assertValues(0)
@@ -89,8 +89,9 @@ class BaseFeatureTest {
     }
 }
 
-class TestBaseFeature(initialState: String = ""): ActorReducerFeature<Int, Int, String, Nothing>(
+class TestBaseFeature(initialState: String = ""): BaseFeature<Int, String, Int, String, Nothing>(
     initialState = initialState,
+    wishToAction = { it.toInt() },
     actor = actor { _, wish ->
         if (wish % 2 == 0) ValueSource(wish) else ValueSource(wish, wish + 1)
     },
@@ -99,8 +100,9 @@ class TestBaseFeature(initialState: String = ""): ActorReducerFeature<Int, Int, 
     }
 )
 
-class TestBaseFeatureWBootstrapper(initialState: String = ""): ActorReducerFeature<Int, Int, String, Nothing>(
+class TestBaseFeatureWBootstrapper(initialState: String = ""): BaseFeature<Int, String, Int, String, Nothing>(
     initialState = initialState,
+    wishToAction = { it.toInt() },
     actor = actor { _, wish ->
         if (wish % 2 == 0) ValueSource(wish) else ValueSource(wish, wish + 1)
     },
@@ -112,8 +114,9 @@ class TestBaseFeatureWBootstrapper(initialState: String = ""): ActorReducerFeatu
     }
 )
 
-class TestBaseFeatureWNews(initialState: String = ""): ActorReducerFeature<Int, Int, String, Int>(
+class TestBaseFeatureWNews(initialState: String = ""): BaseFeature<Int, String, Int, String, Int>(
     initialState = initialState,
+    wishToAction = { it.toInt() },
     actor = actor { _, wish ->
         if (wish % 2 == 0) ValueSource(wish) else ValueSource(wish, wish + 1)
     },

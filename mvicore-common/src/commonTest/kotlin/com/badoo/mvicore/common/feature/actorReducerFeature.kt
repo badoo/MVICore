@@ -46,7 +46,7 @@ class ActorReducerFeatureTest {
 
     @Test
     fun feature_updates_states_on_init_with_bootstrapper() {
-        val feature = TestBaseFeatureWBootstrapper()
+        val feature = TestActorReducerFeatureWBootstrapper()
         val sink = TestSink<String>()
 
         feature.connect(sink)

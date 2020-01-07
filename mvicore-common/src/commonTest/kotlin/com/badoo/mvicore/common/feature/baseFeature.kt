@@ -139,7 +139,7 @@ class TestBaseFeatureWNews(initialState: String = ""): BaseFeature<Int, String, 
     reducer = reducer { state, effect ->
         state + effect.toString()
     },
-    newsPublisher = newsPublisher { old, action, effect, new ->
+    newsPublisher = newsPublisher { _, _, effect, _ ->
         if (effect % 2 == 0) effect else null
     }
 )

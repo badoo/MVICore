@@ -1,5 +1,6 @@
 import com.badoo.mvicore.common.TestSink
 import com.badoo.mvicore.common.assertValues
+import com.badoo.mvicore.common.connect
 import com.badoo.mvicore.common.element.Reducer
 import com.badoo.mvicore.common.feature.ReducerFeature
 import kotlin.native.concurrent.freeze

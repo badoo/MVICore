@@ -9,6 +9,7 @@ import com.badoo.mvicore.common.newsPublisher
 import com.badoo.mvicore.common.reducer
 import com.badoo.mvicore.common.sources.ValueSource
 import kotlin.test.Test
+import kotlin.test.assertFailsWith
 
 class BaseFeatureTest {
 
@@ -28,6 +29,21 @@ class BaseFeatureTest {
         val sink = TestSink<String>()
 
         feature.connect(sink)
+        feature.invoke("0")
+
+        sink.assertValues("", "0")
+    }
+
+    @Test
+    fun feature_emits_states_after_crash() {
+        val feature = TestBaseFeatureCrashingActor()
+        val sink = TestSink<String>()
+
+        feature.connect(sink)
+
+        assertFailsWith(IllegalArgumentException::class) {
+            feature.invoke("1")
+        }
         feature.invoke("0")
 
         sink.assertValues("", "0")
@@ -125,5 +141,16 @@ class TestBaseFeatureWNews(initialState: String = ""): BaseFeature<Int, String, 
     },
     newsPublisher = newsPublisher { old, action, effect, new ->
         if (effect % 2 == 0) effect else null
+    }
+)
+
+class TestBaseFeatureCrashingActor(initialState: String = ""): BaseFeature<Int, String, Int, String, Nothing>(
+    initialState = initialState,
+    wishToAction = { it.toInt() },
+    actor = actor { _, wish ->
+        if (wish % 2 == 0) ValueSource(wish) else throw IllegalArgumentException("Wish is odd")
+    },
+    reducer = reducer { state, effect ->
+        state + effect.toString()
     }
 )

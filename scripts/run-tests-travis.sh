@@ -3,6 +3,7 @@
 ./gradlew \
   clean \
   :mvicore-common:jvmTest \
+  :mvicore-common:linuxX64Test \
   :mvicore-rx:test \
   :mvicore-android:assembleDebug \
   :mvicore-debugdrawer:assembleDebug \

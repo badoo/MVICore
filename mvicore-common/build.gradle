@@ -23,6 +23,7 @@ kotlin {
             framework()
         }
     }
+    linuxX64 { }
 
     targets {
         fromPreset(presets.macosX64, 'native') // remove when multiple targets are setup
@@ -66,5 +67,8 @@ kotlin {
 
         macosX64Main { dependsOn nativeMain }
         macosX64Test { dependsOn nativeTest }
+
+        linuxX64Main { dependsOn nativeMain }
+        linuxX64Test { dependsOn nativeTest }
      }
 }

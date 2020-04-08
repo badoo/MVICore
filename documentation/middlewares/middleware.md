@@ -107,7 +107,7 @@ val wrappedWithMiddlewares: Consumer<String> =
 wrappedWithMiddlewares.accept("MVICore")
 
 // Should output to console:
-// "LoggingMiddleware: element - Hello orecIVM!"
+// "LoggingMiddleware: element - Hello erocIVM!"
 ```
 
 Explanation: the order in which an element is passing through the `Middleware` layers is from the outermost -> inwards. In the above example this means that the passed in string:

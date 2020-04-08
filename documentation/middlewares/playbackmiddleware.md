@@ -68,7 +68,7 @@ This is by design. Imagine a case, where you have (A), (B), (C) components wired
 ```kotlin
 // input --> (A) --> (B) --> (C) --> UI
 
-binder.bind(intput to A)
+binder.bind(input to A)
 binder.bind(A to B)
 binder.bind(B to C)
 binder.bind(C to UI)

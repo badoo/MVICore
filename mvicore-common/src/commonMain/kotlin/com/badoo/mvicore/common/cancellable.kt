@@ -1,5 +1,9 @@
 package com.badoo.mvicore.common
 
+import com.badoo.reaktive.utils.atomic.AtomicBoolean
+import com.badoo.reaktive.utils.atomic.AtomicReference
+import com.badoo.reaktive.utils.atomic.update
+
 interface Cancellable {
     fun cancel()
     val isCancelled: Boolean
@@ -9,14 +13,14 @@ fun cancellableOf(onCancel: Cancellable.() -> Unit): Cancellable = CancellableIm
 fun cancelled(): Cancellable = CancelledCancellable()
 
 private class CancellableImpl(private val onCancel: Cancellable.() -> Unit): Cancellable {
-    private var isCancelledRef = AtomicRef(false)
+    private var isCancelledRef = AtomicBoolean(false)
 
     override val isCancelled: Boolean
-        get() = isCancelledRef.get()
+        get() = isCancelledRef.value
 
     override fun cancel() {
         if (!isCancelled) {
-            isCancelledRef.update { true }
+            isCancelledRef.value = true
             onCancel()
         }
     }
@@ -30,9 +34,9 @@ private class CancelledCancellable : Cancellable {
 }
 
 class CompositeCancellable(vararg cancellables: Cancellable): Cancellable {
-    private val cancellableListRef: AtomicRef<Set<Cancellable>> = AtomicRef(hashSetOf(*cancellables))
+    private val cancellableListRef: AtomicReference<Set<Cancellable>> = AtomicReference(hashSetOf(*cancellables))
     private val internalCancellable = CancellableImpl {
-        val list = cancellableListRef.get()
+        val list = cancellableListRef.value
         list.forEach { it.cancel() }
         cancellableListRef.update { emptySet() }
     }
@@ -59,8 +63,8 @@ class CompositeCancellable(vararg cancellables: Cancellable): Cancellable {
     }
 }
 
-internal fun AtomicRef<Cancellable?>.cancel() {
-    val value = get()
+internal fun AtomicReference<Cancellable?>.cancel() {
+    val value = value
     if (value != null) {
         value.cancel()
         compareAndSet(value, null)

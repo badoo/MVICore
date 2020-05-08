@@ -8,6 +8,7 @@ import com.badoo.mvicore.common.connect
 import com.badoo.mvicore.common.newsPublisher
 import com.badoo.mvicore.common.reducer
 import com.badoo.mvicore.common.sources.ValueSource
+import com.badoo.reaktive.utils.freeze
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 
@@ -15,7 +16,7 @@ class BaseFeatureTest {
 
     @Test
     fun feature_emits_initial_state_on_connect() {
-        val feature = TestBaseFeature()
+        val feature = TestBaseFeature().freeze()
         val sink = TestSink<String>()
 
         feature.connect(sink)
@@ -25,7 +26,7 @@ class BaseFeatureTest {
 
     @Test
     fun feature_emits_states_on_each_wish() {
-        val feature = TestBaseFeature()
+        val feature = TestBaseFeature().freeze()
         val sink = TestSink<String>()
 
         feature.connect(sink)
@@ -36,7 +37,7 @@ class BaseFeatureTest {
 
     @Test
     fun feature_emits_states_after_crash() {
-        val feature = TestBaseFeatureCrashingActor()
+        val feature = TestBaseFeatureCrashingActor().freeze()
         val sink = TestSink<String>()
 
         feature.connect(sink)
@@ -51,7 +52,7 @@ class BaseFeatureTest {
 
     @Test
     fun feature_emits_states_on_each_actor_emission() {
-        val feature = TestBaseFeature()
+        val feature = TestBaseFeature().freeze()
         val sink = TestSink<String>()
 
         feature.connect(sink)
@@ -62,7 +63,7 @@ class BaseFeatureTest {
 
     @Test
     fun feature_updates_states_on_init_with_bootstrapper() {
-        val feature = TestBaseFeatureWBootstrapper()
+        val feature = TestBaseFeatureWBootstrapper().freeze()
         val sink = TestSink<String>()
 
         feature.connect(sink)
@@ -72,7 +73,7 @@ class BaseFeatureTest {
 
     @Test
     fun feature_emits_news_for_each_state_update() {
-        val feature = TestBaseFeatureWNews()
+        val feature = TestBaseFeatureWNews().freeze()
         val stateSink = TestSink<String>()
         val newsSink = TestSink<Int>()
 
@@ -87,7 +88,7 @@ class BaseFeatureTest {
 
     @Test
     fun feature_stops_emitting_after_cancel() {
-        val feature = TestBaseFeatureWNews()
+        val feature = TestBaseFeatureWNews().freeze()
         val stateSink = TestSink<String>()
         val newsSink = TestSink<Int>()
 

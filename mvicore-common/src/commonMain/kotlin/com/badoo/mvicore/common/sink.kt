@@ -1,5 +1,7 @@
 package com.badoo.mvicore.common
 
+import com.badoo.reaktive.utils.atomic.AtomicReference
+
 interface Sink<T> {
     operator fun invoke(value: T)
 }
@@ -22,7 +24,7 @@ fun <T> ((T) -> Unit).toObserver(): Observer<T> =
     ObserverFromAction(this)
 
 private class ObserverFromAction<T>(val action: (T) -> Unit): Observer<T> {
-    private val cancellable: AtomicRef<Cancellable?> = AtomicRef(null)
+    private val cancellable: AtomicReference<Cancellable?> = AtomicReference(null)
 
     override fun invoke(value: T) {
         action(value)

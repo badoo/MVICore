@@ -5,6 +5,7 @@ import com.badoo.mvicore.common.binder.bind
 import com.badoo.mvicore.common.binder.binder
 import com.badoo.mvicore.common.binder.using
 import com.badoo.mvicore.common.lifecycle.Lifecycle
+import com.badoo.reaktive.utils.freeze
 import kotlin.test.Test
 
 class BinderTest {
@@ -13,7 +14,7 @@ class BinderTest {
 
     @Test
     fun binder_without_lifecycle_connects_source_and_sink() {
-        binder().apply {
+        binder().freeze().apply {
             bind(source to sink)
         }
 
@@ -23,7 +24,7 @@ class BinderTest {
 
     @Test
     fun binder_without_lifecycle_does_not_connect_source_and_sink_after_cancel() {
-        val binder = binder().apply {
+        val binder = binder().freeze().apply {
             bind(source to sink)
         }
 
@@ -35,7 +36,7 @@ class BinderTest {
 
     @Test
     fun binder_without_lifecycle_connects_source_and_sink_using_mapper() {
-        binder().apply {
+        binder().freeze().apply {
             bind(source to sink using { it + 1 })
         }
 
@@ -45,7 +46,7 @@ class BinderTest {
 
     @Test
     fun binder_without_lifecycle_connects_source_and_sink_skips_nulls_from_mapper() {
-        binder().apply {
+        binder().freeze().apply {
             bind(source to sink using { if (it % 2 == 0) null else it })
         }
 
@@ -57,8 +58,8 @@ class BinderTest {
 
     @Test
     fun binder_without_lifecycle_connects_source_and_sink_using_connector() {
-        val connector = NotNullConnector<Int, Int> { it }
-        binder().apply {
+        val connector = NotNullConnector<Int, Int> { it }.freeze()
+        binder().freeze().apply {
             bind(source to sink using connector)
         }
 
@@ -68,8 +69,8 @@ class BinderTest {
 
     @Test
     fun binder_with_lifecycle_connects_source_and_sink_when_active() {
-        val lifecycle = Lifecycle.manual()
-        binder(lifecycle).apply {
+        val lifecycle = Lifecycle.manual().freeze()
+        binder(lifecycle).freeze().apply {
             bind(source to sink)
         }
 
@@ -81,8 +82,8 @@ class BinderTest {
 
     @Test
     fun binder_with_lifecycle_does_not_connect_source_and_sink_before_active() {
-        val lifecycle = Lifecycle.manual()
-        binder(lifecycle).apply {
+        val lifecycle = Lifecycle.manual().freeze()
+        binder(lifecycle).freeze().apply {
             bind(source to sink)
         }
 
@@ -94,8 +95,8 @@ class BinderTest {
 
     @Test
     fun binder_with_lifecycle_disconnect_source_and_sink_after_end() {
-        val lifecycle = Lifecycle.manual()
-        binder(lifecycle).apply {
+        val lifecycle = Lifecycle.manual().freeze()
+        binder(lifecycle).freeze().apply {
             bind(source to sink)
         }
 
@@ -109,8 +110,8 @@ class BinderTest {
 
     @Test
     fun binder_with_lifecycle_reconnect_source_and_sink_after_begin() {
-        val lifecycle = Lifecycle.manual()
-        binder(lifecycle).apply {
+        val lifecycle = Lifecycle.manual().freeze()
+        binder(lifecycle).freeze().apply {
             bind(source to sink)
         }
 
@@ -126,8 +127,8 @@ class BinderTest {
 
     @Test
     fun binder_with_lifecycle_does_not_reconnect_source_and_sink_after_cancel() {
-        val lifecycle = Lifecycle.manual()
-        val binder = binder(lifecycle).apply {
+        val lifecycle = Lifecycle.manual().freeze()
+        val binder = binder(lifecycle).freeze().apply {
             bind(source to sink)
         }
 
@@ -143,10 +144,10 @@ class BinderTest {
 
     @Test
     fun binder_with_lifecycle_connects_source_and_sink_if_lifecycle_started() {
-        val lifecycle = Lifecycle.manual()
+        val lifecycle = Lifecycle.manual().freeze()
         lifecycle.begin()
 
-        binder(lifecycle).apply {
+        binder(lifecycle).freeze().apply {
             bind(source to sink)
         }
 
@@ -174,19 +175,19 @@ class BinderTest {
     @Test
     fun binder_covariant_endpoints_compile_for_pair() {
         val sink = sinkOf<Any> { /* no-op */ }
-        binder().bind(source to sink)
+        binder().freeze().bind(source to sink)
     }
 
     @Test
     fun binder_covariant_endpoints_compile_for_connection() {
         val sink = sinkOf { _: Any -> /* no-op */ }
         val intToString: (Int) -> String = { it.toString() }
-        binder().bind(source to sink using intToString)
+        binder().freeze().bind(source to sink using intToString)
     }
 
     @Test
     fun binder_delivers_message_to_all_sinks_on_dispose() {
-        val binder = binder()
+        val binder = binder().freeze()
 
         val sink2 = sinkOf { _: Int -> binder.cancel() }
 
@@ -205,7 +206,7 @@ class BinderTest {
             bind(source to passThroughSource)
             source.invoke(0)
             bind(passThroughSource to sink)
-        }
+        }.freeze()
 
         sink.assertValues(0)
     }

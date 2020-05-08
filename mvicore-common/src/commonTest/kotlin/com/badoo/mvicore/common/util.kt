@@ -4,12 +4,14 @@ import com.badoo.mvicore.common.element.Actor
 import com.badoo.mvicore.common.element.Bootstrapper
 import com.badoo.mvicore.common.element.NewsPublisher
 import com.badoo.mvicore.common.element.Reducer
+import com.badoo.reaktive.utils.atomic.AtomicReference
+import com.badoo.reaktive.utils.atomic.update
 import kotlin.test.assertEquals
 
 open class TestSink<T>: Sink<T> {
-    private val _values = AtomicRef<List<T>>(emptyList())
+    private val _values = AtomicReference<List<T>>(emptyList())
     val values: List<T>
-        get() = _values.get()
+        get() = _values.value
 
     override fun invoke(value: T) {
         _values.update { it + value }

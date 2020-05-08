@@ -1,5 +1,8 @@
 package com.badoo.mvicore.common
 
+import com.badoo.reaktive.utils.atomic.AtomicReference
+import com.badoo.reaktive.utils.atomic.update
+
 /**
  * NOTE: in conversions from other frameworks you need to override equals and hashCode
  * to support binder "emit after dispose" functionality
@@ -20,7 +23,7 @@ fun <T> Source<T>.connect(sink: Sink<T>) =
 
 
 class PublishSource<T> internal constructor(): Source<T>, Sink<T> {
-    private val observers: AtomicRef<List<Observer<T>>> = AtomicRef(emptyList())
+    private val observers: AtomicReference<List<Observer<T>>> = AtomicReference(emptyList())
 
     override fun connect(observer: Observer<T>): Cancellable {
         observers.update { it + observer }
@@ -34,14 +37,14 @@ class PublishSource<T> internal constructor(): Source<T>, Sink<T> {
     }
 
     override fun invoke(value: T) {
-        val observers = observers.get()
+        val observers = observers.value
         observers.forEach { it(value) }
     }
 }
 
 class BehaviourSource<T> internal constructor(initialValue: Any? = NoValue) : Source<T>, Sink<T> {
-    private val observers: AtomicRef<List<Observer<T>>> = AtomicRef(emptyList())
-    private val _value = AtomicRef(initialValue)
+    private val observers: AtomicReference<List<Observer<T>>> = AtomicReference(emptyList())
+    private val _value = AtomicReference(initialValue)
 
     override fun connect(observer: Observer<T>): Cancellable {
         observers.update { it + observer }
@@ -52,7 +55,7 @@ class BehaviourSource<T> internal constructor(initialValue: Any? = NoValue) : So
         }
         observer.onSubscribe(cancellable)
 
-        val value = _value.get()
+        val value = _value.value
         if (value !== NoValue) {
             observer.invoke(value as T)
         }
@@ -61,13 +64,13 @@ class BehaviourSource<T> internal constructor(initialValue: Any? = NoValue) : So
     }
 
     override fun invoke(value: T) {
-        val observers = observers.get()
+        val observers = observers.value
         _value.update { value }
         observers.forEach { it(value) }
     }
 
     val value: T? get() =
-        _value.get().takeIf { it !== NoValue } as T?
+        _value.value.takeIf { it !== NoValue } as T?
 
     object NoValue
 }

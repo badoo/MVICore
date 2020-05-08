@@ -33,6 +33,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation kotlin('stdlib-common')
+                implementation deps('com.badoo.reaktive:utils')
             }
         }
         commonTest {
@@ -62,8 +63,7 @@ kotlin {
             }
         }
         nativeMain { dependsOn commonMain }
-        // Empty source set is required in order to have native tests task
-        nativeTest { }
+        nativeTest { dependsOn commonTest }
 
         macosX64Main { dependsOn nativeMain }
         macosX64Test { dependsOn nativeTest }

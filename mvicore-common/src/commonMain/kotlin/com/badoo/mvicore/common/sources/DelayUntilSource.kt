@@ -1,12 +1,13 @@
 package com.badoo.mvicore.common.sources
 
-import com.badoo.mvicore.common.AtomicRef
 import com.badoo.mvicore.common.Cancellable
 import com.badoo.mvicore.common.CompositeCancellable
 import com.badoo.mvicore.common.Observer
 import com.badoo.mvicore.common.Source
 import com.badoo.mvicore.common.connect
-import com.badoo.mvicore.common.update
+import com.badoo.reaktive.utils.atomic.AtomicBoolean
+import com.badoo.reaktive.utils.atomic.AtomicReference
+import com.badoo.reaktive.utils.atomic.update
 
 internal class DelayUntilSource<T>(
     private val signal: Source<Boolean>,
@@ -19,13 +20,13 @@ internal class DelayUntilSource<T>(
         private val delegate: Observer<T>,
         signal: Source<Boolean>
     ) : Observer<T> {
-        private val passThrough = AtomicRef(false)
-        private val isCompleted = AtomicRef(false)
-        private val events: AtomicRef<List<T>> = AtomicRef(emptyList())
+        private val passThrough = AtomicBoolean(false)
+        private val isCompleted = AtomicBoolean(false)
+        private val events: AtomicReference<List<T>> = AtomicReference(emptyList())
         private val cancellable = signal.connect { if (it) send() }
 
         override fun invoke(value: T) {
-            if (passThrough.get()) {
+            if (passThrough.value) {
                 delegate(value)
             } else {
                 events.update { it + value }
@@ -35,7 +36,7 @@ internal class DelayUntilSource<T>(
         private fun send() {
             passThrough.compareAndSet(false, true)
 
-            val events = this.events.get()
+            val events = this.events.value
             events.forEach { delegate(it) }
             this.events.update { emptyList() }
 
@@ -52,7 +53,7 @@ internal class DelayUntilSource<T>(
         }
 
         private fun completeDownstream() {
-            if (isCompleted.get() && (passThrough.get() || cancellable.isCancelled)) {
+            if (isCompleted.value && (passThrough.value || cancellable.isCancelled)) {
                 delegate.onComplete()
             }
         }

@@ -1,5 +1,6 @@
 package com.badoo.mvicore.common
 
+import com.badoo.reaktive.utils.freeze
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -14,7 +15,7 @@ class CancellableTest {
     @Test
     fun cancellable_action_is_executed_on_cancel() {
         val sink = TestSink<Unit>()
-        val cancellable = cancellableOf { sink(Unit) }
+        val cancellable = cancellableOf { sink(Unit) }.freeze()
 
         cancellable.cancel()
 
@@ -24,7 +25,7 @@ class CancellableTest {
     @Test
     fun cancellable_action_is_executed_only_once_on_cancel() {
         val sink = TestSink<Unit>()
-        val cancellable = cancellableOf { sink(Unit) }
+        val cancellable = cancellableOf { sink(Unit) }.freeze()
 
         cancellable.cancel()
         cancellable.cancel()
@@ -34,7 +35,7 @@ class CancellableTest {
 
     @Test
     fun cancellable_is_cancelled_on_cancel() {
-        val cancellable = cancellableOf { }
+        val cancellable = cancellableOf { }.freeze()
 
         cancellable.cancel()
 
@@ -44,7 +45,7 @@ class CancellableTest {
     @Test
     fun composite_cancellable_cancels_children() {
         val childCancellable = cancellableOf {  }
-        val compositeCancellable = CompositeCancellable(childCancellable)
+        val compositeCancellable = CompositeCancellable(childCancellable).freeze()
 
         compositeCancellable.cancel()
 
@@ -54,7 +55,7 @@ class CancellableTest {
     @Test
     fun composite_cancellable_does_not_cancel_removed_children() {
         val childCancellable = cancellableOf {  }
-        val compositeCancellable = CompositeCancellable(childCancellable)
+        val compositeCancellable = CompositeCancellable(childCancellable).freeze()
 
         compositeCancellable -= childCancellable
         compositeCancellable.cancel()
@@ -65,7 +66,7 @@ class CancellableTest {
     @Test
     fun composite_cancellable_cancel_added_children() {
         val childCancellable = cancellableOf {  }
-        val compositeCancellable = CompositeCancellable()
+        val compositeCancellable = CompositeCancellable().freeze()
 
         compositeCancellable += childCancellable
         compositeCancellable.cancel()

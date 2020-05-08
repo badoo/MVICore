@@ -8,13 +8,14 @@ import com.badoo.mvicore.common.connect
 import com.badoo.mvicore.common.newsPublisher
 import com.badoo.mvicore.common.reducer
 import com.badoo.mvicore.common.sources.ValueSource
+import com.badoo.reaktive.utils.freeze
 import kotlin.test.Test
 
 class ActorReducerFeatureTest {
 
     @Test
     fun feature_emits_initial_state_on_connect() {
-        val feature = TestActorReducerFeature()
+        val feature = TestActorReducerFeature().freeze()
         val sink = TestSink<String>()
 
         feature.connect(sink)
@@ -24,7 +25,7 @@ class ActorReducerFeatureTest {
 
     @Test
     fun feature_emits_states_on_each_wish() {
-        val feature = TestActorReducerFeature()
+        val feature = TestActorReducerFeature().freeze()
         val sink = TestSink<String>()
 
         feature.connect(sink)
@@ -35,7 +36,7 @@ class ActorReducerFeatureTest {
 
     @Test
     fun feature_emits_states_on_each_actor_emission() {
-        val feature = TestActorReducerFeature()
+        val feature = TestActorReducerFeature().freeze()
         val sink = TestSink<String>()
 
         feature.connect(sink)
@@ -46,7 +47,7 @@ class ActorReducerFeatureTest {
 
     @Test
     fun feature_updates_states_on_init_with_bootstrapper() {
-        val feature = TestActorReducerFeatureWBootstrapper()
+        val feature = TestActorReducerFeatureWBootstrapper().freeze()
         val sink = TestSink<String>()
 
         feature.connect(sink)
@@ -56,7 +57,7 @@ class ActorReducerFeatureTest {
 
     @Test
     fun feature_emits_news_for_each_state_update() {
-        val feature = TestActorReducerFeatureWNews()
+        val feature = TestActorReducerFeatureWNews().freeze()
         val stateSink = TestSink<String>()
         val newsSink = TestSink<Int>()
 
@@ -71,7 +72,7 @@ class ActorReducerFeatureTest {
 
     @Test
     fun feature_stops_emitting_after_cancel() {
-        val feature = TestActorReducerFeatureWNews()
+        val feature = TestActorReducerFeatureWNews().freeze()
         val stateSink = TestSink<String>()
         val newsSink = TestSink<Int>()
 

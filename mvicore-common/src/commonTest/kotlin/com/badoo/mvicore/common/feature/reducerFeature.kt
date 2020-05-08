@@ -6,12 +6,13 @@ import com.badoo.mvicore.common.bootstrapper
 import com.badoo.mvicore.common.connect
 import com.badoo.mvicore.common.reducer
 import com.badoo.mvicore.common.sources.ValueSource
+import com.badoo.reaktive.utils.freeze
 import kotlin.test.Test
 
 class ReducerFeatureTest {
     @Test
     fun reducer_feature_emits_initial_state_on_connect() {
-        val feature = TestReducerFeature()
+        val feature = TestReducerFeature().freeze()
         val sink = TestSink<String>()
 
         feature.connect(sink)
@@ -21,7 +22,7 @@ class ReducerFeatureTest {
 
     @Test
     fun reducer_feature_emits_new_state_on_new_wish() {
-        val feature = TestReducerFeature()
+        val feature = TestReducerFeature().freeze()
         val sink = TestSink<String>()
 
         feature.connect(sink)
@@ -32,7 +33,7 @@ class ReducerFeatureTest {
 
     @Test
     fun reducer_feature_emits_new_state_on_new_wish_2() {
-        val feature = TestReducerFeature()
+        val feature = TestReducerFeature().freeze()
         val sink = TestSink<String>()
 
         feature.connect(sink)
@@ -44,7 +45,7 @@ class ReducerFeatureTest {
 
     @Test
     fun reducer_feature_emits_new_state_on_bootstrapper_action() {
-        val feature = TestReducerFeatureWBootstrapper()
+        val feature = TestReducerFeatureWBootstrapper().freeze()
         val sink = TestSink<String>()
 
         feature.connect(sink)
@@ -55,7 +56,7 @@ class ReducerFeatureTest {
 
     @Test
     fun reducer_feature_emits_news_on_wish() {
-        val feature = TestReducerFeatureWNews()
+        val feature = TestReducerFeatureWNews().freeze()
         val sink = TestSink<Int>()
 
         feature.news.connect(sink)
@@ -67,7 +68,7 @@ class ReducerFeatureTest {
 
     @Test
     fun reducer_feature_stop_processing_events_after_cancel() {
-        val feature = TestReducerFeature()
+        val feature = TestReducerFeature().freeze()
         val sink = TestSink<String>()
 
         feature.connect(sink)

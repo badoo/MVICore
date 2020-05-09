@@ -25,20 +25,24 @@ fun <T> TestSink<T>.assertNoValues() =
     assertEquals(emptyList(), this.values)
 
 class TestObserver<T>: TestSink<T>(), Observer<T> {
-    val onSubscribeEvents = mutableListOf<Cancellable>()
-    val onCompleteEvents = mutableListOf<Unit>()
-    val onErrorEvents = mutableListOf<Throwable>()
+    private val onSubscribeEventsRef = AtomicReference<List<Cancellable>>(emptyList())
+    private val onCompleteEventsRef = AtomicReference<List<Unit>>(emptyList())
+    private val onErrorEventsRef = AtomicReference<List<Throwable>>(emptyList())
+
+    val onSubscribeEvents get() = onSubscribeEventsRef.value
+    val onCompleteEvents get() = onCompleteEventsRef.value
+    val onErrorEvents get() = onErrorEventsRef.value
 
     override fun onSubscribe(cancellable: Cancellable) {
-        onSubscribeEvents += cancellable
+        onSubscribeEventsRef.update { it + cancellable }
     }
 
     override fun onComplete() {
-        onCompleteEvents += Unit
+        onCompleteEventsRef.update { it + Unit }
     }
 
     override fun onError(throwable: Throwable) {
-        onErrorEvents += throwable
+        onErrorEventsRef.update { it + throwable }
     }
 
 }

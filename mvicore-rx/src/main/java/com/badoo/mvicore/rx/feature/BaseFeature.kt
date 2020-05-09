@@ -1,18 +1,17 @@
 package com.badoo.mvicore.rx.feature
 
 import com.badoo.mvicore.common.Source
-import com.badoo.mvicore.common.connect
 import com.badoo.mvicore.common.feature.BaseFeature
 import com.badoo.mvicore.rx.element.Actor
 import com.badoo.mvicore.rx.element.Bootstrapper
 import com.badoo.mvicore.rx.element.NewsPublisher
 import com.badoo.mvicore.rx.element.PostProcessor
 import com.badoo.mvicore.rx.element.Reducer
+import com.badoo.mvicore.rx.toCommonObserver
 import com.badoo.mvicore.rx.toObservable
 import com.badoo.mvicore.rx.toSource
 import io.reactivex.ObservableSource
 import io.reactivex.Observer
-import io.reactivex.disposables.Disposables
 
 abstract class BaseFeature<Action : Any, Wish : Any, Effect : Any, State : Any, News : Any> (
     initialState: State,
@@ -41,11 +40,7 @@ abstract class BaseFeature<Action : Any, Wish : Any, Effect : Any, State : Any, 
         get() = delegate.news.toObservable()
 
     override fun subscribe(observer: Observer<in State>) {
-        observer.onSubscribe(
-            Disposables.fromAction {
-                delegate.connect { observer.onNext(it) }
-            }
-        )
+        delegate.connect(observer.toCommonObserver())
     }
 
     private class ActorAdapter<State, Action, Effect>(

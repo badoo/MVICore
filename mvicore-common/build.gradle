@@ -23,6 +23,16 @@ kotlin {
             framework()
         }
     }
+    iosX64 {
+        binaries {
+            framework()
+        }
+    }
+    iosArm64 {
+        binaries {
+            framework()
+        }
+    }
     linuxX64 { }
 
     targets {
@@ -70,5 +80,11 @@ kotlin {
 
         linuxX64Main { dependsOn nativeMain }
         linuxX64Test { dependsOn nativeTest }
+
+        iosX64Main { dependsOn nativeMain }
+        iosX64Test { dependsOn nativeTest }
+
+        iosArm64Test { dependsOn nativeTest }
+        iosArm64Test { dependsOn nativeTest }
      }
 }

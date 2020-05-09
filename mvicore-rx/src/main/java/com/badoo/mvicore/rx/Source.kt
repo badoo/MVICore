@@ -18,7 +18,7 @@ internal class SourceAdapter<T>(internal val delegate: Observable<T>): Source<T>
     override fun connect(observer: MVICoreObserver<T>): Cancellable =
         DisposableAdapter(
             delegate.subscribe(
-                observer::invoke,
+                observer::accept,
                 observer::onError,
                 observer::onComplete,
                 { observer.onSubscribe(DisposableAdapter(it)) }

@@ -15,7 +15,7 @@ class CancellableTest {
     @Test
     fun cancellable_action_is_executed_on_cancel() {
         val sink = TestSink<Unit>()
-        val cancellable = cancellableOf { sink(Unit) }.freeze()
+        val cancellable = cancellableOf { sink.accept(Unit) }.freeze()
 
         cancellable.cancel()
 
@@ -25,7 +25,7 @@ class CancellableTest {
     @Test
     fun cancellable_action_is_executed_only_once_on_cancel() {
         val sink = TestSink<Unit>()
-        val cancellable = cancellableOf { sink(Unit) }.freeze()
+        val cancellable = cancellableOf { sink.accept(Unit) }.freeze()
 
         cancellable.cancel()
         cancellable.cancel()

@@ -27,7 +27,7 @@ class ReducerFeatureTest {
 
         feature.connect(sink)
 
-        feature.invoke(0)
+        feature.accept(0)
         sink.assertValues("", "0")
     }
 
@@ -38,8 +38,8 @@ class ReducerFeatureTest {
 
         feature.connect(sink)
 
-        feature.invoke(0)
-        feature.invoke(1)
+        feature.accept(0)
+        feature.accept(1)
         sink.assertValues("", "0", "01")
     }
 
@@ -50,7 +50,7 @@ class ReducerFeatureTest {
 
         feature.connect(sink)
 
-        feature.invoke(1)
+        feature.accept(1)
         sink.assertValues("0", "01")
     }
 
@@ -61,8 +61,8 @@ class ReducerFeatureTest {
 
         feature.news.connect(sink)
 
-        feature.invoke(1)
-        feature.invoke(1)
+        feature.accept(1)
+        feature.accept(1)
         sink.assertValues(1, 2)
     }
 
@@ -74,7 +74,7 @@ class ReducerFeatureTest {
         feature.connect(sink)
         feature.cancel()
 
-        feature.invoke(1)
+        feature.accept(1)
         sink.assertValues("")
     }
 

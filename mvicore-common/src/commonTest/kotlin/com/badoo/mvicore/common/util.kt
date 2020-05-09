@@ -13,7 +13,7 @@ open class TestSink<T>: Sink<T> {
     val values: List<T>
         get() = _values.value
 
-    override fun invoke(value: T) {
+    override fun accept(value: T) {
         _values.update { it + value }
     }
 }

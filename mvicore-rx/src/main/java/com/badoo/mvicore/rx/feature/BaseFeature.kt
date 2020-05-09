@@ -34,7 +34,7 @@ abstract class BaseFeature<Action : Any, Wish : Any, Effect : Any, State : Any, 
     ) {  }
 
     override fun accept(wish: Wish) {
-        delegate.invoke(wish)
+        delegate.accept(wish)
     }
 
     override val news: ObservableSource<News>
@@ -61,4 +61,11 @@ abstract class BaseFeature<Action : Any, Wish : Any, Effect : Any, State : Any, 
         override fun invoke(): Source<Action> =
             delegate.invoke().toSource()
     }
+
+    override fun dispose() {
+        delegate.cancel()
+    }
+
+    override fun isDisposed(): Boolean =
+        delegate.isCancelled
 }

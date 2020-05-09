@@ -5,7 +5,7 @@ import com.badoo.mvicore.common.element.Bootstrapper
 import com.badoo.mvicore.common.element.NewsPublisher
 import com.badoo.mvicore.common.element.Reducer
 
-open class ActorReducerFeature<Wish : Any, Effect : Any, State : Any, News : Any>(
+open class ActorReducerFeature<in Wish : Any, in Effect : Any, out State : Any, out News : Any>(
     initialState: State,
     bootstrapper: Bootstrapper<Wish>? = null,
     actor: Actor<State, Wish, Effect>,

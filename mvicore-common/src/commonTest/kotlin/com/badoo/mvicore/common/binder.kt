@@ -18,7 +18,7 @@ class BinderTest {
             bind(source to sink)
         }
 
-        source.invoke(0)
+        source.accept(0)
         sink.assertValues(0)
     }
 
@@ -30,7 +30,7 @@ class BinderTest {
 
         binder.cancel()
 
-        source.invoke(0)
+        source.accept(0)
         sink.assertNoValues()
     }
 
@@ -40,7 +40,7 @@ class BinderTest {
             bind(source to sink using { it + 1 })
         }
 
-        source.invoke(0)
+        source.accept(0)
         sink.assertValues(1)
     }
 
@@ -50,9 +50,9 @@ class BinderTest {
             bind(source to sink using { if (it % 2 == 0) null else it })
         }
 
-        source.invoke(0)
-        source.invoke(1)
-        source.invoke(2)
+        source.accept(0)
+        source.accept(1)
+        source.accept(2)
         sink.assertValues(1)
     }
 
@@ -63,7 +63,7 @@ class BinderTest {
             bind(source to sink using connector)
         }
 
-        source.invoke(0)
+        source.accept(0)
         sink.assertValues(0)
     }
 
@@ -75,7 +75,7 @@ class BinderTest {
         }
 
         lifecycle.begin()
-        source.invoke(0)
+        source.accept(0)
 
         sink.assertValues(0)
     }
@@ -87,7 +87,7 @@ class BinderTest {
             bind(source to sink)
         }
 
-        source.invoke(0)
+        source.accept(0)
         lifecycle.begin()
 
         sink.assertNoValues()
@@ -101,9 +101,9 @@ class BinderTest {
         }
 
         lifecycle.begin()
-        source.invoke(0)
+        source.accept(0)
         lifecycle.end()
-        source.invoke(1)
+        source.accept(1)
 
         sink.assertValues(0)
     }
@@ -116,11 +116,11 @@ class BinderTest {
         }
 
         lifecycle.begin()
-        source.invoke(0)
+        source.accept(0)
         lifecycle.end()
-        source.invoke(1)
+        source.accept(1)
         lifecycle.begin()
-        source.invoke(2)
+        source.accept(2)
 
         sink.assertValues(0, 2)
     }
@@ -133,11 +133,11 @@ class BinderTest {
         }
 
         lifecycle.begin()
-        source.invoke(0)
+        source.accept(0)
         lifecycle.end()
         binder.cancel()
         lifecycle.begin()
-        source.invoke(2)
+        source.accept(2)
 
         sink.assertValues(0)
     }
@@ -151,7 +151,7 @@ class BinderTest {
             bind(source to sink)
         }
 
-        source.invoke(0)
+        source.accept(0)
 
         sink.assertValues(0)
     }
@@ -167,7 +167,7 @@ class BinderTest {
         lifecycle.begin()
         lifecycle.begin()
 
-        source.invoke(0)
+        source.accept(0)
 
         sink.assertValues(0)
     }
@@ -194,7 +194,7 @@ class BinderTest {
         binder.bind(source to sink2)
         binder.bind(source to sink)
 
-        source.invoke(0)
+        source.accept(0)
 
         sink.assertValues(0)
     }
@@ -204,7 +204,7 @@ class BinderTest {
         val passThroughSource = source<Int>()
         binder {
             bind(source to passThroughSource)
-            source.invoke(0)
+            source.accept(0)
             bind(passThroughSource to sink)
         }.freeze()
 

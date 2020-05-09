@@ -9,7 +9,7 @@ import com.badoo.reaktive.utils.atomic.AtomicBoolean
 import com.badoo.reaktive.utils.atomic.AtomicReference
 import com.badoo.reaktive.utils.atomic.update
 
-internal class DelayUntilSource<T>(
+internal class DelayUntilSource<out T>(
     private val signal: Source<Boolean>,
     private val delegate: Source<T>
 ): Source<T> {
@@ -25,9 +25,9 @@ internal class DelayUntilSource<T>(
         private val events: AtomicReference<List<T>> = AtomicReference(emptyList())
         private val cancellable = signal.connect { if (it) send() }
 
-        override fun invoke(value: T) {
+        override fun accept(value: T) {
             if (passThrough.value) {
-                delegate(value)
+                delegate.accept(value)
             } else {
                 events.update { it + value }
             }
@@ -37,7 +37,7 @@ internal class DelayUntilSource<T>(
             passThrough.compareAndSet(false, true)
 
             val events = this.events.value
-            events.forEach { delegate(it) }
+            events.forEach { delegate.accept(it) }
             this.events.update { emptyList() }
 
             completeDownstream()

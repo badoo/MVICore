@@ -30,7 +30,7 @@ class SourceTest {
         val sink = TestSink<Int>()
 
         source.connect(sink)
-        source.invoke(0)
+        source.accept(0)
 
         assertEquals(listOf(0), sink.values)
     }
@@ -42,7 +42,7 @@ class SourceTest {
         val cancellable = source.connect(sink)
         cancellable.cancel()
 
-        source.invoke(0)
+        source.accept(0)
 
         assertEquals(emptyList(), sink.values)
     }

@@ -11,7 +11,7 @@ import com.badoo.mvicore.common.element.PostProcessor
 import com.badoo.mvicore.common.element.Reducer
 import com.badoo.mvicore.common.source
 
-abstract class BaseFeature<Action : Any, Wish : Any, Effect : Any, State : Any, News : Any> (
+abstract class BaseFeature<in Action : Any, in Wish : Any, in Effect : Any, out State : Any, out News : Any> (
     initialState: State,
     private val wishToAction: (Wish) -> Action,
     private val actor: Actor<State, Action, Effect>,
@@ -31,19 +31,19 @@ abstract class BaseFeature<Action : Any, Wish : Any, Effect : Any, State : Any, 
             cancellables += actor.invoke(oldState, action)
                 .connect { effect ->
                     val newState = reducer(state, effect)
-                    stateSource(newState)
+                    stateSource.accept(newState)
                     newsPublisher?.invoke(oldState, action, effect, newState)?.let {
-                        newsSource(it)
+                        newsSource.accept(it)
                     }
-                    postProcessor?.invoke(oldState, action, effect, newState)?.let(actionSource::invoke)
+                    postProcessor?.invoke(oldState, action, effect, newState)?.let(actionSource::accept)
                 }
         }
         cancellables += bootstrapper?.invoke()?.connect(actionSource)
     }
 
-    override fun invoke(wish: Wish) {
+    override fun accept(wish: Wish) {
         val action = wishToAction(wish)
-        actionSource.invoke(action)
+        actionSource.accept(action)
     }
 
     override fun connect(observer: Observer<State>) = stateSource.connect(observer)

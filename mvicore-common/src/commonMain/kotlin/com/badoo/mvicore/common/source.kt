@@ -7,7 +7,7 @@ import com.badoo.reaktive.utils.atomic.update
  * NOTE: in conversions from other frameworks you need to override equals and hashCode
  * to support binder "emit after dispose" functionality
  */
-interface Source<T> {
+interface Source<out T> {
     fun connect(observer: Observer<T>): Cancellable
 }
 
@@ -16,10 +16,10 @@ fun <T> source(initialValue: T): BehaviourSource<T> = BehaviourSource(initialVal
 fun <T> source(): PublishSource<T> = PublishSource()
 
 fun <T> Source<T>.connect(action: (T) -> Unit) =
-    connect(action.toObserver())
+    connect(sinkOf(action))
 
 fun <T> Source<T>.connect(sink: Sink<T>) =
-    connect(sink::invoke)
+    connect(sink.toObserver())
 
 
 class PublishSource<T> internal constructor(): Source<T>, Sink<T> {
@@ -36,9 +36,9 @@ class PublishSource<T> internal constructor(): Source<T>, Sink<T> {
         return cancellable
     }
 
-    override fun invoke(value: T) {
+    override fun accept(value: T) {
         val observers = observers.value
-        observers.forEach { it(value) }
+        observers.forEach { it.accept(value) }
     }
 }
 
@@ -57,16 +57,16 @@ class BehaviourSource<T> internal constructor(initialValue: Any? = NoValue) : So
 
         val value = _value.value
         if (value !== NoValue) {
-            observer.invoke(value as T)
+            observer.accept(value as T)
         }
 
         return cancellable
     }
 
-    override fun invoke(value: T) {
+    override fun accept(value: T) {
         val observers = observers.value
         _value.update { value }
-        observers.forEach { it(value) }
+        observers.forEach { it.accept(value) }
     }
 
     val value: T? get() =

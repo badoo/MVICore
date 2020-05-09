@@ -43,7 +43,7 @@ internal class SimpleBinder(init: Binder.() -> Unit) : Binder {
 
     init {
         init()
-        initialized(true)
+        initialized.accept(true)
     }
 
     override fun <Out, In> connect(connection: Connection<Out, In>) {

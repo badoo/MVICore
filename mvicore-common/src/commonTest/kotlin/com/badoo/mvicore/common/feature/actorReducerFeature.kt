@@ -29,7 +29,7 @@ class ActorReducerFeatureTest {
         val sink = TestSink<String>()
 
         feature.connect(sink)
-        feature.invoke(0)
+        feature.accept(0)
 
         sink.assertValues("", "0")
     }
@@ -40,7 +40,7 @@ class ActorReducerFeatureTest {
         val sink = TestSink<String>()
 
         feature.connect(sink)
-        feature.invoke(1)
+        feature.accept(1)
 
         sink.assertValues("", "1", "12")
     }
@@ -63,8 +63,8 @@ class ActorReducerFeatureTest {
 
         feature.news.connect(newsSink)
         feature.connect(stateSink)
-        feature.invoke(0)
-        feature.invoke(1)
+        feature.accept(0)
+        feature.accept(1)
 
         stateSink.assertValues("", "0", "01", "012")
         newsSink.assertValues(0, 2)
@@ -79,10 +79,10 @@ class ActorReducerFeatureTest {
         feature.news.connect(newsSink)
         feature.connect(stateSink)
 
-        feature.invoke(0)
+        feature.accept(0)
         feature.cancel()
 
-        feature.invoke(1)
+        feature.accept(1)
 
         stateSink.assertValues("", "0")
         newsSink.assertValues(0)

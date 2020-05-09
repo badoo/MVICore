@@ -22,9 +22,9 @@ internal class StandaloneMiddleware<In>(
         wrappedMiddleware.onBind(connection)
     }
 
-    override fun invoke(value: In) {
+    override fun accept(value: In) {
         wrappedMiddleware.onElement(connection, value)
-        wrappedMiddleware.invoke(value)
+        wrappedMiddleware.accept(value)
     }
 
     override fun onComplete(connection: Connection<In, In>) {

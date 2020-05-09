@@ -4,7 +4,7 @@ import com.badoo.mvicore.common.Cancellable
 import com.badoo.mvicore.common.Observer
 import com.badoo.mvicore.common.Source
 
-internal class MapNotNullSource<Out, In>(private val delegate: Source<Out>, private val mapper: (Out) -> In?): Source<In> {
+internal class MapNotNullSource<in Out, out In>(private val delegate: Source<Out>, private val mapper: (Out) -> In?): Source<In> {
     override fun connect(observer: Observer<In>): Cancellable =
         delegate.connect(MapNotNullObserver(observer, mapper))
 
@@ -12,8 +12,8 @@ internal class MapNotNullSource<Out, In>(private val delegate: Source<Out>, priv
         val delegate: Observer<In>,
         private val mapper: (Out) -> In?
     ): Observer<Out> {
-        override fun invoke(value: Out) {
-            mapper(value)?.let { delegate(it) }
+        override fun accept(value: Out) {
+            mapper(value)?.let { delegate.accept(it) }
         }
 
         override fun onSubscribe(cancellable: Cancellable) {

@@ -11,8 +11,8 @@ abstract class Middleware<Out, In>(
         wrapped.applyIfMiddleware { onBind(connection) }
     }
 
-    override fun invoke(value: In) {
-        wrapped(value)
+    override fun accept(value: In) {
+        wrapped.accept(value)
     }
 
     open fun onElement(connection: Connection<Out, In>, element: In) {

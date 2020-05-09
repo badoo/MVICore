@@ -4,8 +4,8 @@ import com.badoo.mvicore.common.Sink
 import com.badoo.mvicore.common.Source
 
 data class Connection<Out, In>(
-    val from: Source<out Out>? = null,
-    val to: Sink<in In>,
+    val from: Source<Out>? = null,
+    val to: Sink<In>,
     val connector: Connector<Out, In>? = null,
     val name: String? = null
 ) {
@@ -22,17 +22,17 @@ data class Connection<Out, In>(
     }
 }
 
-infix fun <Out, In> Pair<Source<out Out>, Sink<in In>>.using(transformer: (Out) -> In?): Connection<Out, In> =
+infix fun <Out, In> Pair<Source<Out>, Sink<In>>.using(transformer: (Out) -> In?): Connection<Out, In> =
     using(NotNullConnector(transformer))
 
-infix fun <Out, In> Pair<Source<out Out>, Sink<in In>>.using(connector: Connector<Out, In>): Connection<Out, In> =
+infix fun <Out, In> Pair<Source<Out>, Sink<In>>.using(connector: Connector<Out, In>): Connection<Out, In> =
     Connection(
         from = first,
         to = second,
         connector = connector
     )
 
-infix fun <T> Pair<Source<out T>, Sink<in T>>.named(name: String): Connection<T, T> =
+infix fun <T> Pair<Source<T>, Sink<T>>.named(name: String): Connection<T, T> =
     Connection(
         from = first,
         to = second,

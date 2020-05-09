@@ -5,7 +5,7 @@ import com.badoo.mvicore.common.Observer
 import com.badoo.mvicore.common.Source
 import com.badoo.mvicore.common.cancellableOf
 
-class ValueSource<T>(vararg values: T) : Source<T> {
+class ValueSource<out T>(vararg values: T) : Source<T> {
     private val valuesToEmit = values
 
     override fun connect(observer: Observer<T>): Cancellable {
@@ -13,7 +13,7 @@ class ValueSource<T>(vararg values: T) : Source<T> {
         observer.onSubscribe(cancellable)
 
         valuesToEmit.forEach {
-            observer.invoke(it)
+            observer.accept(it)
         }
 
         if (!cancellable.isCancelled) {

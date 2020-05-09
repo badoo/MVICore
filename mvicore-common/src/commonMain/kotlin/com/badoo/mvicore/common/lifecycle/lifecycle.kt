@@ -19,10 +19,10 @@ class ManualLifecycle(
     private val source: BehaviourSource<Lifecycle.Event> = BehaviourSource()
 ) : Lifecycle, Source<Lifecycle.Event> by source {
     fun begin() {
-        source(BEGIN)
+        source.accept(BEGIN)
     }
 
     fun end() {
-        source(END)
+        source.accept(END)
     }
 }

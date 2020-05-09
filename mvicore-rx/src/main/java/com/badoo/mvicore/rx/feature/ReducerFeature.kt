@@ -4,6 +4,7 @@ import com.badoo.mvicore.rx.element.Actor
 import com.badoo.mvicore.rx.element.Bootstrapper
 import com.badoo.mvicore.rx.element.NewsPublisher
 import com.badoo.mvicore.rx.element.Reducer
+import com.badoo.mvicore.rx.element.SimpleNewsPublisher
 import io.reactivex.Observable
 
 open class ReducerFeature<Wish : Any, State : Any, News : Any>(
@@ -31,4 +32,3 @@ open class ReducerFeature<Wish : Any, State : Any, News : Any>(
     }
 }
 
-typealias SimpleNewsPublisher<Wish, State, News> = (old: State, wish: Wish, state: State) -> News?

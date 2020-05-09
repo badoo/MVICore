@@ -11,7 +11,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.0'
+        classpath 'com.android.tools.build:gradle:3.5.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.9.17"
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
@@ -55,6 +55,8 @@ ext {
     depsWithVersion = [
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib-jdk7"           : kotlinVersion,
+            "org.jetbrains.kotlin:kotlin-stdlib-jdk8"           : kotlinVersion,
+            "org.jetbrains.kotlin:kotlin-stdlib"           : kotlinVersion,
 
             // Android
             "android.arch.lifecycle:common-java8"               : androidArchLifecycleVersion,
@@ -68,7 +70,7 @@ ext {
             "io.reactivex.rxjava2:rxandroid"                    : rxAndroidVersion,
 
             // Reaktive
-            'com.badoo.reaktive:utils'                 : reaktiveVersion,
+            'com.badoo.reaktive:utils'                          : reaktiveVersion,
 
             // DI
             "com.google.dagger:dagger"                          : daggerVersion,

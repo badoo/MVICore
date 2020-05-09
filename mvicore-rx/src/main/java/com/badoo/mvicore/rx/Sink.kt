@@ -27,5 +27,4 @@ fun <T> Observer<T>.toCommonObserver() = object : com.badoo.mvicore.common.Obser
     override fun onSubscribe(cancellable: Cancellable) {
         onSubscribe(cancellable.toDisposable())
     }
-
 }

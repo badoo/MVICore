@@ -60,7 +60,7 @@ internal class SimpleBinder(init: Binder.() -> Unit) : Binder {
             DelayUntilSource(initialized, transformedSource)
         }
 
-        delayInitialize.connect(connection.to as Sink<In>)
+        delayInitialize.connect(connection.to)
     }
 
     private fun <T> getInternalSourceFor(from: Source<T>): PublishSource<T> {

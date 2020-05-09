@@ -26,7 +26,7 @@ internal class SourceAdapter<T>(internal val delegate: Observable<T>): Source<T>
         )
 
     override fun equals(other: Any?): Boolean =
-        other is SourceAdapter<*> && super.equals(other.delegate)
+        other is SourceAdapter<*> && delegate == other.delegate
 
     override fun hashCode(): Int =
         delegate.hashCode()

@@ -1,0 +1,24 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '5.1.0'
+    id 'org.jetbrains.kotlin.jvm'
+    id 'me.champeau.gradle.jmh' version "0.5.0"
+}
+
+dependencies {
+    implementation project(':mvicore-rx')
+    implementation project(':mvicore-common')
+    implementation project(':mvicore')
+    implementation deps('io.reactivex.rxjava2:rxjava')
+    implementation 'org.openjdk.jmh:jmh-core:1.22'
+    implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
+}
+
+jmh {
+    benchmarkMode = ['avgt']
+    timeUnit = 'ms'
+    fork = 1
+    warmup = '2s'
+    warmupIterations = 8
+    timeOnIteration = '2s'
+    iterations = 10
+}

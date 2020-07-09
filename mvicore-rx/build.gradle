@@ -1,0 +1,18 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+group = 'com.github.badoo.mvicore'
+
+dependencies {
+    def deps = rootProject.ext.deps
+
+    implementation deps('io.reactivex.rxjava2:rxjava')
+    implementation deps('io.reactivex.rxjava2:rxkotlin')
+    implementation deps("org.jetbrains.kotlin:kotlin-stdlib")
+
+    implementation project(':mvicore-common')
+    testImplementation project(':mvicore-common')
+
+    testImplementation deps('junit:junit')
+}

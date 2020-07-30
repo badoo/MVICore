@@ -1,6 +1,6 @@
-package com.badoo.mvicore.consumer.middleware.base
+package com.badoo.binder.middleware.base
 
-import com.badoo.mvicore.binder.Connection
+import com.badoo.binder.Connection
 import io.reactivex.disposables.Disposable
 
 internal class StandaloneMiddleware<In>(

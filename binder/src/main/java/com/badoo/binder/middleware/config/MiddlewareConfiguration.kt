@@ -1,6 +1,6 @@
-package com.badoo.mvicore.consumer.middlewareconfig
+package com.badoo.binder.middleware.config
 
-import com.badoo.mvicore.consumer.middleware.base.Middleware
+import com.badoo.binder.middleware.base.Middleware
 import io.reactivex.functions.Consumer
 
 data class MiddlewareConfiguration(

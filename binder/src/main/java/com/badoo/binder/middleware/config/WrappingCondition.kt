@@ -1,4 +1,4 @@
-package com.badoo.mvicore.consumer.middlewareconfig
+package com.badoo.binder.middleware.config
 
 interface WrappingCondition {
 

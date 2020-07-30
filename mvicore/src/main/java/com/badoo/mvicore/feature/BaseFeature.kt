@@ -1,6 +1,6 @@
 package com.badoo.mvicore.feature
 
-import com.badoo.mvicore.consumer.wrapWithMiddleware
+import com.badoo.binder.middleware.wrapWithMiddleware
 import com.badoo.mvicore.element.Actor
 import com.badoo.mvicore.element.Bootstrapper
 import com.badoo.mvicore.element.NewsPublisher

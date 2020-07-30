@@ -1,10 +1,10 @@
 package com.badoo.mvicore.newspublishing
 
+import com.badoo.binder.middleware.config.MiddlewareConfiguration
+import com.badoo.binder.middleware.config.Middlewares
+import com.badoo.binder.middleware.config.WrappingCondition.Always
+import com.badoo.binder.middleware.config.WrappingCondition.InstanceOf
 import com.badoo.mvicore.consumer.middleware.ConsumerMiddleware
-import com.badoo.mvicore.consumer.middlewareconfig.MiddlewareConfiguration
-import com.badoo.mvicore.consumer.middlewareconfig.Middlewares
-import com.badoo.mvicore.consumer.middlewareconfig.WrappingCondition.Always
-import com.badoo.mvicore.consumer.middlewareconfig.WrappingCondition.InstanceOf
 import com.badoo.mvicore.element.Actor
 import com.badoo.mvicore.element.NewsPublisher
 import com.badoo.mvicore.element.Reducer

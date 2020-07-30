@@ -1,7 +1,7 @@
-package com.badoo.mvicore.binder
+package com.badoo.binder
 
-import com.badoo.mvicore.connector.Connector
-import com.badoo.mvicore.connector.NotNullConnector
+import com.badoo.binder.connector.Connector
+import com.badoo.binder.connector.NotNullConnector
 import io.reactivex.ObservableSource
 import io.reactivex.functions.Consumer
 

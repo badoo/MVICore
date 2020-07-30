@@ -1,10 +1,10 @@
-package com.badoo.mvicore.binder
+package com.badoo.binder
 
-import com.badoo.mvicore.binder.lifecycle.Lifecycle
-import com.badoo.mvicore.binder.lifecycle.Lifecycle.Event.BEGIN
-import com.badoo.mvicore.binder.lifecycle.Lifecycle.Event.END
-import com.badoo.mvicore.consumer.middleware.base.Middleware
-import com.badoo.mvicore.consumer.wrapWithMiddleware
+import com.badoo.binder.lifecycle.Lifecycle
+import com.badoo.binder.lifecycle.Lifecycle.Event.BEGIN
+import com.badoo.binder.lifecycle.Lifecycle.Event.END
+import com.badoo.binder.middleware.base.Middleware
+import com.badoo.binder.middleware.wrapWithMiddleware
 import io.reactivex.Observable
 import io.reactivex.Observable.wrap
 import io.reactivex.ObservableSource

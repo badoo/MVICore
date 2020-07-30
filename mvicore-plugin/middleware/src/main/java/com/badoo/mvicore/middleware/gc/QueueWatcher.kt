@@ -1,6 +1,6 @@
 package com.badoo.mvicore.middleware.gc
 
-import com.badoo.mvicore.binder.Connection
+import com.badoo.binder.Connection
 import com.badoo.mvicore.plugin.model.ConnectionData
 import java.lang.ref.PhantomReference
 import java.lang.ref.ReferenceQueue

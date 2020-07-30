@@ -1,4 +1,4 @@
-package com.badoo.mvicore
+package com.badoo.binder
 
 import io.reactivex.functions.Consumer
 import kotlin.test.assertEquals

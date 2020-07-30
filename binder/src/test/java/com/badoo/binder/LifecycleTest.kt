@@ -1,10 +1,7 @@
-package com.badoo.mvicore.lifecycle
+package com.badoo.binder
 
-import com.badoo.mvicore.TestConsumer
-import com.badoo.mvicore.assertValues
-import com.badoo.mvicore.binder.Binder
-import com.badoo.mvicore.binder.lifecycle.Lifecycle
-import com.badoo.mvicore.binder.lifecycle.ManualLifecycle
+import com.badoo.binder.lifecycle.Lifecycle
+import com.badoo.binder.lifecycle.ManualLifecycle
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.times

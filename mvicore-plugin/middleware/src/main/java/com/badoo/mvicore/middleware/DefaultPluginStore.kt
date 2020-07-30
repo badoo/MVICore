@@ -1,7 +1,6 @@
 package com.badoo.mvicore.middleware
 
-import com.badoo.mvicore.binder.Connection
-import com.badoo.mvicore.middleware.data.parse
+import com.badoo.binder.Connection
 import com.badoo.mvicore.middleware.gc.QueueWatcher
 import com.badoo.mvicore.middleware.gson.MviPluginTypeAdapterFactory
 import com.badoo.mvicore.middleware.gson.SuperclassExclusionStrategy

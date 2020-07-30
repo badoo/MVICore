@@ -17,6 +17,8 @@ The `Binder` is a tool that can:
 - dispose of this subscription when its lifecycle expires
 - automatically add `Middlewares` around all inputs (logging and time travel debugging, or your custom one)
 
+!!! warning ""
+    The `Binder` is now being moved out of MVICore now. If you are using version higher than 1.2.4, you may need to include additional dependency to `com.github.badoo.mvicore:binder`
 
 ## Binder creation
 

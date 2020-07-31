@@ -1,5 +1,8 @@
 # Binder usage and lifecycle
 
+!!! warning ""
+    After 1.2.4, `Binder` is located in a separate module. You may need to add dependency on `com.github.badoo.mvicore:binder` to have it available.
+
 ## What is the Binder and why is it good for me?
 
 If you wrote your first `Feature`, now you may wonder how to start using it.
@@ -16,9 +19,6 @@ The `Binder` is a tool that can:
 - automatically connect those outputs to those inputs by a subscription using a super simple syntax
 - dispose of this subscription when its lifecycle expires
 - automatically add `Middlewares` around all inputs (logging and time travel debugging, or your custom one)
-
-!!! warning ""
-    The `Binder` is now being moved out of MVICore now. If you are using version higher than 1.2.4, you may need to include additional dependency to `com.github.badoo.mvicore:binder`
 
 ## Binder creation
 

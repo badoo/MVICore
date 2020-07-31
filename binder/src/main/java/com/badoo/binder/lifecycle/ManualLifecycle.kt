@@ -1,8 +1,8 @@
-package com.badoo.mvicore.binder.lifecycle
+package com.badoo.binder.lifecycle
 
-import com.badoo.mvicore.binder.lifecycle.Lifecycle.Event
-import com.badoo.mvicore.binder.lifecycle.Lifecycle.Event.BEGIN
-import com.badoo.mvicore.binder.lifecycle.Lifecycle.Event.END
+import com.badoo.binder.lifecycle.Lifecycle.Event
+import com.badoo.binder.lifecycle.Lifecycle.Event.BEGIN
+import com.badoo.binder.lifecycle.Lifecycle.Event.END
 import io.reactivex.subjects.BehaviorSubject
 
 class ManualLifecycle(private val subject : BehaviorSubject<Event> = BehaviorSubject.create()) : Lifecycle by Lifecycle.wrap(subject) {

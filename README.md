@@ -40,6 +40,11 @@ Add the dependencies:
 implementation 'com.github.badoo.mvicore:mvicore:{latest-version}'
 ```
 
+- Binder (for versions higher than 1.2.4)
+```groovy
+implementation 'com.github.badoo.mvicore:binder:{latest-version}'
+```
+
 - Helper classes for Android:
 ```groovy
 implementation 'com.github.badoo.mvicore:mvicore-android:{latest-version}'

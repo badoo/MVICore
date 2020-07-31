@@ -1,9 +1,9 @@
-package com.badoo.mvicore.consumer
+package com.badoo.binder.middleware
 
-import com.badoo.mvicore.consumer.middleware.base.Middleware
-import com.badoo.mvicore.consumer.middleware.base.StandaloneMiddleware
-import com.badoo.mvicore.consumer.middlewareconfig.Middlewares
-import com.badoo.mvicore.consumer.middlewareconfig.NonWrappable
+import com.badoo.binder.middleware.base.Middleware
+import com.badoo.binder.middleware.base.StandaloneMiddleware
+import com.badoo.binder.middleware.config.Middlewares
+import com.badoo.binder.middleware.config.NonWrappable
 import io.reactivex.functions.Consumer
 
 /**
@@ -11,7 +11,7 @@ import io.reactivex.functions.Consumer
  * by calling on all available [com.badoo.mvicore.consumer.middlewareconfig.MiddlewareConfiguration]
  *
  * @param standalone    Whether the Consumer<T> is used as a standalone target (true), or as
- *                      part of a [com.badoo.mvicore.binder.Connection] used by [com.badoo.mvicore.binder.Binder].
+ *                      part of a [Connection] used by [Binder].
  *                      Defaults to true. In most cases you should not need to override the default value.
  * @param name          The name for the wrapping. Useful to add MiddlewareConfiguration
  *                      that only applies to named wrappings, or to make them human-readable
@@ -49,7 +49,7 @@ fun <In> Consumer<In>.wrapWithMiddleware(
     "Use wrapWithMiddleware directly",
     ReplaceWith(
         "wrapWithMiddleware(standalone, name, postfix, wrapperOf)",
-        "com.badoo.mvicore.consumer.wrapWithMiddleware"
+        "com.badoo.binder.middleware.wrapWithMiddleware"
     )
 )
 fun <In: Any> Consumer<In>.wrap(

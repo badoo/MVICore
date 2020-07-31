@@ -1,6 +1,6 @@
-package com.badoo.mvicore.binder.lifecycle.internal
+package com.badoo.binder.lifecycle.internal
 
-import com.badoo.mvicore.binder.lifecycle.Lifecycle
+import com.badoo.binder.lifecycle.Lifecycle
 import io.reactivex.ObservableSource
 
 internal class FromObservableSource(

@@ -1,7 +1,7 @@
 package com.badoo.mvicore.consumer.middleware
 
-import com.badoo.mvicore.binder.Connection
-import com.badoo.mvicore.consumer.middleware.base.Middleware
+import com.badoo.binder.Connection
+import com.badoo.binder.middleware.base.Middleware
 import com.badoo.mvicore.consumer.util.Logger
 import io.reactivex.Observable
 import io.reactivex.functions.Consumer

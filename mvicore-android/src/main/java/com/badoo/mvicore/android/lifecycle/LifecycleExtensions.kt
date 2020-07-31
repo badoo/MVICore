@@ -1,7 +1,7 @@
 package com.badoo.mvicore.android.lifecycle
 
 import android.arch.lifecycle.Lifecycle
-import com.badoo.mvicore.binder.Binder
+import com.badoo.binder.Binder
 
 fun Lifecycle.createDestroy(f: Binder.() -> Unit) {
     Binder(CreateDestroyBinderLifecycle(this)).apply(f)

@@ -5,7 +5,7 @@ import android.arch.lifecycle.LifecycleObserver
 import io.reactivex.ObservableSource
 import io.reactivex.subjects.BehaviorSubject
 import android.arch.lifecycle.Lifecycle as AndroidLifecycle
-import com.badoo.mvicore.binder.lifecycle.Lifecycle as BinderLifecycle
+import com.badoo.binder.lifecycle.Lifecycle as BinderLifecycle
 
 abstract class BaseAndroidBinderLifecycle private constructor(
     androidLifecycle: AndroidLifecycle,

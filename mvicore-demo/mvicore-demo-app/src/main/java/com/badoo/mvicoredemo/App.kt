@@ -2,12 +2,12 @@ package com.badoo.mvicoredemo
 
 import android.annotation.SuppressLint
 import android.app.Application
+import com.badoo.binder.middleware.config.MiddlewareConfiguration
+import com.badoo.binder.middleware.config.Middlewares
+import com.badoo.binder.middleware.config.WrappingCondition
 import com.badoo.mvicore.consumer.middleware.LoggingMiddleware
 import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware
 import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore
-import com.badoo.mvicore.consumer.middlewareconfig.MiddlewareConfiguration
-import com.badoo.mvicore.consumer.middlewareconfig.Middlewares
-import com.badoo.mvicore.consumer.middlewareconfig.WrappingCondition
 import com.badoo.mvicore.middleware.DefaultPluginStore
 import com.badoo.mvicore.middleware.IdeaPluginMiddleware
 import com.badoo.mvicoredemo.di.appscope.component.AppScopedComponent

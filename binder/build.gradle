@@ -5,23 +5,6 @@ apply plugin: 'org.jetbrains.dokka'
 
 group = 'com.github.badoo.mvicore'
 
-dependencies {
-    def deps = rootProject.ext.deps
-
-    api project(":binder")
-    implementation deps('io.reactivex.rxjava2:rxjava')
-    implementation deps('io.reactivex.rxjava2:rxkotlin')
-    implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
-
-    testImplementation deps('junit:junit')
-    testImplementation deps('org.jetbrains.kotlin:kotlin-test-junit')
-    testImplementation deps('org.amshove.kluent:kluent')
-    testImplementation deps('com.nhaarman:mockito-kotlin')
-}
-
-sourceCompatibility = "1.7"
-targetCompatibility = "1.7"
-
 buildscript {
     repositories {
         jcenter()
@@ -35,11 +18,20 @@ repositories {
     jcenter()
 }
 
-sourceSets {
-    main {
-        java {}
-    }
+dependencies {
+    def deps = rootProject.ext.deps
+
+    implementation deps('io.reactivex.rxjava2:rxjava')
+    implementation deps('io.reactivex.rxjava2:rxkotlin')
+    implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
+
+    testImplementation deps('junit:junit')
+    testImplementation deps('org.jetbrains.kotlin:kotlin-test-junit')
+    testImplementation deps('com.nhaarman:mockito-kotlin')
 }
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
 
 task packageSources(type: Jar, dependsOn: 'classes') {
     classifier = 'sources'

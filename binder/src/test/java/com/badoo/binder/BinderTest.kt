@@ -1,10 +1,7 @@
-package com.badoo.mvicore.binder
+package com.badoo.binder
 
-import com.badoo.mvicore.TestConsumer
-import com.badoo.mvicore.assertValues
-import com.badoo.mvicore.connector.Connector
-import io.reactivex.Observable.just
-import io.reactivex.Observable.wrap
+import com.badoo.binder.connector.Connector
+import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import io.reactivex.subjects.PublishSubject
 import org.junit.Test
@@ -49,8 +46,8 @@ class BinderTest {
 
     object TestConnector: Connector<Int, String> {
         override fun invoke(it: ObservableSource<out Int>): ObservableSource<String> =
-            wrap(it).flatMap {
-                just(it.toString(), (it + 1).toString())
+            Observable.wrap(it).flatMap {
+                Observable.just(it.toString(), (it + 1).toString())
             }
     }
 }

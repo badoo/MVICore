@@ -1,6 +1,6 @@
 package com.badoo.mvicore.middleware.data
 
-import com.badoo.mvicore.binder.Connection
+import com.badoo.binder.Connection
 import com.badoo.mvicore.plugin.model.ConnectionData
 import com.badoo.mvicore.plugin.model.Id
 

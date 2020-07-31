@@ -1,10 +1,10 @@
 package com.badoo.mvicoredemo.ui.main
 
+import com.badoo.binder.named
+import com.badoo.binder.using
 import com.badoo.feature1.Feature1
 import com.badoo.feature2.Feature2
 import com.badoo.mvicore.android.AndroidBindings
-import com.badoo.mvicore.binder.named
-import com.badoo.mvicore.binder.using
 import com.badoo.mvicoredemo.ui.main.analytics.FakeAnalyticsTracker
 import com.badoo.mvicoredemo.ui.main.event.UiEventTransformer1
 import com.badoo.mvicoredemo.ui.main.event.UiEventTransformer2

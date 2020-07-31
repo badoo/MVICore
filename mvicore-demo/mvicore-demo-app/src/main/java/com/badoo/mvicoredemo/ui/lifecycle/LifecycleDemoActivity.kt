@@ -5,11 +5,11 @@ import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.MenuItem
+import com.badoo.binder.Binder
+import com.badoo.binder.named
 import com.badoo.mvicore.android.lifecycle.CreateDestroyBinderLifecycle
 import com.badoo.mvicore.android.lifecycle.ResumePauseBinderLifecycle
 import com.badoo.mvicore.android.lifecycle.StartStopBinderLifecycle
-import com.badoo.mvicore.binder.Binder
-import com.badoo.mvicore.binder.named
 import com.badoo.mvicoredemo.R
 import init
 import io.reactivex.functions.Consumer

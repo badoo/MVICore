@@ -1,4 +1,4 @@
-package com.badoo.mvicore.connector
+package com.badoo.binder.connector
 
 import io.reactivex.Observable
 import io.reactivex.Observable.wrap

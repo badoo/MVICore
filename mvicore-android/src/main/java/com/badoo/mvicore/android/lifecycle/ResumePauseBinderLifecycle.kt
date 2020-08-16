@@ -1,10 +1,9 @@
 package com.badoo.mvicore.android.lifecycle
 
-import android.arch.lifecycle.DefaultLifecycleObserver
-import android.arch.lifecycle.LifecycleOwner
-import android.arch.lifecycle.Lifecycle as AndroidLifecycle
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.Lifecycle as AndroidLifecycle
+import androidx.lifecycle.LifecycleOwner
 import com.badoo.binder.lifecycle.Lifecycle as BinderLifecycle
-
 
 class ResumePauseBinderLifecycle(
     androidLifecycle: AndroidLifecycle

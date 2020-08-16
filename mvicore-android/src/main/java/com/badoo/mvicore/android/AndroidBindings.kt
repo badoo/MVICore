@@ -1,6 +1,6 @@
 package com.badoo.mvicore.android
 
-import android.arch.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleOwner
 import com.badoo.mvicore.binder.Binder
 
 abstract class AndroidBindings<T : Any>(

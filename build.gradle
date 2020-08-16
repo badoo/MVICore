@@ -35,7 +35,7 @@ ext {
     debugDrawerVersion = '0.8.0'
     timberVersion = '4.7.0'
     scalpelVersion = '1.1.2'
-    glideVersion = '4.7.1'
+    glideVersion = '4.8.0'
 
     // Network
     okhttpVersion = '3.10.0'

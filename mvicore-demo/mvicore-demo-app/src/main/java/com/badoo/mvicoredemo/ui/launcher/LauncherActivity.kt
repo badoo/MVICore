@@ -1,7 +1,7 @@
 package com.badoo.mvicoredemo.ui.launcher
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.badoo.mvicoredemo.auth.isLoggedIn
 import com.badoo.mvicoredemo.auth.login
 import com.badoo.mvicoredemo.auth.logout

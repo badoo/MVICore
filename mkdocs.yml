@@ -8,7 +8,7 @@ repo_name: MVICore
 repo_url: https://github.com/badoo/MVICore
 edit_uri: edit/master/documentation
 
-copyright: 'Copyright &copy; 2019 Badoo Trading Limited'
+copyright: 'Copyright &copy; 2020 Badoo Trading Limited'
 
 theme:
   name: 'material'

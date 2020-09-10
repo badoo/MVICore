@@ -1,7 +1,7 @@
 package com.badoo.mvicoredemo.ui.login
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.badoo.mvicoredemo.R
 import com.badoo.mvicoredemo.auth.login
 import kotlinx.android.synthetic.main.activity_login.signIn

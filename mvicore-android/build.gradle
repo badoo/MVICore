@@ -12,7 +12,7 @@ android {
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
     buildTypes {
@@ -32,7 +32,7 @@ dependencies {
     def deps = rootProject.ext.deps
 
     implementation deps('com.android.support:appcompat-v7')
-    implementation deps('android.arch.lifecycle:common-java8')
+    implementation deps('androidx.lifecycle:lifecycle-common-java8')
     implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
 
     implementation deps('io.reactivex.rxjava2:rxjava')

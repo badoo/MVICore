@@ -3,8 +3,8 @@ package com.badoo.mvicoredemo.auth
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.badoo.mvicoredemo.di.usersessionscope.component.UserSessionScopedComponent
 import com.badoo.mvicoredemo.ui.login.LoginActivity
 import com.badoo.mvicoredemo.ui.main.MainActivity

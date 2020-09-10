@@ -2,9 +2,9 @@ package com.badoo.mvicoredemo.ui.common
 
 import android.content.Context
 import android.graphics.PorterDuff
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.AppCompatButton
 import android.util.AttributeSet
+import androidx.appcompat.widget.AppCompatButton
+import androidx.core.content.ContextCompat
 import com.badoo.mvicoredemo.R
 
 class ToggleButton @JvmOverloads constructor(

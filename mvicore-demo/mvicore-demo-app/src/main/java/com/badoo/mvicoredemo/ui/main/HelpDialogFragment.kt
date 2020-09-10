@@ -2,9 +2,9 @@ package com.badoo.mvicoredemo.ui.main
 
 import android.app.Dialog
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
-import android.support.v7.app.AlertDialog
 import android.text.Html
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.DialogFragment
 import com.badoo.mvicoredemo.R
 
 class HelpDialogFragment : DialogFragment() {

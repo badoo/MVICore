@@ -1,9 +1,9 @@
 package com.badoo.mvicoredemo.ui.common
 
 import android.support.v7.app.AppCompatActivity
-import io.reactivex.ObservableSource
-import io.reactivex.Observer
-import io.reactivex.subjects.PublishSubject
+import io.reactivex.rxjava3.core.ObservableSource
+import io.reactivex.rxjava3.core.Observer
+import io.reactivex.rxjava3.subjects.PublishSubject
 
 abstract class ObservableSourceActivity<T> : DebugActivity(), ObservableSource<T> {
 

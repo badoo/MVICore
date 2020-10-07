@@ -5,13 +5,13 @@ import com.badoo.binder.lifecycle.Lifecycle.Event.BEGIN
 import com.badoo.binder.lifecycle.Lifecycle.Event.END
 import com.badoo.binder.middleware.base.Middleware
 import com.badoo.binder.middleware.wrapWithMiddleware
-import io.reactivex.Observable
-import io.reactivex.Observable.wrap
-import io.reactivex.ObservableSource
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Consumer
-import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Observable.wrap
+import io.reactivex.rxjava3.core.ObservableSource
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.functions.Consumer
+import io.reactivex.rxjava3.kotlin.plusAssign
 
 class Binder(
     private val lifecycle: Lifecycle? = null
@@ -143,3 +143,4 @@ class Binder(
         disposables.clear()
     }
 }
+

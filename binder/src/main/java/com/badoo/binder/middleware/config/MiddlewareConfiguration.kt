@@ -1,7 +1,7 @@
 package com.badoo.binder.middleware.config
 
 import com.badoo.binder.middleware.base.Middleware
-import io.reactivex.functions.Consumer
+import io.reactivex.rxjava3.functions.Consumer
 
 data class MiddlewareConfiguration(
     private val condition: WrappingCondition,
@@ -9,10 +9,10 @@ data class MiddlewareConfiguration(
 ) {
 
     fun <T> applyOn(
-        consumerToWrap: Consumer<T>,
-        targetToCheck: Any,
-        name: String?,
-        standalone: Boolean
+            consumerToWrap: Consumer<T>,
+            targetToCheck: Any,
+            name: String?,
+            standalone: Boolean
     ): Consumer<T> {
         var current = consumerToWrap
         val middlewares = if (condition.shouldWrap(targetToCheck, name, standalone)) factories else listOf()

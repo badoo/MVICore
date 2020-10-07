@@ -28,8 +28,8 @@ dependencies {
 
     implementation deps('com.android.support.constraint:constraint-layout')
 
-    implementation deps('io.reactivex.rxjava2:rxjava')
-    implementation deps('io.reactivex.rxjava2:rxkotlin')
+    implementation deps('io.reactivex.rxjava3:rxjava')
+    implementation deps('io.reactivex.rxjava3:rxkotlin')
 
     implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
 

@@ -35,8 +35,8 @@ dependencies {
     implementation deps('android.arch.lifecycle:common-java8')
     implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
 
-    implementation deps('io.reactivex.rxjava2:rxjava')
-    implementation deps('io.reactivex.rxjava2:rxkotlin')
+    implementation deps('io.reactivex.rxjava3:rxjava')
+    implementation deps('io.reactivex.rxjava3:rxkotlin')
 
     testImplementation deps('junit:junit')
     testImplementation deps('org.jetbrains.kotlin:kotlin-test-junit')

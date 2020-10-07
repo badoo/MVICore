@@ -9,8 +9,8 @@ dependencies {
     def deps = rootProject.ext.deps
 
     api project(":binder")
-    implementation deps('io.reactivex.rxjava2:rxjava')
-    implementation deps('io.reactivex.rxjava2:rxkotlin')
+    implementation deps('io.reactivex.rxjava3:rxjava')
+    implementation deps('io.reactivex.rxjava3:rxkotlin')
     implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
 
     testImplementation deps('junit:junit')

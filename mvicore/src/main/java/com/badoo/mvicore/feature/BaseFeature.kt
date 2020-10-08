@@ -10,12 +10,12 @@ import com.badoo.mvicore.element.WishToAction
 import com.badoo.mvicore.extension.SameThreadVerifier
 import com.badoo.mvicore.extension.asConsumer
 import com.badoo.mvicore.feature.internal.DisposableCollection
-import io.reactivex.ObservableSource
-import io.reactivex.Observer
-import io.reactivex.functions.Consumer
-import io.reactivex.subjects.BehaviorSubject
-import io.reactivex.subjects.PublishSubject
-import io.reactivex.subjects.Subject
+import io.reactivex.rxjava3.core.ObservableSource
+import io.reactivex.rxjava3.core.Observer
+import io.reactivex.rxjava3.functions.Consumer
+import io.reactivex.rxjava3.subjects.BehaviorSubject
+import io.reactivex.rxjava3.subjects.PublishSubject
+import io.reactivex.rxjava3.subjects.Subject
 
 open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any, News : Any>(
     initialState: State,
@@ -161,10 +161,10 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
     }
 
     private class ReducerWrapper<State : Any, Action : Any, Effect : Any>(
-        private val reducer: Reducer<State, Effect>,
-        private val states: Subject<State>,
-        private val postProcessorWrapper: Consumer<Triple<Action, Effect, State>>?,
-        private val newsPublisherWrapper: Consumer<Triple<Action, Effect, State>>?
+            private val reducer: Reducer<State, Effect>,
+            private val states: Subject<State>,
+            private val postProcessorWrapper: Consumer<Triple<Action, Effect, State>>?,
+            private val newsPublisherWrapper: Consumer<Triple<Action, Effect, State>>?
     ) : Consumer<Triple<State, Action, Effect>> {
 
         // record-playback entry point

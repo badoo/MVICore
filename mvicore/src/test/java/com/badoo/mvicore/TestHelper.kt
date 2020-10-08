@@ -25,9 +25,9 @@ import com.badoo.mvicore.TestHelper.TestWish.Unfulfillable
 import com.badoo.mvicore.element.Actor
 import com.badoo.mvicore.element.NewsPublisher
 import com.badoo.mvicore.element.Reducer
-import io.reactivex.Observable
-import io.reactivex.Observable.just
-import io.reactivex.Scheduler
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Observable.just
+import io.reactivex.rxjava3.core.Scheduler
 import java.util.concurrent.TimeUnit
 
 class TestHelper {
@@ -124,7 +124,7 @@ class TestHelper {
             just(delayedFulfillAmount)
                 .delay(wish.delayMs, TimeUnit.MILLISECONDS, asyncWorkScheduler)
                 .map { FinishedAsync(it) as TestEffect }
-                .startWith(StartedAsync)
+                .startWith(just(StartedAsync))
 
         private fun emit3effects(): Observable<TestEffect> =
             just(

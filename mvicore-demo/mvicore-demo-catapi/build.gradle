@@ -25,11 +25,11 @@ dependencies {
     implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
     implementation deps('com.android.support:appcompat-v7')
 
-    implementation deps('io.reactivex.rxjava2:rxjava')
-    implementation deps('io.reactivex.rxjava2:rxandroid')
+    implementation deps('io.reactivex.rxjava3:rxjava')
+    implementation deps('io.reactivex.rxjava3:rxandroid')
 
     implementation deps('com.squareup.retrofit2:retrofit')
-    implementation deps('com.squareup.retrofit2:adapter-rxjava2')
+    implementation deps('com.github.akarnokd:rxjava3-retrofit-adapter')
     implementation deps('com.squareup.retrofit2:converter-simplexml')
 }
 

@@ -4,7 +4,7 @@ import android.content.Context
 import android.widget.Toast
 import com.badoo.feature2.Feature2
 import com.badoo.feature2.Feature2.News.ErrorExecutingRequest
-import io.reactivex.functions.Consumer
+import io.reactivex.rxjava3.functions.Consumer
 import timber.log.Timber
 
 class NewsListener(

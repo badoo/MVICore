@@ -6,7 +6,7 @@ import com.badoo.mvicore.debugdrawer.MviCoreControlsModule
 import com.badoo.mvicoredemo.di.appscope.scope.AppScope
 import dagger.Module
 import dagger.Provides
-import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import timber.log.Timber
 
 @Module

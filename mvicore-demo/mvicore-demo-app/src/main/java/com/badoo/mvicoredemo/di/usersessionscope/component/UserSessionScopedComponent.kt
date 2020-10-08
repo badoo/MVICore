@@ -3,7 +3,7 @@ package com.badoo.mvicoredemo.di.usersessionscope.component
 import com.badoo.mvicoredemo.di.ScopedComponent
 import com.badoo.mvicoredemo.App
 import com.badoo.mvicoredemo.di.usersessionscope.module.FeatureModule
-import io.reactivex.disposables.Disposable
+import io.reactivex.rxjava3.disposables.Disposable
 
 object UserSessionScopedComponent : ScopedComponent<UserSessionComponent>() {
 

@@ -24,9 +24,9 @@ ext {
     constraintLayoutVersion = '1.1.2'
 
     // Rx
-    rxJavaVersion = '2.2.10'
-    rxKotlinVersion = '2.2.0'
-    rxAndroidVersion = '2.1.1'
+    rxJavaVersion = '3.0.6'
+    rxKotlinVersion = '3.0.1'
+    rxAndroidVersion = '3.0.0'
 
     // DI
     daggerVersion = '2.14.1'
@@ -39,7 +39,8 @@ ext {
 
     // Network
     okhttpVersion = '3.10.0'
-    retrofitVersion = '2.4.0'
+    retrofitVersion = '2.9.0'
+    retrofitAdapterVersion = '3.0.0'
     gsonVersion = '2.8.5'
 
     // Testing
@@ -59,9 +60,9 @@ ext {
             "com.android.support:design"                        : androidSupportLibVersion,
 
             // Rx
-            "io.reactivex.rxjava2:rxjava"                       : rxJavaVersion,
-            "io.reactivex.rxjava2:rxkotlin"                     : rxKotlinVersion,
-            "io.reactivex.rxjava2:rxandroid"                    : rxAndroidVersion,
+            "io.reactivex.rxjava3:rxjava"                       : rxJavaVersion,
+            "io.reactivex.rxjava3:rxkotlin"                     : rxKotlinVersion,
+            "io.reactivex.rxjava3:rxandroid"                    : rxAndroidVersion,
 
             // DI
             "com.google.dagger:dagger"                          : daggerVersion,
@@ -91,8 +92,8 @@ ext {
             // Network
             "com.squareup.okhttp3:okhttp"                       : okhttpVersion,
             "com.squareup.retrofit2:retrofit"                   : retrofitVersion,
-            "com.squareup.retrofit2:adapter-rxjava2"            : retrofitVersion,
             "com.squareup.retrofit2:converter-simplexml"        : retrofitVersion,
+            "com.github.akarnokd:rxjava3-retrofit-adapter"      : retrofitAdapterVersion,
             "com.google.code.gson:gson"                         : gsonVersion,
 
             // Testing

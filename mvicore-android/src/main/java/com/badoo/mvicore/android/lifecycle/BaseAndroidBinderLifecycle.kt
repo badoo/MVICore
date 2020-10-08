@@ -2,8 +2,8 @@ package com.badoo.mvicore.android.lifecycle
 
 import android.arch.lifecycle.DefaultLifecycleObserver
 import android.arch.lifecycle.LifecycleObserver
-import io.reactivex.ObservableSource
-import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.rxjava3.core.ObservableSource
+import io.reactivex.rxjava3.subjects.BehaviorSubject
 import android.arch.lifecycle.Lifecycle as AndroidLifecycle
 import com.badoo.binder.lifecycle.Lifecycle as BinderLifecycle
 

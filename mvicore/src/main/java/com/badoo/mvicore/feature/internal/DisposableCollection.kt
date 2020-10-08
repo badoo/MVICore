@@ -1,6 +1,6 @@
 package com.badoo.mvicore.feature.internal
 
-import io.reactivex.disposables.Disposable
+import io.reactivex.rxjava3.disposables.Disposable
 
 internal class DisposableCollection : Disposable {
 

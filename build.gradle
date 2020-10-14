@@ -18,9 +18,9 @@ buildscript {
 
 ext {
     // Android
-    androidArchLifecycleVersion = '2.2.0'
-    androidSupportLibVersion = '1.2.0'
-    materialVersion = '1.2.1'
+    androidLifecycleVersion = '2.2.0'
+    androidAppCompatVersion = '1.2.0'
+    androidMaterialVersion = '1.2.1'
     constraintLayoutVersion = '2.0.2'
 
     // Rx
@@ -53,10 +53,10 @@ ext {
             "org.jetbrains.kotlin:kotlin-stdlib-jdk7"           : kotlinVersion,
 
             // Android
-            "androidx.lifecycle:lifecycle-common-java8"         : androidArchLifecycleVersion,
-            "androidx.appcompat:appcompat"                      : androidSupportLibVersion,
+            "androidx.lifecycle:lifecycle-common-java8"         : androidLifecycleVersion,
+            "androidx.appcompat:appcompat"                      : androidAppCompatVersion,
             "androidx.constraintlayout:constraintlayout"        : constraintLayoutVersion,
-            "com.google.android.material:material"              : materialVersion,
+            "com.google.android.material:material"              : androidMaterialVersion,
 
             // Rx
             "io.reactivex.rxjava2:rxjava"                       : rxJavaVersion,

@@ -1,10 +1,10 @@
 package com.badoo.mvicoredemo.ui.lifecycle
 
 import android.os.Bundle
-import android.support.v4.view.GravityCompat
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import com.badoo.binder.Binder
 import com.badoo.binder.named
 import com.badoo.mvicore.android.lifecycle.CreateDestroyBinderLifecycle
@@ -63,7 +63,7 @@ class LifecycleDemoActivity : AppCompatActivity() {
         events.onNext("onStart")
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
 
         events.onNext("onRestoreState")
@@ -87,7 +87,7 @@ class LifecycleDemoActivity : AppCompatActivity() {
         events.onNext("onPause")
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
+    override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
         events.onNext("onSaveState")

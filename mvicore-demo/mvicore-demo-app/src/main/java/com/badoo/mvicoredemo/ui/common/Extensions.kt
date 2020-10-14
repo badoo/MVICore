@@ -1,12 +1,12 @@
 import android.content.Context
 import android.content.Intent
-import android.support.design.widget.NavigationView
-import android.support.v4.content.ContextCompat
-import android.support.v4.widget.DrawerLayout
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import com.badoo.mvicoredemo.R
 import com.badoo.mvicoredemo.ui.lifecycle.LifecycleDemoActivity
 import com.badoo.mvicoredemo.ui.main.MainActivity
+import com.google.android.material.navigation.NavigationView
 
 fun NavigationView.init(drawerLayout: DrawerLayout, selectedIndex: Int) {
     setCheckedItem(selectedIndex)

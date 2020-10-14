@@ -1,18 +1,17 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'org.jetbrains.dokka'
-apply plugin: 'com.github.dcendents.android-maven'
 
 group='com.github.badoo.mvicore'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 30
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 27
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -26,18 +25,18 @@ android {
 dependencies {
     def deps = rootProject.ext.deps
 
-    implementation deps('com.android.support.constraint:constraint-layout')
+    implementation deps('androidx.constraintlayout:constraintlayout')
 
     implementation deps('io.reactivex.rxjava2:rxjava')
     implementation deps('io.reactivex.rxjava2:rxkotlin')
 
     implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
 
-    implementation deps('io.palaima.debugdrawer:debugdrawer-base')
-    debugImplementation deps('io.palaima.debugdrawer:debugdrawer')
-    debugImplementation deps('io.palaima.debugdrawer:debugdrawer-view')
-    releaseImplementation deps('io.palaima.debugdrawer:debugdrawer-no-op')
-    releaseImplementation deps('io.palaima.debugdrawer:debugdrawer-view-no-op')
+    implementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer-base')
+    debugImplementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer')
+    debugImplementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer-view')
+    releaseImplementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer-no-op')
+    releaseImplementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer-view-no-op')
 
     testImplementation deps('junit:junit')
     testImplementation deps('org.jetbrains.kotlin:kotlin-test-junit')
@@ -52,14 +51,11 @@ targetCompatibility = "1.7"
 buildscript {
     repositories {
         jcenter()
+        maven { url 'https://jitpack.io' }
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$rootProject.ext.kotlinVersion"
     }
-}
-
-repositories {
-    jcenter()
 }
 
 sourceSets {

@@ -1,6 +1,6 @@
 package com.badoo.mvicoredemo.ui.common
 
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.badoo.mvicore.debugdrawer.MviCoreControlsModule
 import io.palaima.debugdrawer.DebugDrawer
 import io.palaima.debugdrawer.commons.BuildModule
@@ -22,7 +22,7 @@ abstract class DebugActivity : AppCompatActivity() {
                 playbackControlsAction,
                 NetworkQualityModule(this),
                 ScalpelModule(this),
-                TimberModule(),
+                TimberModule(""),
                 SettingsModule(),
                 BuildModule(),
                 DeviceModule()

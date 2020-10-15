@@ -1,8 +1,9 @@
 package com.badoo.mvicoredemo.di.activityscope.module;
 
 import android.app.Activity;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
 import dagger.Module;
 import dagger.Provides;

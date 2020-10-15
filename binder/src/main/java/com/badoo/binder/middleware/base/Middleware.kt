@@ -11,8 +11,8 @@ abstract class Middleware<Out, In>(
         wrapped.applyIfMiddleware { onBind(connection) }
     }
 
-    override fun accept(element: In) {
-        wrapped.accept(element)
+    override fun accept(t: In) {
+        wrapped.accept(t)
     }
 
     open fun onElement(connection: Connection<Out, In>, element: In) {

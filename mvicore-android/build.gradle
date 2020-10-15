@@ -1,18 +1,17 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'org.jetbrains.dokka'
-apply plugin: 'com.github.dcendents.android-maven'
 
 group='com.github.badoo.mvicore'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 30
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 28
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -31,8 +30,8 @@ android {
 dependencies {
     def deps = rootProject.ext.deps
 
-    implementation deps('com.android.support:appcompat-v7')
-    implementation deps('android.arch.lifecycle:common-java8')
+    implementation deps('androidx.appcompat:appcompat')
+    implementation deps('androidx.lifecycle:lifecycle-common-java8')
     implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
 
     implementation deps('io.reactivex.rxjava2:rxjava')
@@ -41,8 +40,9 @@ dependencies {
     testImplementation deps('junit:junit')
     testImplementation deps('org.jetbrains.kotlin:kotlin-test-junit')
     testImplementation deps('org.amshove.kluent:kluent')
-    androidTestImplementation deps("com.android.support.test:runner")
-    androidTestImplementation deps("com.android.support.test:rules")
+    androidTestImplementation deps("androidx.test:runner")
+    androidTestImplementation deps("androidx.test:rules")
+    androidTestImplementation deps("androidx.test:rules")
 
     implementation project(":mvicore")
 }

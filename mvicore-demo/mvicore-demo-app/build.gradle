@@ -4,15 +4,15 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 30
     defaultConfig {
         applicationId "com.badoo.mvicoredemo"
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -41,9 +41,9 @@ dependencies {
     implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
 
     // Android
-    implementation deps('com.android.support:appcompat-v7')
-    implementation deps('com.android.support.constraint:constraint-layout')
-    implementation deps('com.android.support:design')
+    implementation deps('androidx.appcompat:appcompat')
+    implementation deps('androidx.constraintlayout:constraintlayout')
+    implementation deps('com.google.android.material:material')
 
     // Rx
     implementation deps('io.reactivex.rxjava2:rxjava')
@@ -57,16 +57,16 @@ dependencies {
     kapt deps('com.google.dagger:dagger-android-processor')
 
     // DebugDrawer
-    debugImplementation deps('io.palaima.debugdrawer:debugdrawer')
-    debugImplementation deps('io.palaima.debugdrawer:debugdrawer-view')
-    releaseImplementation deps('io.palaima.debugdrawer:debugdrawer-no-op')
-    releaseImplementation deps('io.palaima.debugdrawer:debugdrawer-view-no-op')
-    implementation deps('io.palaima.debugdrawer:debugdrawer-commons')
-    implementation deps('io.palaima.debugdrawer:debugdrawer-actions')
-    implementation deps('io.palaima.debugdrawer:debugdrawer-scalpel')
-    implementation deps('io.palaima.debugdrawer:debugdrawer-base')
-    implementation deps('io.palaima.debugdrawer:debugdrawer-timber')
-    implementation deps('io.palaima.debugdrawer:debugdrawer-network-quality')
+    debugImplementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer')
+    debugImplementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer-view')
+    releaseImplementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer-no-op')
+    releaseImplementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer-view-no-op')
+    implementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer-commons')
+    implementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer-actions')
+    implementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer-scalpel')
+    implementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer-base')
+    implementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer-timber')
+    implementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer-network-quality')
 
     // Utils
     implementation deps('com.jakewharton.timber:timber')

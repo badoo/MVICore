@@ -1,9 +1,9 @@
 package com.badoo.mvicoredemo.ui.main
 
 import android.os.Bundle
-import android.support.v4.view.GravityCompat
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.GravityCompat
 import com.badoo.mvicoredemo.R
 import com.badoo.mvicoredemo.auth.logout
 import com.badoo.mvicoredemo.glide.GlideApp

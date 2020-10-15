@@ -27,7 +27,7 @@ class AndroidTimeCapsuleTest {
 
     class SimpleTestParcelable(val value: String) : Parcelable {
 
-        constructor(source: Parcel) : this(source.readString())
+        constructor(source: Parcel) : this(source.readString()!!)
 
         override fun describeContents() = 0
 

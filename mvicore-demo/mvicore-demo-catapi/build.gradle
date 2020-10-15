@@ -2,15 +2,15 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 30
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -23,7 +23,7 @@ android {
 
 dependencies {
     implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
-    implementation deps('com.android.support:appcompat-v7')
+    implementation deps('androidx.appcompat:appcompat')
 
     implementation deps('io.reactivex.rxjava2:rxjava')
     implementation deps('io.reactivex.rxjava2:rxandroid')
@@ -31,8 +31,4 @@ dependencies {
     implementation deps('com.squareup.retrofit2:retrofit')
     implementation deps('com.squareup.retrofit2:adapter-rxjava2')
     implementation deps('com.squareup.retrofit2:converter-simplexml')
-}
-
-repositories {
-    jcenter()
 }

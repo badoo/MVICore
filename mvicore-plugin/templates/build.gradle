@@ -1,0 +1,28 @@
+plugins {
+    id "org.jetbrains.intellij" version "0.6.3"
+}
+
+apply plugin: 'org.jetbrains.intellij'
+
+group 'com.badoo.mvicore'
+version '0.8'
+
+intellij {
+    pluginName 'MVICoreFileTemplates'
+    version "2019.2"
+    plugins = ['android']
+}
+
+patchPluginXml {
+    changeNotes
+    """
+      0.8
+      Fixed plugin work for Android Studio 4.1
+    """
+    sinceBuild '145.0'
+    untilBuild null
+}
+
+repositories {
+    mavenCentral()
+}

@@ -1,0 +1,39 @@
+package ${PACKAGE_NAME}
+
+import ${PACKAGE_NAME}.${NAME}.State
+import ${PACKAGE_NAME}.${NAME}.Wish
+import ${PACKAGE_NAME}.${NAME}.Wish.*
+import ${PACKAGE_NAME}.${NAME}.Effect
+import ${PACKAGE_NAME}.${NAME}.Effect.*
+import com.badoo.mvicore.element.Actor
+import com.badoo.mvicore.element.Reducer
+import com.badoo.mvicore.feature.ActorReducerFeature
+import com.badoo.mvicore.feature.ReducerFeature
+import io.reactivex.Observable
+
+class ${NAME} : ActorReducerFeature<Wish, Effect, State, Nothing>(
+    initialState = State(),
+    actor = ActorImpl(),
+    reducer = ReducerImpl()
+) {
+
+    data class State(
+        val yourData: Any? = null
+    )
+
+    sealed class Wish
+
+    sealed class Effect
+
+    class ActorImpl : Actor<State, Wish, Effect> {
+        override fun invoke(state: State, wish: Wish): Observable<Effect> = when (wish) {
+            TODO() -> Observable.just(TODO())
+        }
+    }
+
+    class ReducerImpl : Reducer<State, Effect> {
+        override fun invoke(state: State, effect: Effect): State = when (effect) {
+            TODO() -> state.copy()
+        }
+    }
+}

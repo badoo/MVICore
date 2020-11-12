@@ -1,0 +1,25 @@
+package ${PACKAGE_NAME}
+
+import ${PACKAGE_NAME}.${NAME}.State
+import ${PACKAGE_NAME}.${NAME}.Wish
+import ${PACKAGE_NAME}.${NAME}.Wish.*
+import com.badoo.mvicore.element.Reducer
+import com.badoo.mvicore.feature.ReducerFeature
+
+class ${NAME} : ReducerFeature<Wish, State, Nothing>(
+    initialState = State(),
+    reducer = ReducerImpl()
+) {
+
+    data class State(
+        val yourData: Any? = null
+    )
+
+    sealed class Wish
+
+    class ReducerImpl : Reducer<State, Wish> {
+        override fun invoke(state: State, wish: Wish): State = when (wish) {
+            TODO() -> state.copy()
+        }
+    }
+}

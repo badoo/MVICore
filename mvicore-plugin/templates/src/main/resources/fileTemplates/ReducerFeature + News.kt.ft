@@ -1,0 +1,36 @@
+package ${PACKAGE_NAME}
+
+import ${PACKAGE_NAME}.${NAME}.State
+import ${PACKAGE_NAME}.${NAME}.Wish
+import ${PACKAGE_NAME}.${NAME}.Wish.*
+import ${PACKAGE_NAME}.${NAME}.News
+import ${PACKAGE_NAME}.${NAME}.News.*
+import com.badoo.mvicore.element.Reducer
+import com.badoo.mvicore.feature.ReducerFeature
+
+class ${NAME} : ReducerFeature<Wish, State, News>(
+    initialState = State(),
+    reducer = ReducerImpl()
+) {
+
+    data class State(
+        val yourData: Any? = null
+    )
+
+    sealed class Wish
+
+    sealed class News
+
+    class ReducerImpl : Reducer<State, Wish> {
+        override fun invoke(state: State, wish: Wish): State = when (wish) {
+            TODO() -> state.copy()
+        }
+    }
+
+    class NewsPublisher : SimpleNewsPublisher<Wish, State, News>() {
+        override fun invoke(wish: Wish, state: State): News? = when {
+            TODO() -> TODO()
+            else -> null
+        }
+    }
+}

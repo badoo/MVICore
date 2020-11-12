@@ -1,0 +1,15 @@
+<idea-plugin>
+    <id>com.badoo.mvicore.fileTemplates</id>
+    <name>MVICore File Templates</name>
+    <vendor email="zsolt.kocsi@corp.badoo.com" url="https://medium.com/bumble-tech">Bumble</vendor>
+
+    <description><![CDATA[
+      File templates for common Feature usage patterns.
+    ]]></description>
+
+    <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>org.jetbrains.android</depends>
+
+</idea-plugin>

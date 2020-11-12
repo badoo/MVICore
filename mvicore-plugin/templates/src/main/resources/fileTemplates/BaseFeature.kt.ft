@@ -1,0 +1,75 @@
+package ${PACKAGE_NAME}
+
+import ${PACKAGE_NAME}.${NAME}.State
+import ${PACKAGE_NAME}.${NAME}.Action
+import ${PACKAGE_NAME}.${NAME}.Action.*
+import ${PACKAGE_NAME}.${NAME}.Wish
+import ${PACKAGE_NAME}.${NAME}.Wish.*
+import ${PACKAGE_NAME}.${NAME}.Effect
+import ${PACKAGE_NAME}.${NAME}.Effect.*
+import ${PACKAGE_NAME}.${NAME}.News
+import ${PACKAGE_NAME}.${NAME}.News.*
+import com.badoo.mvicore.element.Actor
+import com.badoo.mvicore.element.Bootstrapper
+import com.badoo.mvicore.element.NewsPublisher
+import com.badoo.mvicore.element.PostProcessor
+import com.badoo.mvicore.element.Reducer
+import com.badoo.mvicore.feature.BaseFeature
+import io.reactivex.Observable
+
+class ${NAME} : BaseFeature<Wish, Action, Effect, State, News>(
+    initialState = State(),
+    wishToAction = { Execute(it) },
+    bootstrapper = BootStrapperImpl(),
+    actor = ActorImpl(),
+    reducer = ReducerImpl(),
+    postProcessor = PostProcessorImpl(),
+    newsPublisher = NewsPublisherImpl()
+) {
+
+    data class State(
+        val yourData: Any? = null
+    )
+
+    sealed class Wish
+
+    sealed class Action {
+        data class Execute(val wish: Wish) : Action()
+    }
+
+    sealed class Effect
+
+    sealed class News
+
+    class BootStrapperImpl : Bootstrapper<Action> {
+        override fun invoke(): Observable<Action> {
+            TODO()
+        }
+    }
+
+    class ActorImpl : Actor<State, Action, Effect> {
+        override fun invoke(state: State, action: Action): Observable<Effect> = when (action) {
+            TODO() -> Observable.just(TODO())
+        }
+    }
+
+    class ReducerImpl : Reducer<State, Effect> {
+        override fun invoke(state: State, effect: Effect): State = when (effect) {
+            TODO() -> state.copy()
+        }
+    }
+
+    class PostProcessorImpl : PostProcessor<Action, Effect, State> {
+        override fun invoke(action: Action, effect: Effect, state: State): Action? = when {
+            TODO() -> TODO()
+            else -> null
+        }
+    }
+
+    class NewsPublisherImpl : NewsPublisher<Action, Effect, State, News> {
+        override fun invoke(action: Action, effect: Effect, state: State): News? = when {
+            TODO() -> TODO()
+            else -> null
+        }
+    }
+}

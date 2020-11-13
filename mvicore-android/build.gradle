@@ -1,3 +1,4 @@
+apply plugin: 'maven-publish'
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'org.jetbrains.dokka'
@@ -74,3 +75,14 @@ task packageSources(type: Jar, dependsOn: 'classes') {
 artifacts {
     archives packageSources
 }
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+            }
+        }
+    }
+}
+

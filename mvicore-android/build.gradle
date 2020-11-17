@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'org.jetbrains.dokka'
+apply plugin: 'com.github.dcendents.android-maven'
 
 group='com.github.badoo.mvicore'
 
@@ -74,3 +75,4 @@ task packageSources(type: Jar, dependsOn: 'classes') {
 artifacts {
     archives packageSources
 }
+

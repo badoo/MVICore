@@ -2,8 +2,8 @@ package com.badoo.binder
 
 import com.badoo.binder.connector.Connector
 import com.badoo.binder.connector.NotNullConnector
-import io.reactivex.ObservableSource
-import io.reactivex.functions.Consumer
+import io.reactivex.rxjava3.core.ObservableSource
+import io.reactivex.rxjava3.functions.Consumer
 
 data class Connection<Out, In>(
     val from: ObservableSource<out Out>? = null,

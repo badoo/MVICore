@@ -8,7 +8,7 @@ import ${PACKAGE_NAME}.${NAME}.News.*
 import com.badoo.mvicore.element.Bootstrapper
 import com.badoo.mvicore.element.Reducer
 import com.badoo.mvicore.feature.ReducerFeature
-import io.reactivex.Observable
+import io.reactivex.rxjava3.core.Observable
 
 class ${NAME} : ReducerFeature<Wish, State, News>(
     initialState = State(),

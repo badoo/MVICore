@@ -12,7 +12,7 @@ import com.badoo.mvicore.element.Bootstrapper
 import com.badoo.mvicore.element.NewsPublisher
 import com.badoo.mvicore.element.Reducer
 import com.badoo.mvicore.feature.ActorReducerFeature
-import io.reactivex.Observable
+import io.reactivex.rxjava3.core.Observable
 
 class ${NAME} : ActorReducerFeature<Wish, Effect, State, News>(
     initialState = State(),

@@ -30,8 +30,8 @@ dependencies {
     implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
     implementation deps('androidx.appcompat:appcompat')
 
-    implementation deps('io.reactivex.rxjava2:rxjava')
-    implementation deps('io.reactivex.rxjava2:rxandroid')
+    implementation deps('io.reactivex.rxjava3:rxjava')
+    implementation deps('io.reactivex.rxjava3:rxandroid')
 
     implementation project(":mvicore")
 }

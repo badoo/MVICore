@@ -2,7 +2,7 @@ package com.badoo.mvicore.middleware
 
 import com.badoo.binder.Connection
 import com.badoo.binder.middleware.base.Middleware
-import io.reactivex.functions.Consumer
+import io.reactivex.rxjava3.functions.Consumer
 
 class IdeaPluginMiddleware<Out: Any, In: Any>(
     wrapped: Consumer<In>,

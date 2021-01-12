@@ -1,8 +1,8 @@
 package com.badoo.mvicore.extension
 
-import io.reactivex.Observable
-import io.reactivex.Observer
-import io.reactivex.functions.Consumer
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Observer
+import io.reactivex.rxjava3.functions.Consumer
 
 @Deprecated(
     "Part of internal api, not supposed to be visible outside",

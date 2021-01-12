@@ -1,7 +1,7 @@
 package com.badoo.mvicoredemo.di
 
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.Disposable
 import java.lang.ref.WeakReference
 
 abstract class ScopedComponent<T : Any> {

@@ -11,9 +11,9 @@ import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore.Play
 import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore.PlaybackState.RECORDING
 import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore.RecordKey
 import com.badoo.mvicore.consumer.util.Logger
-import io.reactivex.Observable
-import io.reactivex.Scheduler
-import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Scheduler
+import io.reactivex.rxjava3.subjects.BehaviorSubject
 import java.util.concurrent.TimeUnit
 
 class MemoryRecordStore(

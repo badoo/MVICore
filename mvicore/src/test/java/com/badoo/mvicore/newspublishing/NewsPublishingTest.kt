@@ -16,11 +16,6 @@ import com.badoo.mvicore.newspublishing.TestNews.News3
 import com.badoo.mvicore.newspublishing.TestWish.Wish1
 import com.badoo.mvicore.newspublishing.TestWish.Wish2
 import com.badoo.mvicore.newspublishing.TestWish.Wish3
-import com.nhaarman.mockito_kotlin.argumentCaptor
-import com.nhaarman.mockito_kotlin.spy
-import com.nhaarman.mockito_kotlin.times
-import com.nhaarman.mockito_kotlin.verify
-import com.nhaarman.mockito_kotlin.whenever
 import io.reactivex.Observable
 import io.reactivex.functions.Consumer
 import io.reactivex.observers.TestObserver
@@ -32,6 +27,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
+import org.mockito.kotlin.*
 import kotlin.test.assertEquals
 
 sealed class TestWish {

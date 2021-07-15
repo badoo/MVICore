@@ -9,13 +9,20 @@ import com.badoo.mvicore.element.Reducer
 import com.badoo.mvicore.element.WishToAction
 import com.badoo.mvicore.extension.SameThreadVerifier
 import com.badoo.mvicore.extension.asConsumer
-import com.badoo.mvicore.feature.internal.DisposableCollection
+import com.badoo.mvicore.extension.observeOnNullable
+import com.badoo.mvicore.extension.subscribeOnNullable
+import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import io.reactivex.Observer
+import io.reactivex.Scheduler
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
+import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
+import java.util.concurrent.atomic.AtomicReference
 
 open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any, News : Any>(
     initialState: State,
@@ -24,14 +31,16 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
     actor: Actor<State, Action, Effect>,
     reducer: Reducer<State, Effect>,
     postProcessor: PostProcessor<Action, Effect, State>? = null,
-    newsPublisher: NewsPublisher<Action, Effect, State, News>? = null
-) : Feature<Wish, State, News> {
+    newsPublisher: NewsPublisher<Action, Effect, State, News>? = null,
+    featureScheduler: Scheduler? = null,
+    private val observationScheduler: Scheduler? = null
+) : AsyncFeature<Wish, State, News> {
 
-    private val threadVerifier = SameThreadVerifier()
+    private val threadVerifier by lazy { SameThreadVerifier() }
     private val actionSubject = PublishSubject.create<Action>()
     private val stateSubject = BehaviorSubject.createDefault(initialState)
     private val newsSubject = PublishSubject.create<News>()
-    private val disposables = DisposableCollection()
+    private val disposables = CompositeDisposable()
     private val postProcessorWrapper = postProcessor?.let {
         PostProcessorWrapper(
             postProcessor,
@@ -54,45 +63,63 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
     ).wrapWithMiddleware(wrapperOf = reducer)
 
     private val actorWrapper = ActorWrapper(
-        threadVerifier,
         disposables,
         actor,
         stateSubject,
-        reducerWrapper
+        reducerWrapper,
+        featureScheduler,
+        lazy { threadVerifier }
     ).wrapWithMiddleware(wrapperOf = actor)
 
     init {
+        require((featureScheduler == null) == (observationScheduler == null)) {
+            "Provide both featureScheduler and observationScheduler"
+        }
+        if (featureScheduler == null) threadVerifier
+
         disposables += actorWrapper
         disposables += reducerWrapper
         disposables += postProcessorWrapper
         disposables += newsPublisherWrapper
-        disposables += actionSubject.subscribe {
-            invokeActor(state, it)
-        }
+        disposables +=
+            actionSubject
+                .observeOnNullable(featureScheduler)
+                .subscribe { invokeActor(state, it) }
 
-        bootstrapper?.let {
-            actionSubject.asConsumer()
+        if (bootstrapper != null) {
+            actionSubject
+                .asConsumer()
                 .wrapWithMiddleware(
-                    wrapperOf = it,
+                    wrapperOf = bootstrapper,
                     postfix = "output"
                 ).also { output ->
                     disposables += output
-                    disposables += bootstrapper.invoke().subscribe {
-                        output.accept(it)
-                    }
+                    disposables +=
+                        Observable
+                            .defer { bootstrapper() }
+                            .subscribeOnNullable(featureScheduler)
+                            .observeOnNullable(featureScheduler)
+                            .subscribe { output.accept(it) }
                 }
         }
     }
+
+    override val backgroundStates: Observable<State>
+        get() = stateSubject
+
+    override val backgroundNews: Observable<News>
+        get() = newsSubject
 
     override val state: State
         get() = stateSubject.value!!
 
     override val news: ObservableSource<News>
-        get() = newsSubject
-
+        get() = newsSubject.observeOnNullable(observationScheduler)
 
     override fun subscribe(observer: Observer<in State>) {
-        stateSubject.subscribe(observer)
+        stateSubject
+            .observeOnNullable(observationScheduler)
+            .subscribe(observer)
     }
 
     override fun accept(wish: Wish) {
@@ -120,12 +147,17 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
         }
     }
 
-    private class ActorWrapper<State : Any, Action : Any, Effect: Any>(
-        private val threadVerifier: SameThreadVerifier,
-        private val disposables: DisposableCollection,
+    private operator fun CompositeDisposable.plusAssign(any: Any?) {
+        if (any is Disposable) add(any)
+    }
+
+    private class ActorWrapper<State : Any, Action : Any, Effect : Any>(
+        private val disposables: CompositeDisposable,
         private val actor: Actor<State, Action, Effect>,
         private val stateSubject: BehaviorSubject<State>,
-        private val reducerWrapper: Consumer<Triple<State, Action, Effect>>
+        private val reducerWrapper: Consumer<Triple<State, Action, Effect>>,
+        private val featureScheduler: Scheduler?,
+        private val threadVerifier: Lazy<SameThreadVerifier>
     ) : Consumer<Pair<State, Action>> {
 
         // record-playback entry point
@@ -137,18 +169,28 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
         fun processAction(state: State, action: Action) {
             if (disposables.isDisposed) return
 
-            disposables += actor
-                .invoke(state, action)
-                .doOnNext { effect ->
-                    invokeReducer(stateSubject.value!!, action, effect)
-                }
-                .subscribe()
+            val disposable = AtomicReference<Disposable>()
+            disposable.set(
+                actor
+                    .invoke(state, action)
+                    .observeOnNullable(featureScheduler)
+                    .doAfterTerminate {
+                        // Remove disposables manually because CompositeDisposable does not do it automatically
+                        // producing memory leaks.
+                        // Check for null as it might be disposed instantly.
+                        disposable.get()?.also { disposables.remove(it) }
+                    }
+                    .subscribe { effect -> invokeReducer(action, effect) }
+            )
+            // Disposable might be disposed instantly.
+            disposable.get()?.takeIf { !it.isDisposed }?.addTo(disposables)
         }
 
-        private fun invokeReducer(state: State, action: Action, effect: Effect) {
+        private fun invokeReducer(action: Action, effect: Effect) {
             if (disposables.isDisposed) return
+            val state = stateSubject.value!!
 
-            threadVerifier.verify()
+            threadVerifier.value.verify()
             if (reducerWrapper is ReducerWrapper) {
                 // there's no middleware around it, so we can optimise here by not creating any extra objects
                 reducerWrapper.processEffect(state, action, effect)

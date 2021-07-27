@@ -4,9 +4,9 @@ import com.badoo.binder.middleware.base.Middleware
 import com.badoo.binder.middleware.config.MiddlewareConfiguration
 import com.badoo.binder.middleware.config.Middlewares
 import com.badoo.binder.middleware.config.WrappingCondition
-import com.badoo.mvicore.bootstrapper.Action.Action1
-import com.badoo.mvicore.bootstrapper.Action.Action2
-import com.badoo.mvicore.bootstrapper.Action.Action3
+import com.badoo.mvicore.bootstrapper.BootstrapperTest.Action.Action1
+import com.badoo.mvicore.bootstrapper.BootstrapperTest.Action.Action2
+import com.badoo.mvicore.bootstrapper.BootstrapperTest.Action.Action3
 import com.badoo.mvicore.element.Bootstrapper
 import com.badoo.mvicore.feature.BaseFeature
 import com.badoo.mvicore.feature.Feature
@@ -16,22 +16,28 @@ import io.reactivex.subjects.ReplaySubject
 import junit.framework.Assert.assertEquals
 import org.amshove.kluent.any
 import org.amshove.kluent.mock
+import org.junit.After
 import org.junit.Test
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 
-sealed class Action {
-    object Action1 : Action()
-    object Action2 : Action()
-    object Action3 : Action()
-}
-
 class BootstrapperTest {
+
+    private sealed class Action {
+        object Action1 : Action()
+        object Action2 : Action()
+        object Action3 : Action()
+    }
 
     private lateinit var feature: Feature<Any, Any, Any>
     private lateinit var actionHandler: TestObserver<Action>
+
+    @After
+    fun tearDown() {
+        Middlewares.configurations.clear()
+    }
 
     @Test
     fun `GIVEN Feature without Bootstrapper THEN Bootstrapper doesn't emit actions`() {
@@ -86,8 +92,6 @@ class BootstrapperTest {
             verify(testMiddleware, times(3)).onElement(any(), capture())
             assertEquals(listOf(Action2, Action3, Action1), allValues)
         }
-
-        clearMiddleware()
     }
 
     private fun setupTestMiddlewareConfiguration(): Middleware<Any, Action> {
@@ -101,10 +105,6 @@ class BootstrapperTest {
         )
 
         return middlewareStub
-    }
-
-    private fun clearMiddleware() {
-        Middlewares.configurations.clear()
     }
 
     private fun initializeFeatureWithBootstrapper(bootstrapper: Bootstrapper<Action>?) {

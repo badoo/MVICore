@@ -10,8 +10,11 @@ import com.badoo.mvicore.element.WishToAction
 import com.badoo.mvicore.extension.SameThreadVerifier
 import com.badoo.mvicore.extension.asConsumer
 import com.badoo.mvicore.feature.internal.DisposableCollection
+import com.badoo.mvicore.scheduler.MVICoreSchedulers
 import io.reactivex.ObservableSource
 import io.reactivex.Observer
+import io.reactivex.Scheduler
+import io.reactivex.Single
 import io.reactivex.functions.Consumer
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
@@ -24,10 +27,11 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
     actor: Actor<State, Action, Effect>,
     reducer: Reducer<State, Effect>,
     postProcessor: PostProcessor<Action, Effect, State>? = null,
-    newsPublisher: NewsPublisher<Action, Effect, State, News>? = null
+    newsPublisher: NewsPublisher<Action, Effect, State, News>? = null,
+    actionScheduler: Scheduler? = null,
+    observerScheduler: Scheduler? = null,
 ) : Feature<Wish, State, News> {
 
-    private val threadVerifier = SameThreadVerifier()
     private val actionSubject = PublishSubject.create<Action>()
     private val stateSubject = BehaviorSubject.createDefault(initialState)
     private val newsSubject = PublishSubject.create<News>()
@@ -54,11 +58,12 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
     ).wrapWithMiddleware(wrapperOf = reducer)
 
     private val actorWrapper = ActorWrapper(
-        threadVerifier,
         disposables,
         actor,
         stateSubject,
-        reducerWrapper
+        reducerWrapper,
+        actionScheduler,
+        observerScheduler,
     ).wrapWithMiddleware(wrapperOf = actor)
 
     init {
@@ -120,13 +125,16 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
         }
     }
 
-    private class ActorWrapper<State : Any, Action : Any, Effect: Any>(
-        private val threadVerifier: SameThreadVerifier,
+    private class ActorWrapper<State : Any, Action : Any, Effect : Any>(
         private val disposables: DisposableCollection,
         private val actor: Actor<State, Action, Effect>,
         private val stateSubject: BehaviorSubject<State>,
-        private val reducerWrapper: Consumer<Triple<State, Action, Effect>>
+        private val reducerWrapper: Consumer<Triple<State, Action, Effect>>,
+        private val actionScheduler: Scheduler?,
+        private val observerScheduler: Scheduler?,
     ) : Consumer<Pair<State, Action>> {
+
+        private val threadVerifier by lazy { SameThreadVerifier() }
 
         // record-playback entry point
         override fun accept(t: Pair<State, Action>) {
@@ -136,13 +144,21 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
 
         fun processAction(state: State, action: Action) {
             if (disposables.isDisposed) return
-
-            disposables += actor
-                .invoke(state, action)
-                .doOnNext { effect ->
-                    invokeReducer(stateSubject.value!!, action, effect)
+            disposables +=
+                Single.fromCallable {
+                    // TODO: Performance. Do we need to use stateSubject to make sure we have an up to date state?
+//                    stateSubject.value!!
+                    state
                 }
-                .subscribe()
+                    .subscribeOn(MVICoreSchedulers.scheduler(actionScheduler))
+                    .flatMapObservable {
+                        actor.invoke(it, action)
+                            .observeOn(MVICoreSchedulers.observerScheduler(observerScheduler))
+                            .doOnNext { effect ->
+                                invokeReducer(stateSubject.value!!, action, effect)
+                            }
+                    }
+                    .subscribe()
         }
 
         private fun invokeReducer(state: State, action: Action, effect: Effect) {

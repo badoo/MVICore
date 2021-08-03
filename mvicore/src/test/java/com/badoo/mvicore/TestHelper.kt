@@ -1,5 +1,6 @@
 package com.badoo.mvicore
 
+import com.badoo.mvicore.TestHelper.TestEffect.ActionSchedulerEffect
 import com.badoo.mvicore.TestHelper.TestEffect.ConditionalThingHappened
 import com.badoo.mvicore.TestHelper.TestEffect.FinishedAsync
 import com.badoo.mvicore.TestHelper.TestEffect.InstantEffect
@@ -10,7 +11,9 @@ import com.badoo.mvicore.TestHelper.TestEffect.LoopbackEffectInitial
 import com.badoo.mvicore.TestHelper.TestEffect.MultipleEffect1
 import com.badoo.mvicore.TestHelper.TestEffect.MultipleEffect2
 import com.badoo.mvicore.TestHelper.TestEffect.MultipleEffect3
+import com.badoo.mvicore.TestHelper.TestEffect.OtherSchedulerEffect
 import com.badoo.mvicore.TestHelper.TestEffect.StartedAsync
+import com.badoo.mvicore.TestHelper.TestWish.ActionScheduler
 import com.badoo.mvicore.TestHelper.TestWish.FulfillableAsync
 import com.badoo.mvicore.TestHelper.TestWish.FulfillableInstantly1
 import com.badoo.mvicore.TestHelper.TestWish.FulfillableInstantly2
@@ -22,6 +25,7 @@ import com.badoo.mvicore.TestHelper.TestWish.LoopbackWishInitial
 import com.badoo.mvicore.TestHelper.TestWish.MaybeFulfillable
 import com.badoo.mvicore.TestHelper.TestWish.TranslatesTo3Effects
 import com.badoo.mvicore.TestHelper.TestWish.Unfulfillable
+import com.badoo.mvicore.TestHelper.TestWish.OtherScheduler
 import com.badoo.mvicore.element.Actor
 import com.badoo.mvicore.element.NewsPublisher
 import com.badoo.mvicore.element.Reducer
@@ -64,6 +68,8 @@ class TestHelper {
         object LoopbackWish2 : TestWish()
         object LoopbackWish3 : TestWish()
         data class IncreasCounterBy(val value: Int) : TestWish()
+        data class OtherScheduler(val scheduler: Scheduler, val value: Int) : TestWish()
+        data class ActionScheduler(val value: Int) : TestWish()
     }
 
     sealed class TestEffect {
@@ -78,6 +84,8 @@ class TestHelper {
         object LoopbackEffect1 : TestEffect()
         object LoopbackEffect2 : TestEffect()
         object LoopbackEffect3 : TestEffect()
+        data class OtherSchedulerEffect(val value: Int) : TestEffect()
+        data class ActionSchedulerEffect(val value: Int) : TestEffect()
     }
 
     sealed class TestNews {
@@ -104,6 +112,10 @@ class TestHelper {
                 LoopbackWish2 -> just(LoopbackEffect2)
                 LoopbackWish3 -> just(LoopbackEffect3)
                 is IncreasCounterBy -> just(InstantEffect(amount = wish.value))
+                is OtherScheduler ->
+                    just<TestEffect>(OtherSchedulerEffect(value = wish.value))
+                        .observeOn(wish.scheduler)
+                is ActionScheduler -> just<TestEffect>(ActionSchedulerEffect(value = wish.value))
             }
         }
 
@@ -148,6 +160,14 @@ class TestHelper {
                 LoopbackEffect1 -> loopBackState1
                 LoopbackEffect2 -> loopBackState2
                 LoopbackEffect3 -> loopBackState3
+                is OtherSchedulerEffect -> state.copy(
+                    counter = effect.value,
+                    id = Thread.currentThread().id.toString()
+                )
+                is ActionSchedulerEffect -> state.copy(
+                    counter = effect.value,
+                    id = Thread.currentThread().id.toString()
+                )
             }
     }
 

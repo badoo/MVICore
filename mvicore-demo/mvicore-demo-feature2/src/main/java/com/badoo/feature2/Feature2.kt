@@ -50,7 +50,7 @@ class Feature2(
     sealed class Effect {
         object StartedLoading : Effect()
         data class LoadedImage(val url: String) : Effect()
-        data class ErrorLoading(val throwable : Throwable) : Effect()
+        data class ErrorLoading(val throwable: Throwable) : Effect()
     }
 
     sealed class News {
@@ -58,7 +58,7 @@ class Feature2(
     }
 
     class BootStrapperImpl : Bootstrapper<Wish> {
-        override fun invoke(): Observable<Wish> = just(LoadNewImage)
+        override fun invoke(): Observable<out Wish> = just(LoadNewImage)
     }
 
     class ActorImpl : Actor<State, Wish, Effect> {

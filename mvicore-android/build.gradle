@@ -37,7 +37,6 @@ dependencies {
 
     implementation deps('io.reactivex.rxjava2:rxjava')
     implementation deps('io.reactivex.rxjava2:rxkotlin')
-    implementation deps('io.reactivex.rxjava2:rxandroid')
 
     testImplementation deps('junit:junit')
     testImplementation deps('org.jetbrains.kotlin:kotlin-test-junit')
@@ -76,4 +75,3 @@ task packageSources(type: Jar, dependsOn: 'classes') {
 artifacts {
     archives packageSources
 }
-

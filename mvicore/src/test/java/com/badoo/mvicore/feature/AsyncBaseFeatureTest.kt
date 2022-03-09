@@ -10,14 +10,16 @@ import com.badoo.mvicore.utils.RxErrorRule
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import io.reactivex.Scheduler
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-import kotlin.test.assertEquals
 
 /**
  * Tests async functionality of [BaseFeature].
@@ -29,6 +31,7 @@ class AsyncBaseFeatureTest {
     private val featureScheduler = Schedulers.from(featureExecutor)
     private val observationExecutor = Executors.newSingleThreadExecutor { Thread(it, THREAD_OBSERVATION) }
     private val observationScheduler = Schedulers.from(observationExecutor)
+    private val disposable = CompositeDisposable()
 
     private lateinit var feature: AsyncFeature<Wish, State, News>
 
@@ -45,6 +48,7 @@ class AsyncBaseFeatureTest {
         // scheduler.shutdown() does not do anything
         featureExecutor.shutdown()
         observationExecutor.shutdown()
+        disposable.clear()
     }
 
     @Test
@@ -59,8 +63,7 @@ class AsyncBaseFeatureTest {
 
     @Test
     fun `allows creation with both schedulers`() {
-        feature =
-            testFeature(featureScheduler = Schedulers.trampoline(), observationScheduler = Schedulers.trampoline())
+        feature = testFeature(featureScheduler = Schedulers.trampoline(), observationScheduler = Schedulers.trampoline())
     }
 
     @Test
@@ -117,7 +120,7 @@ class AsyncBaseFeatureTest {
     fun `sends background news on feature scheduler`() {
         val capture = ThreadCapture(THREAD_FEATURE)
         feature = testFeature()
-        feature.backgroundNews.wrap().subscribe {
+        disposable += feature.backgroundNews.wrap().subscribe {
             capture.capture()
         }
         capture.waitAndAssert()
@@ -127,7 +130,7 @@ class AsyncBaseFeatureTest {
     fun `sends news on observation scheduler`() {
         val capture = ThreadCapture(THREAD_OBSERVATION)
         feature = testFeature()
-        feature.news.wrap().firstElement().subscribe {
+        disposable += feature.news.wrap().firstElement().subscribe {
             capture.capture()
         }
         capture.waitAndAssert()
@@ -137,7 +140,7 @@ class AsyncBaseFeatureTest {
     fun `sends initial state on observation scheduler`() {
         val capture = ThreadCapture(THREAD_OBSERVATION)
         feature = testFeature(bootstrapper = null)
-        feature.wrap().firstElement().subscribe {
+        disposable += feature.wrap().firstElement().subscribe {
             capture.capture()
         }
         capture.waitAndAssert()
@@ -147,7 +150,7 @@ class AsyncBaseFeatureTest {
     fun `sends state updates on observation scheduler`() {
         val capture = ThreadCapture(THREAD_OBSERVATION)
         feature = testFeature(bootstrapper = null)
-        feature.wrap().skip(1).firstElement().subscribe {
+        disposable += feature.wrap().skip(1).firstElement().subscribe {
             capture.capture()
         }
         feature.accept(Wish())
@@ -158,7 +161,7 @@ class AsyncBaseFeatureTest {
     fun `sends initial background state on current thread`() {
         val capture = ThreadCapture(Thread.currentThread().name)
         feature = testFeature(bootstrapper = null)
-        feature.backgroundStates.wrap().firstElement().subscribe {
+        disposable += feature.backgroundStates.wrap().firstElement().subscribe {
             capture.capture()
         }
         capture.waitAndAssert()
@@ -168,7 +171,7 @@ class AsyncBaseFeatureTest {
     fun `sends background state updates on feature scheduler`() {
         val capture = ThreadCapture(THREAD_FEATURE)
         feature = testFeature(bootstrapper = null)
-        feature.backgroundStates.wrap().skip(1).firstElement().subscribe {
+        disposable += feature.backgroundStates.wrap().skip(1).firstElement().subscribe {
             capture.capture()
         }
         feature.accept(Wish())
@@ -192,8 +195,14 @@ class AsyncBaseFeatureTest {
         reducer = reducer,
         newsPublisher = newsPublisher,
         postProcessor = postProcessor,
-        featureScheduler = featureScheduler,
-        observationScheduler = observationScheduler
+        schedulers = if (featureScheduler != null && observationScheduler != null) {
+            BaseFeature.Schedulers(
+                featureScheduler = featureScheduler,
+                observationScheduler = observationScheduler
+            )
+        } else {
+            null
+        }
     )
 
     private fun <T> ObservableSource<T>.wrap() =

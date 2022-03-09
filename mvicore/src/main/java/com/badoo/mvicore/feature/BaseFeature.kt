@@ -32,8 +32,7 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
     reducer: Reducer<State, Effect>,
     postProcessor: PostProcessor<Action, Effect, State>? = null,
     newsPublisher: NewsPublisher<Action, Effect, State, News>? = null,
-    featureScheduler: Scheduler? = null,
-    private val observationScheduler: Scheduler? = null
+    private val schedulers: Schedulers? = null
 ) : AsyncFeature<Wish, State, News> {
 
     private val threadVerifier by lazy { SameThreadVerifier() }
@@ -67,15 +66,12 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
         actor,
         stateSubject,
         reducerWrapper,
-        featureScheduler,
-        lazy { threadVerifier }
+        schedulers?.featureScheduler,
+        lazy { threadVerifier } // pass as lazy to not initialize here
     ).wrapWithMiddleware(wrapperOf = actor)
 
     init {
-        require((featureScheduler == null) == (observationScheduler == null)) {
-            "Provide both featureScheduler and observationScheduler"
-        }
-        if (featureScheduler == null) threadVerifier
+        if (schedulers?.featureScheduler == null) threadVerifier
 
         disposables += actorWrapper
         disposables += reducerWrapper
@@ -83,7 +79,7 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
         disposables += newsPublisherWrapper
         disposables +=
             actionSubject
-                .observeOnNullable(featureScheduler)
+                .observeOnNullable(schedulers?.featureScheduler)
                 .subscribe { invokeActor(state, it) }
 
         if (bootstrapper != null) {
@@ -97,8 +93,8 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
                     disposables +=
                         Observable
                             .defer { bootstrapper() }
-                            .subscribeOnNullable(featureScheduler)
-                            .observeOnNullable(featureScheduler)
+                            .subscribeOnNullable(schedulers?.featureScheduler)
+                            .observeOnNullable(schedulers?.featureScheduler)
                             .subscribe { output.accept(it) }
                 }
         }
@@ -114,11 +110,11 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
         get() = stateSubject.value!!
 
     override val news: ObservableSource<News>
-        get() = newsSubject.observeOnNullable(observationScheduler)
+        get() = newsSubject.observeOnNullable(schedulers?.observationScheduler)
 
     override fun subscribe(observer: Observer<in State>) {
         stateSubject
-            .observeOnNullable(observationScheduler)
+            .observeOnNullable(schedulers?.observationScheduler)
             .subscribe(observer)
     }
 
@@ -177,12 +173,12 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
                     .doAfterTerminate {
                         // Remove disposables manually because CompositeDisposable does not do it automatically
                         // producing memory leaks.
-                        // Check for null as it might be disposed instantly.
+                        // Check for null as it might be disposed instantly
                         disposable.get()?.also { disposables.remove(it) }
                     }
                     .subscribe { effect -> invokeReducer(action, effect) }
             )
-            // Disposable might be disposed instantly.
+            // Disposable might be disposed instantly in case of Observable.just
             disposable.get()?.takeIf { !it.isDisposed }?.addTo(disposables)
         }
 
@@ -284,4 +280,10 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
             }
         }
     }
+
+    class Schedulers(
+        /** Should be single-threaded. */
+        val featureScheduler: Scheduler,
+        val observationScheduler: Scheduler
+    )
 }

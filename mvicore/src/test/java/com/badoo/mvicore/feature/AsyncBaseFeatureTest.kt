@@ -56,11 +56,6 @@ class AsyncBaseFeatureTest {
         feature = testFeature(featureScheduler = null, observationScheduler = null)
     }
 
-    @Test(expected = IllegalArgumentException::class)
-    fun `forces to specify both schedulers`() {
-        feature = testFeature(featureScheduler = Schedulers.trampoline(), observationScheduler = null)
-    }
-
     @Test
     fun `allows creation with both schedulers`() {
         feature = testFeature(featureScheduler = Schedulers.trampoline(), observationScheduler = Schedulers.trampoline())
@@ -233,7 +228,7 @@ class AsyncBaseFeatureTest {
 
         fun waitAndAssert() {
             countDownLatch.await(10, TimeUnit.SECONDS)
-            assertEquals(expected, actual, "Expected '$expected' but was executed on '$actual'")
+            assertEquals("Expected '$expected' but was executed on '$actual'", expected, actual)
         }
     }
 

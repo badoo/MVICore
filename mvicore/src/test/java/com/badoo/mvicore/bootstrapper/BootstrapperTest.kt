@@ -14,11 +14,11 @@ import io.reactivex.Observable
 import io.reactivex.observers.TestObserver
 import io.reactivex.subjects.ReplaySubject
 import junit.framework.Assert.assertEquals
-import org.amshove.kluent.any
-import org.amshove.kluent.mock
 import org.junit.After
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -112,7 +112,7 @@ class BootstrapperTest {
         feature = BaseFeature<Any, Action, Any, Any, Any>(
             initialState = Any(),
             bootstrapper = bootstrapper,
-            wishToAction = { _-> Action1 },
+            wishToAction = { _ -> Action1 },
             actor = { _, action ->
                 actions.onNext(action)
                 Observable.empty()

@@ -19,15 +19,15 @@ import com.badoo.mvicore.newspublishing.TestWish.Wish3
 import io.reactivex.Observable
 import io.reactivex.functions.Consumer
 import io.reactivex.observers.TestObserver
-import org.amshove.kluent.any
-import org.amshove.kluent.mock
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
+import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify

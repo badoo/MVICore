@@ -2,21 +2,17 @@ package com.badoo.mvicore.extension
 
 import io.reactivex.Observable
 import io.reactivex.Observer
+import io.reactivex.Scheduler
 import io.reactivex.functions.Consumer
-
-@Deprecated(
-    "Part of internal api, not supposed to be visible outside",
-    ReplaceWith(
-        "flatMap { mapper(it)?.let { Observable.just(it) } ?: Observable.empty() }",
-        "io.reactivex.Observable"
-    )
-)
-inline fun <T, R> Observable<T>.mapNotNull(crossinline mapper: (T) -> R?): Observable<R> =
-    flatMap {
-        mapper(it)
-            ?.let { Observable.just(it) }
-            ?: Observable.empty()
-    }
+import io.reactivex.subjects.Subject
 
 fun <T> Observer<T>.asConsumer() = Consumer<T> { onNext(it) }
 
+internal fun <T> Observable<T>.observeOnNullable(scheduler: Scheduler?): Observable<T> =
+    if (scheduler != null) observeOn(scheduler) else this
+
+internal fun <T> Observable<T>.subscribeOnNullable(scheduler: Scheduler?): Observable<T> =
+    if (scheduler != null) subscribeOn(scheduler) else this
+
+internal fun <T> Subject<T>.serializeIfNotNull(param: Any?): Subject<T> =
+    if (param != null) toSerialized() else this

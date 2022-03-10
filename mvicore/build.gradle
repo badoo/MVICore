@@ -15,7 +15,6 @@ dependencies {
 
     testImplementation deps('junit:junit')
     testImplementation deps('org.jetbrains.kotlin:kotlin-test-junit')
-    testImplementation deps('org.amshove.kluent:kluent')
     testImplementation deps('org.mockito.kotlin:mockito-kotlin')
 }
 

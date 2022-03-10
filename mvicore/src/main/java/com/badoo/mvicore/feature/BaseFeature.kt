@@ -10,6 +10,7 @@ import com.badoo.mvicore.element.WishToAction
 import com.badoo.mvicore.extension.SameThreadVerifier
 import com.badoo.mvicore.extension.asConsumer
 import com.badoo.mvicore.extension.observeOnNullable
+import com.badoo.mvicore.extension.serializeIfNotNull
 import com.badoo.mvicore.extension.subscribeOnNullable
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
@@ -22,6 +23,7 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
+import java.util.concurrent.atomic.AtomicReference
 
 open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any, News : Any>(
     initialState: State,
@@ -35,9 +37,11 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
 ) : AsyncFeature<Wish, State, News> {
 
     private val threadVerifier by lazy { SameThreadVerifier() }
-    private val actionSubject = PublishSubject.create<Action>()
-    private val stateSubject = BehaviorSubject.createDefault(initialState)
-    private val newsSubject = PublishSubject.create<News>()
+    private val actionSubject = PublishSubject.create<Action>().serializeIfNotNull(schedulers)
+    // store last state to make best effort to return it in getState()
+    private val lastState = AtomicReference<State>(initialState)
+    private val stateSubject = BehaviorSubject.createDefault(initialState).serializeIfNotNull(schedulers)
+    private val newsSubject = PublishSubject.create<News>().serializeIfNotNull(schedulers)
     private val disposables = CompositeDisposable()
     private val postProcessorWrapper = postProcessor?.let {
         PostProcessorWrapper(
@@ -72,6 +76,7 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
     init {
         if (schedulers?.featureScheduler == null) threadVerifier
 
+        disposables += stateSubject.subscribe { lastState.set(it) }
         disposables += actorWrapper
         disposables += reducerWrapper
         disposables += postProcessorWrapper
@@ -106,7 +111,7 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
         get() = newsSubject
 
     override val state: State
-        get() = stateSubject.value!!
+        get() = lastState.get()
 
     override val news: ObservableSource<News>
         get() = newsSubject.observeOnNullable(schedulers?.observationScheduler)
@@ -149,7 +154,7 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
     private class ActorWrapper<State : Any, Action : Any, Effect : Any>(
         private val disposables: CompositeDisposable,
         private val actor: Actor<State, Action, Effect>,
-        private val stateSubject: BehaviorSubject<State>,
+        private val stateSubject: Subject<State>,
         private val reducerWrapper: Consumer<Triple<State, Action, Effect>>,
         private val featureScheduler: Scheduler?,
         private val threadVerifier: Lazy<SameThreadVerifier>
@@ -181,7 +186,14 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
 
         private fun invokeReducer(action: Action, effect: Effect) {
             if (disposables.isDisposed) return
-            val state = requireNotNull(stateSubject.value)
+            val state =
+                if (stateSubject is BehaviorSubject<State>) {
+                    requireNotNull(stateSubject.value)
+                } else {
+                    // if serialized wait for async processes to complete and get the actual value
+                    // blockingFirst is happening on the featureScheduler in this case
+                    stateSubject.blockingFirst()
+                }
 
             threadVerifier.value.verify()
             if (reducerWrapper is ReducerWrapper) {

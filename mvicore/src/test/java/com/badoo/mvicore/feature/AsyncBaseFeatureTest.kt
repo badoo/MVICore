@@ -125,10 +125,11 @@ class AsyncBaseFeatureTest {
     @Test
     fun `sends news on observation scheduler`() {
         val capture = ThreadCapture(THREAD_OBSERVATION)
-        feature = testFeature()
+        feature = testFeature(bootstrapper = null)
         disposable += feature.news.wrap().firstElement().subscribe {
             capture.capture()
         }
+        feature.accept(Wish())
         capture.waitAndAssert()
     }
 

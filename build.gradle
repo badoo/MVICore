@@ -45,9 +45,8 @@ ext {
 
     // Testing
     junitVersion = '4.12'
-    kluentVersion = '1.23'
     supportTestVersion = '1.3.0'
-    mockitoKotlinVersion = '1.3.0'
+    mockitoKotlinVersion = '4.0.0'
 
     depsWithVersion = [
             // Kotlin
@@ -99,8 +98,7 @@ ext {
             // Testing
             "junit:junit"                                       : junitVersion,
             "org.jetbrains.kotlin:kotlin-test-junit"            : kotlinVersion,
-            "org.amshove.kluent:kluent"                         : kluentVersion,
-            "com.nhaarman:mockito-kotlin"                       : mockitoKotlinVersion,
+            "org.mockito.kotlin:mockito-kotlin"                 : mockitoKotlinVersion,
             "androidx.test:runner"                              : supportTestVersion,
             "androidx.test:orchestrator"                        : supportTestVersion,
             "androidx.test:rules"                               : supportTestVersion,

@@ -32,7 +32,6 @@ dependencies {
 
     testImplementation deps('junit:junit')
     testImplementation deps('org.jetbrains.kotlin:kotlin-test-junit')
-    testImplementation deps('org.amshove.kluent:kluent')
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8

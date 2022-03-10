@@ -40,7 +40,6 @@ dependencies {
 
     testImplementation deps('junit:junit')
     testImplementation deps('org.jetbrains.kotlin:kotlin-test-junit')
-    testImplementation deps('org.amshove.kluent:kluent')
     androidTestImplementation deps("androidx.test:runner")
     androidTestImplementation deps("androidx.test:rules")
     androidTestImplementation deps("androidx.test:rules")

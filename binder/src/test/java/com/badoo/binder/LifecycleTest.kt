@@ -2,14 +2,14 @@ package com.badoo.binder
 
 import com.badoo.binder.lifecycle.Lifecycle
 import com.badoo.binder.lifecycle.ManualLifecycle
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.times
-import com.nhaarman.mockito_kotlin.verify
 import io.reactivex.ObservableSource
 import io.reactivex.functions.Consumer
 import io.reactivex.subjects.PublishSubject
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 
 
 class LifecycleTest {

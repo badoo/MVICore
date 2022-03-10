@@ -18,11 +18,10 @@ import io.reactivex.Scheduler
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
-import io.reactivex.rxkotlin.addTo
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
-import java.util.concurrent.atomic.AtomicReference
 
 open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any, News : Any>(
     initialState: State,
@@ -165,26 +164,24 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
         fun processAction(state: State, action: Action) {
             if (disposables.isDisposed) return
 
-            val disposable = AtomicReference<Disposable>()
-            disposable.set(
+            var disposable: Disposable? = null
+            disposable =
                 actor
                     .invoke(state, action)
                     .observeOnNullable(featureScheduler)
                     .doAfterTerminate {
-                        // Remove disposables manually because CompositeDisposable does not do it automatically
-                        // producing memory leaks.
+                        // Remove disposables manually because CompositeDisposable does not do it automatically producing memory leaks
                         // Check for null as it might be disposed instantly
-                        disposable.get()?.also { disposables.remove(it) }
+                        disposable?.let(disposables::remove)
                     }
                     .subscribe { effect -> invokeReducer(action, effect) }
-            )
-            // Disposable might be disposed instantly in case of Observable.just
-            disposable.get()?.takeIf { !it.isDisposed }?.addTo(disposables)
+            // Disposable might be already disposed in case of no scheduler + Observable.just
+            if (!disposable.isDisposed) disposables += disposable
         }
 
         private fun invokeReducer(action: Action, effect: Effect) {
             if (disposables.isDisposed) return
-            val state = stateSubject.value!!
+            val state = requireNotNull(stateSubject.value)
 
             threadVerifier.value.verify()
             if (reducerWrapper is ReducerWrapper) {

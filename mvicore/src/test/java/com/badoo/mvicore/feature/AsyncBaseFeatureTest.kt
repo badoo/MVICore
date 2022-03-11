@@ -193,7 +193,7 @@ class AsyncBaseFeatureTest {
         newsPublisher = newsPublisher,
         postProcessor = postProcessor,
         schedulers = if (featureScheduler != null && observationScheduler != null) {
-            BaseFeature.Schedulers(
+            FeatureSchedulers(
                 featureScheduler = featureScheduler,
                 observationScheduler = observationScheduler
             )

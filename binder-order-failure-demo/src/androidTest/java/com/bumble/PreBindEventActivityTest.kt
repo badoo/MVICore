@@ -7,6 +7,7 @@ import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
 import com.bumble.binder.orderfailure.R
 import com.bumble.binder.orderfailure.prebindevent.PreBindEventActivity
+import org.hamcrest.CoreMatchers.not
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -20,7 +21,7 @@ class PreBindEventActivityTest {
     @Test
     fun `GIVEN_the_screen_launched_THEN_the_title_should_not_be_visible`() {
         Espresso.onView(ViewMatchers.withId(R.id.title))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+            .check(ViewAssertions.matches(not(ViewMatchers.isDisplayed())))
     }
 
 }

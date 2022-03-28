@@ -64,7 +64,7 @@ class Binder(
         connection: Connection<Out, In>,
         middleware: Middleware<Out, In>?
     ) {
-        connectionDisposables += wrap(connection.from)
+        connectionDisposables += wrap(connection.source)
             .subscribeWithMiddleware(connection, middleware)
     }
 
@@ -72,7 +72,7 @@ class Binder(
         connection: Connection<Out, In>,
         middleware: Middleware<Out, In>?
     ) {
-        disposables += wrap(connection.from)
+        disposables += wrap(connection.source)
             .subscribeWithMiddleware(connection, middleware)
     }
 

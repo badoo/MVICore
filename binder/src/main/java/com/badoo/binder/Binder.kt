@@ -13,12 +13,13 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
 import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.subjects.UnicastSubject
 
 class Binder(
     private val lifecycle: Lifecycle? = null,
 ) : Disposable {
+    private val bindings = mutableListOf<Binding>()
     private val disposables = CompositeDisposable()
-    private val connections = mutableListOf<Pair<Connection<*, *>, Middleware<*, *>?>>()
     private val connectionDisposables = CompositeDisposable()
     private var isActive = false
 
@@ -51,28 +52,31 @@ class Binder(
 
         when {
             lifecycle != null -> {
-                connections += (connection to middleware)
-                if (isActive) {
-                    subscribeWithLifecycle(connection, middleware)
+                with(Binding(connection, middleware)) {
+                    bindings.add(this)
+                    if (isActive) {
+                        accumulate()
+                        subscribeWithLifecycle<Out, In>(this)
+                    }
                 }
             }
             else -> subscribe(connection, middleware)
         }
     }
 
-    private fun <Out, In> subscribeWithLifecycle(
-        connection: Connection<Out, In>,
-        middleware: Middleware<Out, In>?
-    ) {
-        connectionDisposables += wrap(connection.source)
-            .subscribeWithMiddleware(connection, middleware)
+    private fun <Out, In> subscribeWithLifecycle(binding: Binding) {
+        connectionDisposables += wrap(binding.source as UnicastSubject<Out>)
+            .subscribeWithMiddleware(
+                binding.connection as Connection<Out, In>,
+                binding.middleware as? Middleware<Out, In>
+            )
     }
 
     private fun <Out, In> subscribe(
         connection: Connection<Out, In>,
         middleware: Middleware<Out, In>?
     ) {
-        disposables += wrap(connection.source)
+        disposables += wrap(connection.from)
             .subscribeWithMiddleware(connection, middleware)
     }
 
@@ -120,12 +124,8 @@ class Binder(
 
     private fun bindConnections() {
         isActive = true
-        connections.forEach { (connection, middleware) ->
-            subscribeWithLifecycle(
-                connection as Connection<Any, Any>,
-                middleware as? Middleware<Any, Any>
-            )
-        }
+        bindings.forEach { it.accumulate() }
+        bindings.forEach { subscribeWithLifecycle<Any, Any>(it) }
     }
 
     private fun unbindConnections() {

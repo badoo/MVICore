@@ -22,7 +22,7 @@ class PreBindEventActivity : AppCompatActivity(), Consumer<ViewModel>, Observabl
         setContentView(R.layout.activity_main)
         title = findViewById(R.id.title)
         button = findViewById(R.id.button)
-        MainActivityBindings(this, Feature1(), Feature2()).setup(this)
+        MainActivityBindings(this, Feature1()).setup(this)
     }
 
     override fun subscribe(observer: Observer<in UiEvent>) {

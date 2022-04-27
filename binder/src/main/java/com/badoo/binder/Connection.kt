@@ -5,7 +5,6 @@ import com.badoo.binder.connector.NotNullConnector
 import io.reactivex.ObservableSource
 import io.reactivex.Scheduler
 import io.reactivex.functions.Consumer
-import io.reactivex.subjects.UnicastSubject
 
 data class Connection<Out, In>(
     val from: ObservableSource<out Out>? = null,
@@ -16,11 +15,6 @@ data class Connection<Out, In>(
 ) {
     companion object {
         private const val ANONYMOUS: String = "anonymous"
-    }
-
-    val source: ObservableSource<Out>? = from?.run {
-        UnicastSubject.create<Out>()
-            .also { this.subscribe(it) }
     }
 
     fun isAnonymous(): Boolean =

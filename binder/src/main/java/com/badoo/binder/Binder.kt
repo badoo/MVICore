@@ -65,11 +65,13 @@ class Binder(
     }
 
     private fun <Out, In> subscribeWithLifecycle(binding: Binding) {
-        connectionDisposables += wrap(binding.source as UnicastSubject<Out>)
-            .subscribeWithMiddleware(
-                binding.connection as Connection<Out, In>,
-                binding.middleware as? Middleware<Out, In>
-            )
+        (binding.source as? UnicastSubject<Out>)?.let { source ->
+            connectionDisposables += wrap(source)
+                .subscribeWithMiddleware(
+                    binding.connection as Connection<Out, In>,
+                    binding.middleware as? Middleware<Out, In>
+                )
+        }
     }
 
     private fun <Out, In> subscribe(

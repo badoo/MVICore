@@ -12,9 +12,9 @@ internal class Binding(
         private set
 
     fun accumulate() {
-        source = connection.from?.run {
+        source = connection.from?.let { source ->
             UnicastSubject.create<Any>()
-                .also { this.subscribe(it) }
+                .also { observer -> source.subscribe(observer) }
         }
     }
 }

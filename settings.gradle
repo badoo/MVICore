@@ -12,3 +12,4 @@ include ':mvicore-demo:mvicore-demo-feature1'
 include ':mvicore-demo:mvicore-demo-feature2'
 include ':mvicore-demo:mvicore-demo-app'
 
+include ':binding-order'

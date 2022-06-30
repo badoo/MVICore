@@ -1,0 +1,21 @@
+plugins {
+    id 'java-library'
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_7
+    targetCompatibility = JavaVersion.VERSION_1_7
+}
+
+dependencies {
+    implementation project(":mvicore")
+
+    implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
+
+    implementation deps('io.reactivex.rxjava2:rxjava')
+    implementation deps('io.reactivex.rxjava2:rxandroid')
+
+    testImplementation deps('junit:junit')
+    testImplementation deps('org.mockito.kotlin:mockito-kotlin')
+}

@@ -284,4 +284,13 @@ open class BaseAsyncFeature<Wish : Any, in Action : Any, in Effect : Any, State 
             }
         }
     }
+
+    /**
+     * A set of [Scheduler]s that change the threading behaviour of a [Feature]
+     */
+    class FeatureSchedulers(
+        /** Should be single-threaded. */
+        val featureScheduler: Scheduler,
+        val observationScheduler: Scheduler
+    )
 }

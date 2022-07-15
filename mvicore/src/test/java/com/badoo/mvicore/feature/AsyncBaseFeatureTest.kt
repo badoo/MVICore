@@ -6,6 +6,7 @@ import com.badoo.mvicore.element.NewsPublisher
 import com.badoo.mvicore.element.PostProcessor
 import com.badoo.mvicore.element.Reducer
 import com.badoo.mvicore.element.WishToAction
+import com.badoo.mvicore.feature.BaseAsyncFeature.FeatureSchedulers
 import com.badoo.mvicore.utils.RxErrorRule
 import io.reactivex.Observable
 import io.reactivex.ObservableSource

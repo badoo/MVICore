@@ -9,9 +9,6 @@ import com.badoo.mvicore.element.Reducer
 import com.badoo.mvicore.element.WishToAction
 import com.badoo.mvicore.extension.SameThreadVerifier
 import com.badoo.mvicore.extension.asConsumer
-import com.badoo.mvicore.extension.observeOnNullable
-import com.badoo.mvicore.extension.serializeIfNotNull
-import com.badoo.mvicore.extension.subscribeOnNullable
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import io.reactivex.Observer
@@ -33,15 +30,15 @@ open class BaseAsyncFeature<Wish : Any, in Action : Any, in Effect : Any, State 
     reducer: Reducer<State, Effect>,
     postProcessor: PostProcessor<Action, Effect, State>? = null,
     newsPublisher: NewsPublisher<Action, Effect, State, News>? = null,
-    private val schedulers: FeatureSchedulers? = null
+    private val schedulers: FeatureSchedulers
 ) : AsyncFeature<Wish, State, News> {
 
     private val threadVerifier by lazy { SameThreadVerifier() }
-    private val actionSubject = PublishSubject.create<Action>().serializeIfNotNull(schedulers)
+    private val actionSubject = PublishSubject.create<Action>().toSerialized()
     // store last state to make best effort to return it in getState()
     private val lastState = AtomicReference<State>(initialState)
-    private val stateSubject = BehaviorSubject.createDefault(initialState).serializeIfNotNull(schedulers)
-    private val newsSubject = PublishSubject.create<News>().serializeIfNotNull(schedulers)
+    private val stateSubject = BehaviorSubject.createDefault(initialState).toSerialized()
+    private val newsSubject = PublishSubject.create<News>().toSerialized()
     private val disposables = CompositeDisposable()
     private val postProcessorWrapper = postProcessor?.let {
         PostProcessorWrapper(
@@ -69,13 +66,11 @@ open class BaseAsyncFeature<Wish : Any, in Action : Any, in Effect : Any, State 
         actor,
         stateSubject,
         reducerWrapper,
-        schedulers?.featureScheduler,
+        schedulers.featureScheduler,
         lazy { threadVerifier } // pass as lazy to not initialize here
     ).wrapWithMiddleware(wrapperOf = actor)
 
     init {
-        if (schedulers?.featureScheduler == null) threadVerifier
-
         disposables += stateSubject.subscribe { lastState.set(it) }
         disposables += actorWrapper
         disposables += reducerWrapper
@@ -83,7 +78,7 @@ open class BaseAsyncFeature<Wish : Any, in Action : Any, in Effect : Any, State 
         disposables += newsPublisherWrapper
         disposables +=
             actionSubject
-                .observeOnNullable(schedulers?.featureScheduler)
+                .observeOn(schedulers.featureScheduler)
                 .subscribe { invokeActor(state, it) }
 
         if (bootstrapper != null) {
@@ -97,8 +92,8 @@ open class BaseAsyncFeature<Wish : Any, in Action : Any, in Effect : Any, State 
                     disposables +=
                         Observable
                             .defer { bootstrapper() }
-                            .subscribeOnNullable(schedulers?.featureScheduler)
-                            .observeOnNullable(schedulers?.featureScheduler)
+                            .subscribeOn(schedulers.featureScheduler)
+                            .observeOn(schedulers.featureScheduler)
                             .subscribe { output.accept(it) }
                 }
         }
@@ -114,11 +109,11 @@ open class BaseAsyncFeature<Wish : Any, in Action : Any, in Effect : Any, State 
         get() = lastState.get()
 
     override val news: ObservableSource<News>
-        get() = newsSubject.observeOnNullable(schedulers?.observationScheduler)
+        get() = newsSubject.observeOn(schedulers.observationScheduler)
 
     override fun subscribe(observer: Observer<in State>) {
         stateSubject
-            .observeOnNullable(schedulers?.observationScheduler)
+            .observeOn(schedulers.observationScheduler)
             .subscribe(observer)
     }
 
@@ -173,7 +168,7 @@ open class BaseAsyncFeature<Wish : Any, in Action : Any, in Effect : Any, State 
             disposable =
                 actor
                     .invoke(state, action)
-                    .observeOnNullable(featureScheduler)
+                    .observeOn(featureScheduler)
                     .doAfterTerminate {
                         // Remove disposables manually because CompositeDisposable does not do it automatically producing memory leaks
                         // Check for null as it might be disposed instantly

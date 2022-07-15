@@ -10,14 +10,12 @@ open class ActorReducerFeature<Wish : Any, in Effect : Any, State : Any, News : 
     bootstrapper: Bootstrapper<Wish>? = null,
     actor: Actor<State, Wish, Effect>,
     reducer: Reducer<State, Effect>,
-    newsPublisher: NewsPublisher<Wish, Effect, State, News>? = null,
-    schedulers: FeatureSchedulers? = null
+    newsPublisher: NewsPublisher<Wish, Effect, State, News>? = null
 ) : BaseFeature<Wish, Wish, Effect, State, News>(
     initialState = initialState,
     bootstrapper = bootstrapper,
     wishToAction = { wish -> wish },
     actor = actor,
     reducer = reducer,
-    newsPublisher = newsPublisher,
-    schedulers = schedulers
+    newsPublisher = newsPublisher
 )

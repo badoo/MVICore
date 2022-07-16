@@ -23,8 +23,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 /**
- * Tests async functionality of [BaseFeature].
- * Basic tests are inside [BaseFeatureTest].
+ * Tests async functionality of [BaseAsyncFeature].
  */
 class AsyncBaseFeatureTest {
 

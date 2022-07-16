@@ -12,14 +12,16 @@ open class ReducerFeature<Wish : Any, State : Any, News : Any>(
     initialState: State,
     reducer: Reducer<State, Wish>,
     bootstrapper: Bootstrapper<Wish>? = null,
-    newsPublisher: SimpleNewsPublisher<Wish, State, News>? = null
+    newsPublisher: SimpleNewsPublisher<Wish, State, News>? = null,
+    featureScheduler: FeatureScheduler? = null
 ) : BaseFeature<Wish, Wish, Wish, State, News>(
     initialState = initialState,
     bootstrapper = bootstrapper,
     wishToAction = { wish -> wish },
     actor = BypassActor(),
     reducer = reducer,
-    newsPublisher = newsPublisher
+    newsPublisher = newsPublisher,
+    featureScheduler = featureScheduler
 ) {
     class BypassActor<in State : Any, Wish : Any> : Actor<State, Wish, Wish>, NonWrappable {
         override fun invoke(state: State, wish: Wish): Observable<Wish> =

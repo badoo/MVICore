@@ -3,17 +3,19 @@ package com.badoo.mvicore.feature
 import io.reactivex.Scheduler
 import io.reactivex.internal.schedulers.RxThreadFactory
 import io.reactivex.plugins.RxJavaPlugins
+import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.ThreadFactory
 
-object FeatureSchedulerFactory {
+object FeatureSchedulers {
     /**
      * Creates a single threaded feature scheduler.
      */
-    fun create(
+    @JvmStatic
+    fun createFeatureScheduler(
         threadPrefix: String,
         threadPriority: Int = Thread.NORM_PRIORITY
-    ): BaseFeature.FeatureScheduler {
-        return object : BaseFeature.FeatureScheduler {
+    ): FeatureScheduler {
+        return object : FeatureScheduler {
             private val singleThreadedThreadFactory by lazy {
                 ThreadIdInterceptingThreadFactory(threadPrefix, threadPriority)
             }
@@ -33,6 +35,15 @@ object FeatureSchedulerFactory {
         RxJavaPlugins
             .createSingleScheduler(threadFactory)
             .apply { start() }
+
+    /**
+     * A feature scheduler that is useful for unit testing.
+     */
+    object TrampolineFeatureScheduler : FeatureScheduler {
+        override val scheduler: Scheduler = Schedulers.trampoline()
+
+        override val isOnFeatureThread: Boolean = false
+    }
 
     /**
      * A thread factory which stores the thread id of the thread created.

@@ -312,12 +312,12 @@ class BaseFeatureWithSchedulerTest {
         assertValueCount(count)
     }
 
-    private class TestThreadFeatureScheduler : BaseFeature.FeatureScheduler {
+    private class TestThreadFeatureScheduler : FeatureScheduler {
         val schedulerInvocationCount: Int
             get() = countingScheduler.interactionCount
 
         private val delegate by lazy {
-            FeatureSchedulerFactory.create("AsyncTestScheduler")
+            FeatureSchedulers.createFeatureScheduler("AsyncTestScheduler")
         }
 
         val testScheduler: Scheduler

@@ -30,7 +30,7 @@ open class BaseAsyncFeature<Wish : Any, in Action : Any, in Effect : Any, State 
     reducer: Reducer<State, Effect>,
     postProcessor: PostProcessor<Action, Effect, State>? = null,
     newsPublisher: NewsPublisher<Action, Effect, State, News>? = null,
-    private val schedulers: FeatureSchedulers
+    private val schedulers: AsyncFeatureSchedulers
 ) : AsyncFeature<Wish, State, News> {
 
     private val threadVerifier by lazy { SameThreadVerifier() }
@@ -284,13 +284,4 @@ open class BaseAsyncFeature<Wish : Any, in Action : Any, in Effect : Any, State 
             }
         }
     }
-
-    /**
-     * A set of [Scheduler]s that change the threading behaviour of a [Feature]
-     */
-    class FeatureSchedulers(
-        /** Should be single-threaded. */
-        val featureScheduler: Scheduler,
-        val observationScheduler: Scheduler
-    )
 }

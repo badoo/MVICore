@@ -13,7 +13,6 @@ import com.badoo.mvicore.extension.subscribeOnNullable
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import io.reactivex.Observer
-import io.reactivex.Scheduler
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
@@ -275,23 +274,10 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
             }
         }
     }
-
-    interface FeatureScheduler {
-        /**
-         * The scheduler that this feature executes on.
-         * This must be single threaded, otherwise your feature will be non-deterministic.
-         */
-        val scheduler: Scheduler
-
-        /**
-         * Helps avoid sending a message to a thread if we are already on the thread.
-         */
-        val isOnFeatureThread: Boolean
-    }
 }
 
 fun <T : Any> Observable<T>.observeOnFeatureScheduler(
-    scheduler: BaseFeature.FeatureScheduler?,
+    scheduler: FeatureScheduler?,
     func: (T) -> Unit
 ): Observable<T> =
     flatMap { value ->

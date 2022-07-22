@@ -2,10 +2,10 @@ package com.badoo.mvicore.feature
 
 import com.badoo.mvicore.element.Actor
 import com.badoo.mvicore.element.Reducer
-import com.badoo.mvicore.feature.BaseFeature.FeatureScheduler
 import com.badoo.mvicore.feature.ActorReducerFeatureTestSchedulerTest.TestFeature.Effect
 import com.badoo.mvicore.feature.ActorReducerFeatureTestSchedulerTest.TestFeature.State
 import com.badoo.mvicore.feature.ActorReducerFeatureTestSchedulerTest.TestFeature.Wish
+import com.badoo.mvicore.feature.FeatureSchedulers.TrampolineFeatureScheduler
 import com.badoo.mvicore.onNextEvents
 import io.reactivex.Observable
 import io.reactivex.Scheduler
@@ -21,7 +21,7 @@ class ActorReducerFeatureTestSchedulerTest {
     fun `ensure computation scheduler works with feature scheduler`() {
         val computationScheduler = TestScheduler()
         val feature = TestFeature(
-            featureScheduler = TestFeatureScheduler,
+            featureScheduler = TrampolineFeatureScheduler,
             computationScheduler = computationScheduler
         )
         val states = Observable.wrap(feature).test()
@@ -66,11 +66,5 @@ class ActorReducerFeatureTestSchedulerTest {
                     Effect.Mutate -> state.copy(mutated = true)
                 }
         }
-    }
-
-    private object TestFeatureScheduler : FeatureScheduler {
-        override val scheduler: Scheduler = Schedulers.trampoline()
-
-        override val isOnFeatureThread: Boolean = false
     }
 }

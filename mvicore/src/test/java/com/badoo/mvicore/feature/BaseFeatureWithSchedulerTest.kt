@@ -22,9 +22,7 @@ import com.badoo.mvicore.onNextEvents
 import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
-import io.reactivex.internal.schedulers.RxThreadFactory
 import io.reactivex.observers.TestObserver
-import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.schedulers.TestScheduler
 import io.reactivex.subjects.PublishSubject
@@ -318,17 +316,12 @@ class BaseFeatureWithSchedulerTest {
         val schedulerInvocationCount: Int
             get() = countingScheduler.interactionCount
 
-        val testScheduler by lazy {
-            RxJavaPlugins
-                .createSingleScheduler(
-                    RxThreadFactory(
-                        "AsyncTestScheduler",
-                        Thread.NORM_PRIORITY,
-                        false
-                    )
-                )
-                .apply { start() }
+        private val delegate by lazy {
+            FeatureSchedulerFactory.create("AsyncTestScheduler")
         }
+
+        val testScheduler: Scheduler
+            get() = delegate.scheduler
 
         private val countingScheduler: CountingScheduler by lazy {
             CountingScheduler(delegate = testScheduler)
@@ -338,12 +331,13 @@ class BaseFeatureWithSchedulerTest {
             get() = countingScheduler
 
         override val isOnFeatureThread: Boolean
-            get() = Thread.currentThread().name.startsWith("AsyncTestScheduler")
+            get() = delegate.isOnFeatureThread
 
         private class CountingScheduler(private val delegate: Scheduler) : Scheduler() {
             var interactionCount: Int = 0
 
-            override fun createWorker(): Worker = delegate.createWorker().also { interactionCount++ }
+            override fun createWorker(): Worker =
+                delegate.createWorker().also { interactionCount++ }
 
             override fun start() {
                 delegate.start()

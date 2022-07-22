@@ -160,12 +160,22 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
         fun processAction(state: State, action: Action) {
             if (disposables.isDisposed) return
 
-            disposables += actor
-                .invoke(state, action)
-                .observeOnFeatureScheduler(featureScheduler) { effect ->
-                    invokeReducer(stateSubject.value!!, action, effect)
-                }
-                .subscribe()
+            var disposable: Disposable? = null
+            disposable =
+                actor
+                    .invoke(state, action)
+                    .observeOnFeatureScheduler(featureScheduler) { effect ->
+                        invokeReducer(stateSubject.value!!, action, effect)
+                    }
+                    .doAfterTerminate {
+                        // Remove disposables manually because CompositeDisposable does not do it automatically producing memory leaks
+                        // Check for null as it might be disposed instantly
+                        disposable?.let(disposables::remove)
+                    }
+                    .subscribe()
+
+            // Disposable might be already disposed in case of no scheduler + Observable.just
+            if (!disposable.isDisposed) disposables += disposable
         }
 
         private fun invokeReducer(state: State, action: Action, effect: Effect) {

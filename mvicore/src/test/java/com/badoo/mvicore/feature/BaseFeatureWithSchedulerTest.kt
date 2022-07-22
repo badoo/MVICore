@@ -71,7 +71,6 @@ class BaseFeatureWithSchedulerTest {
                 actorScheduler
             ),
             reducer = TestHelper.TestReducer(invocationCallback = {
-                println("${Thread.currentThread().name} reducer about to check if on feature thread")
                 if (!featureScheduler.isOnFeatureThread) {
                     fail("Reducer was not invoked on the feature thread")
                 }

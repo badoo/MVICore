@@ -21,6 +21,7 @@ import com.badoo.mvicore.extension.SameThreadVerifier
 import com.badoo.mvicore.onNextEvents
 import io.reactivex.Observable
 import io.reactivex.Scheduler
+import io.reactivex.disposables.Disposable
 import io.reactivex.internal.schedulers.RxThreadFactory
 import io.reactivex.observers.TestObserver
 import io.reactivex.plugins.RxJavaPlugins
@@ -70,6 +71,7 @@ class BaseFeatureWithSchedulerTest {
                 actorScheduler
             ),
             reducer = TestHelper.TestReducer(invocationCallback = {
+                println("${Thread.currentThread().name} reducer about to check if on feature thread")
                 if (!featureScheduler.isOnFeatureThread) {
                     fail("Reducer was not invoked on the feature thread")
                 }
@@ -236,7 +238,10 @@ class BaseFeatureWithSchedulerTest {
 
         testObserver.awaitAndAssertCount(8 + 1)
         val state = states.onNextEvents().last() as TestState
-        assertEquals((initialCounter + 4 * instantFulfillAmount1) * conditionalMultiplier, state.counter)
+        assertEquals(
+            (initialCounter + 4 * instantFulfillAmount1) * conditionalMultiplier,
+            state.counter
+        )
         assertEquals(false, state.loading)
     }
 
@@ -254,9 +259,18 @@ class BaseFeatureWithSchedulerTest {
         feature.accept(LoopbackWish1)
 
         actorInvocationLogTest.awaitAndAssertCount(4)
-        assertEquals(LoopbackWish1 to TestHelper.loopBackInitialState, actorInvocationLogTest.onNextEvents()[1])
-        assertEquals(LoopbackWish2 to TestHelper.loopBackState1, actorInvocationLogTest.onNextEvents()[2])
-        assertEquals(LoopbackWish3 to TestHelper.loopBackState2, actorInvocationLogTest.onNextEvents()[3])
+        assertEquals(
+            LoopbackWish1 to TestHelper.loopBackInitialState,
+            actorInvocationLogTest.onNextEvents()[1]
+        )
+        assertEquals(
+            LoopbackWish2 to TestHelper.loopBackState1,
+            actorInvocationLogTest.onNextEvents()[2]
+        )
+        assertEquals(
+            LoopbackWish3 to TestHelper.loopBackState2,
+            actorInvocationLogTest.onNextEvents()[3]
+        )
     }
 
     @Test
@@ -267,15 +281,15 @@ class BaseFeatureWithSchedulerTest {
     }
 
     @Test
-    fun `if feature created on same thread, feature scheduler not be accessed for bootstrapping`() {
+    fun `if feature created on same thread, feature scheduler still accessed for bootstrapping`() {
         val latch = CountDownLatch(1)
-        featureScheduler.schedulerIncrementingCount.scheduleDirect {
+        featureScheduler.testScheduler.scheduleDirect {
             initFeature()
             latch.countDown()
         }
 
         latch.await(5, TimeUnit.SECONDS)
-        assertEquals(0, featureScheduler.schedulerInvocationCount)
+        assertEquals(1, featureScheduler.schedulerInvocationCount)
     }
 
     @Test
@@ -302,21 +316,58 @@ class BaseFeatureWithSchedulerTest {
     }
 
     private class TestThreadFeatureScheduler : BaseFeature.FeatureScheduler {
-        var schedulerInvocationCount: Int = 0
+        val schedulerInvocationCount: Int
+            get() = countingScheduler.interactionCount
 
-        val schedulerIncrementingCount by lazy {
+        val testScheduler by lazy {
             RxJavaPlugins
-                .createSingleScheduler(RxThreadFactory("AsyncTestScheduler", Thread.NORM_PRIORITY, false))
+                .createSingleScheduler(
+                    RxThreadFactory(
+                        "AsyncTestScheduler",
+                        Thread.NORM_PRIORITY,
+                        false
+                    )
+                )
                 .apply { start() }
         }
 
+        private val countingScheduler: CountingScheduler by lazy {
+            CountingScheduler(delegate = testScheduler)
+        }
+
         override val scheduler: Scheduler
-            get() {
-                schedulerInvocationCount++
-                return schedulerIncrementingCount
-            }
+            get() = countingScheduler
 
         override val isOnFeatureThread: Boolean
             get() = Thread.currentThread().name.startsWith("AsyncTestScheduler")
+
+        private class CountingScheduler(private val delegate: Scheduler) : Scheduler() {
+            var interactionCount: Int = 0
+
+            override fun createWorker(): Worker = delegate.createWorker().also { interactionCount++ }
+
+            override fun start() {
+                delegate.start()
+            }
+
+            override fun shutdown() {
+                delegate.shutdown()
+            }
+
+            override fun scheduleDirect(run: Runnable): Disposable =
+                delegate.scheduleDirect(run).also { interactionCount++ }
+
+            override fun scheduleDirect(run: Runnable, delay: Long, unit: TimeUnit): Disposable =
+                delegate.scheduleDirect(run, delay, unit).also { interactionCount++ }
+
+            override fun schedulePeriodicallyDirect(
+                run: Runnable,
+                initialDelay: Long,
+                period: Long,
+                unit: TimeUnit
+            ): Disposable =
+                delegate.schedulePeriodicallyDirect(run, initialDelay, period, unit)
+                    .also { interactionCount++ }
+        }
     }
 }

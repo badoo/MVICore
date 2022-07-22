@@ -9,6 +9,7 @@ import com.badoo.mvicore.element.Reducer
 import com.badoo.mvicore.element.WishToAction
 import com.badoo.mvicore.extension.SameThreadVerifier
 import com.badoo.mvicore.extension.asConsumer
+import com.badoo.mvicore.extension.subscribeOnNullable
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import io.reactivex.Observer
@@ -72,9 +73,11 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
         disposables += reducerWrapper
         disposables += postProcessorWrapper
         disposables += newsPublisherWrapper
-        disposables += actionSubject.subscribe {
-            featureScheduler.runOnFeatureThread { invokeActor(state, it) }
-        }
+        disposables += actionSubject
+            .observeOnFeatureScheduler(featureScheduler) { action ->
+                invokeActor(state, action)
+            }
+            .subscribe()
 
         if (bootstrapper != null) {
             setupBootstrapper(bootstrapper)
@@ -90,20 +93,13 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
             ).also { output ->
                 disposables += output
                 disposables +=
-                    if (featureScheduler == null || featureScheduler.isOnFeatureThread) {
-                        bootstrapper.invoke().subscribe {
-                            output.accept(it)
+                    Observable
+                        .defer { bootstrapper() }
+                        .observeOnFeatureScheduler(featureScheduler) { action ->
+                            output.accept(action)
                         }
-                    } else {
-                        Observable
-                            .defer { bootstrapper() }
-                            .subscribeOn(featureScheduler.scheduler)
-                            .subscribe {
-                                // As the action subject is serialized, it doesn't matter if we
-                                // are no longer on the feature scheduler thread.
-                                output.accept(it)
-                            }
-                    }
+                        .subscribeOnNullable(featureScheduler?.scheduler)
+                        .subscribe()
             }
     }
 
@@ -166,10 +162,8 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
 
             disposables += actor
                 .invoke(state, action)
-                .doOnNext { effect ->
-                    featureScheduler.runOnFeatureThread {
-                        invokeReducer(stateSubject.value!!, action, effect)
-                    }
+                .observeOnFeatureScheduler(featureScheduler) { effect ->
+                    invokeReducer(stateSubject.value!!, action, effect)
                 }
                 .subscribe()
         }
@@ -284,14 +278,20 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
          */
         val isOnFeatureThread: Boolean
     }
+}
 
-    companion object {
-        private inline fun FeatureScheduler?.runOnFeatureThread(crossinline func: () -> Unit) {
-            if (this == null || isOnFeatureThread) {
-                func()
-            } else {
-                scheduler.scheduleDirect { func() }
-            }
+fun <T : Any> Observable<T>.observeOnFeatureScheduler(
+    scheduler: BaseFeature.FeatureScheduler?,
+    func: (T) -> Unit
+): Observable<T> =
+    flatMap { value ->
+        val upstream = Observable.just(value)
+        if (scheduler == null || scheduler.isOnFeatureThread) {
+            upstream
+                .doOnNext { func(it) }
+        } else {
+            upstream
+                .observeOn(scheduler.scheduler)
+                .doOnNext { func(it) }
         }
     }
-}

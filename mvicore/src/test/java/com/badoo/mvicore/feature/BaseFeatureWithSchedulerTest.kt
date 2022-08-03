@@ -28,7 +28,6 @@ import io.reactivex.schedulers.TestScheduler
 import io.reactivex.subjects.PublishSubject
 import org.junit.Before
 import org.junit.Test
-import org.mockito.MockitoAnnotations
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import kotlin.test.assertEquals
@@ -45,7 +44,6 @@ class BaseFeatureWithSchedulerTest {
 
     @Before
     fun prepare() {
-        MockitoAnnotations.initMocks(this)
         SameThreadVerifier.isEnabled = true
 
         newsSubject = PublishSubject.create<TestNews>()

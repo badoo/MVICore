@@ -73,10 +73,8 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
         disposables += postProcessorWrapper
         disposables += newsPublisherWrapper
         disposables += actionSubject
-            .observeOnFeatureScheduler(featureScheduler) { action ->
-                invokeActor(state, action)
-            }
-            .subscribe()
+            .observeOnFeatureScheduler(featureScheduler)
+            .subscribe { action -> invokeActor(state, action) }
 
         if (bootstrapper != null) {
             setupBootstrapper(bootstrapper)
@@ -94,11 +92,9 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
                 disposables +=
                     Observable
                         .defer { bootstrapper() }
-                        .observeOnFeatureScheduler(featureScheduler) { action ->
-                            output.accept(action)
-                        }
+                        .observeOnFeatureScheduler(featureScheduler)
                         .subscribeOnNullable(featureScheduler?.scheduler)
-                        .subscribe()
+                        .subscribe { action -> output.accept(action) }
             }
     }
 
@@ -163,15 +159,13 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
             disposable =
                 actor
                     .invoke(state, action)
-                    .observeOnFeatureScheduler(featureScheduler) { effect ->
-                        invokeReducer(stateSubject.value!!, action, effect)
-                    }
+                    .observeOnFeatureScheduler(featureScheduler)
                     .doAfterTerminate {
                         // Remove disposables manually because CompositeDisposable does not do it automatically producing memory leaks
                         // Check for null as it might be disposed instantly
                         disposable?.let(disposables::remove)
                     }
-                    .subscribe()
+                    .subscribe { effect -> invokeReducer(stateSubject.value!!, action, effect) }
 
             // Disposable might be already disposed in case of no scheduler + Observable.just
             if (!disposable.isDisposed) disposables += disposable
@@ -277,18 +271,15 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
 
     private companion object {
         private fun <T : Any> Observable<T>.observeOnFeatureScheduler(
-            scheduler: FeatureScheduler?,
-            func: (T) -> Unit
+            scheduler: FeatureScheduler?
         ): Observable<T> =
             flatMap { value ->
                 val upstream = Observable.just(value)
                 if (scheduler == null || scheduler.isOnFeatureThread) {
                     upstream
-                        .doOnNext { func(it) }
                 } else {
                     upstream
-                        .observeOn(scheduler.scheduler)
-                        .doOnNext { func(it) }
+                        .subscribeOn(scheduler.scheduler)
                 }
             }
     }

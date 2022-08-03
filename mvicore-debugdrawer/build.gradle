@@ -21,6 +21,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
@@ -44,9 +53,6 @@ dependencies {
 
     implementation project(':mvicore')
 }
-
-sourceCompatibility = "1.7"
-targetCompatibility = "1.7"
 
 buildscript {
     repositories {

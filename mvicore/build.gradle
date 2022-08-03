@@ -18,8 +18,14 @@ dependencies {
     testImplementation deps('org.mockito.kotlin:mockito-kotlin')
 }
 
-sourceCompatibility = "1.7"
-targetCompatibility = "1.7"
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
+}
 
 buildscript {
     repositories {

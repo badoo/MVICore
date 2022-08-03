@@ -23,8 +23,8 @@ dependencies {
     testImplementation deps('org.jetbrains.kotlin:kotlin-test-junit')
 }
 
-sourceCompatibility = "1.7"
-targetCompatibility = "1.7"
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
     jcenter()
@@ -52,11 +52,11 @@ artifacts {
 }
 compileKotlin {
     kotlinOptions {
-        jvmTarget = "1.6"
+        jvmTarget = JavaVersion.VERSION_1_8
     }
 }
 compileTestKotlin {
     kotlinOptions {
-        jvmTarget = "1.6"
+        jvmTarget = JavaVersion.VERSION_1_8
     }
 }

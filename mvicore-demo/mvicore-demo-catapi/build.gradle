@@ -31,4 +31,8 @@ dependencies {
     implementation deps('com.squareup.retrofit2:retrofit')
     implementation deps('com.squareup.retrofit2:adapter-rxjava2')
     implementation deps('com.squareup.retrofit2:converter-simplexml')
+
+    configurations {
+        all*.exclude group: 'xpp3', module: 'xpp3'
+    }
 }

@@ -10,7 +10,7 @@ import com.badoo.mvicoredemo.R
 class HelpDialogFragment : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
-        AlertDialog.Builder(activity!!)
+        AlertDialog.Builder(requireActivity())
             .setMessage(
                 Html.fromHtml(resources.getString(R.string.help_dialog_main)))
             .setPositiveButton(R.string.action_ok) { dialog, _ -> dialog.dismiss() }

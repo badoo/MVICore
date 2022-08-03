@@ -2,11 +2,10 @@ package com.badoo.mvicore.feature
 
 import com.badoo.mvicore.element.Actor
 import com.badoo.mvicore.element.Reducer
-import com.badoo.mvicore.feature.ActorReducerFeatureTestSchedulerTest.TestFeature.Effect
-import com.badoo.mvicore.feature.ActorReducerFeatureTestSchedulerTest.TestFeature.State
-import com.badoo.mvicore.feature.ActorReducerFeatureTestSchedulerTest.TestFeature.Wish
+import com.badoo.mvicore.feature.TrampolineFeatureSchedulerTest.TestFeature.Effect
+import com.badoo.mvicore.feature.TrampolineFeatureSchedulerTest.TestFeature.State
+import com.badoo.mvicore.feature.TrampolineFeatureSchedulerTest.TestFeature.Wish
 import com.badoo.mvicore.feature.FeatureSchedulers.TrampolineFeatureScheduler
-import com.badoo.mvicore.onNextEvents
 import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.schedulers.Schedulers
@@ -15,10 +14,10 @@ import org.junit.Test
 import java.util.concurrent.TimeUnit
 import kotlin.test.assertEquals
 
-class ActorReducerFeatureTestSchedulerTest {
+class TrampolineFeatureSchedulerTest {
 
     @Test
-    fun `ensure computation scheduler works with feature scheduler`() {
+    fun `ensure feature is testable with trampoline scheduler`() {
         val computationScheduler = TestScheduler()
         val feature = TestFeature(
             featureScheduler = TrampolineFeatureScheduler,
@@ -29,8 +28,7 @@ class ActorReducerFeatureTestSchedulerTest {
         feature.accept(Wish.Trigger)
         computationScheduler.advanceTimeBy(1, TimeUnit.MINUTES)
 
-        val state = states.onNextEvents().last() as State
-        assertEquals(true, state.mutated)
+        assertEquals(true, states.values().last().mutated)
     }
 
     class TestFeature(

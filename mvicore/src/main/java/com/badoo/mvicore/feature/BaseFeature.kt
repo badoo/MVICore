@@ -274,20 +274,22 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
             }
         }
     }
-}
 
-fun <T : Any> Observable<T>.observeOnFeatureScheduler(
-    scheduler: FeatureScheduler?,
-    func: (T) -> Unit
-): Observable<T> =
-    flatMap { value ->
-        val upstream = Observable.just(value)
-        if (scheduler == null || scheduler.isOnFeatureThread) {
-            upstream
-                .doOnNext { func(it) }
-        } else {
-            upstream
-                .observeOn(scheduler.scheduler)
-                .doOnNext { func(it) }
-        }
+    private companion object {
+        private fun <T : Any> Observable<T>.observeOnFeatureScheduler(
+            scheduler: FeatureScheduler?,
+            func: (T) -> Unit
+        ): Observable<T> =
+            flatMap { value ->
+                val upstream = Observable.just(value)
+                if (scheduler == null || scheduler.isOnFeatureThread) {
+                    upstream
+                        .doOnNext { func(it) }
+                } else {
+                    upstream
+                        .observeOn(scheduler.scheduler)
+                        .doOnNext { func(it) }
+                }
+            }
     }
+}

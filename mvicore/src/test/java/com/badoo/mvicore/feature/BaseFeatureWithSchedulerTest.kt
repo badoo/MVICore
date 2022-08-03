@@ -19,6 +19,7 @@ import com.badoo.mvicore.TestHelper.TestWish.TranslatesTo3Effects
 import com.badoo.mvicore.TestHelper.TestWish.Unfulfillable
 import com.badoo.mvicore.extension.SameThreadVerifier
 import com.badoo.mvicore.onNextEvents
+import com.badoo.mvicore.utils.RxErrorRule
 import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
@@ -27,6 +28,7 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.schedulers.TestScheduler
 import io.reactivex.subjects.PublishSubject
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -41,6 +43,9 @@ class BaseFeatureWithSchedulerTest {
     private lateinit var actorInvocationLogTest: TestObserver<Pair<TestWish, TestState>>
     private lateinit var actorScheduler: Scheduler
     private val featureScheduler = TestThreadFeatureScheduler()
+
+    @get:Rule
+    val rxRule = RxErrorRule()
 
     @Before
     fun prepare() {
@@ -153,7 +158,7 @@ class BaseFeatureWithSchedulerTest {
         wishes.forEach { feature.accept(it) }
 
         testObserver.awaitAndAssertCount(1 + wishes.size)
-        val state = states.onNextEvents().last() as TestState
+        val state = states.values().last()
         assertEquals(initialCounter + wishes.size * instantFulfillAmount1, state.counter)
         assertEquals(false, state.loading)
     }
@@ -168,7 +173,7 @@ class BaseFeatureWithSchedulerTest {
         wishes.forEach { feature.accept(it) }
 
         testObserver.awaitAndAssertCount(1 + wishes.size)
-        val state = states.onNextEvents().last() as TestState
+        val state = states.values().last()
         assertEquals(true, state.loading)
         assertEquals(initialCounter, state.counter)
     }
@@ -191,7 +196,7 @@ class BaseFeatureWithSchedulerTest {
         testScheduler.advanceTimeBy(mockServerDelayMs, TimeUnit.MILLISECONDS)
 
         testObserver.awaitAndAssertCount(2 + wishes.size)
-        val state = states.onNextEvents().last() as TestState
+        val state = states.values().last()
         assertEquals(false, state.loading)
         assertEquals(initialCounter + TestHelper.delayedFulfillAmount, state.counter)
     }
@@ -232,7 +237,7 @@ class BaseFeatureWithSchedulerTest {
         wishes.forEach { feature.accept(it) }
 
         testObserver.awaitAndAssertCount(8 + 1)
-        val state = states.onNextEvents().last() as TestState
+        val state = states.values().last()
         assertEquals(
             (initialCounter + 4 * instantFulfillAmount1) * conditionalMultiplier,
             state.counter

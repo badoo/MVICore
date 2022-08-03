@@ -22,6 +22,7 @@ import com.badoo.mvicore.onNextEvents
 import io.reactivex.observers.TestObserver
 import io.reactivex.schedulers.TestScheduler
 import io.reactivex.subjects.PublishSubject
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import java.util.concurrent.TimeUnit
@@ -60,6 +61,12 @@ class BaseFeatureWithoutSchedulerTest {
         states = subscription.test()
         feature.subscribe(subscription)
         feature.news.subscribe(newsSubject)
+    }
+
+    @After
+    fun teardown() {
+        // Reset back to the default to ensure we don't introduce flaky behaviours
+        SameThreadVerifier.isEnabled = true
     }
 
     @Test
@@ -120,7 +127,7 @@ class BaseFeatureWithoutSchedulerTest {
 
         wishes.forEach { feature.accept(it) }
 
-        val state = states.onNextEvents().last() as TestState
+        val state = states.values().last()
         assertEquals(initialCounter + wishes.size * instantFulfillAmount1, state.counter)
         assertEquals(false, state.loading)
     }
@@ -133,7 +140,7 @@ class BaseFeatureWithoutSchedulerTest {
 
         wishes.forEach { feature.accept(it) }
 
-        val state = states.onNextEvents().last() as TestState
+        val state = states.values().last()
         assertEquals(true, state.loading)
         assertEquals(initialCounter, state.counter)
     }
@@ -150,7 +157,7 @@ class BaseFeatureWithoutSchedulerTest {
 
         actorScheduler.advanceTimeBy(mockServerDelayMs, TimeUnit.MILLISECONDS)
 
-        val state = states.onNextEvents().last() as TestState
+        val state = states.values().last()
         assertEquals(false, state.loading)
         assertEquals(initialCounter + TestHelper.delayedFulfillAmount, state.counter)
     }
@@ -188,7 +195,7 @@ class BaseFeatureWithoutSchedulerTest {
 
         wishes.forEach { feature.accept(it) }
 
-        val state = states.onNextEvents().last() as TestState
+        val state = states.values().last()
         assertEquals((initialCounter + 4 * instantFulfillAmount1) * conditionalMultiplier, state.counter)
         assertEquals(false, state.loading)
     }

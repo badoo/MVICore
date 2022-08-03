@@ -8,7 +8,6 @@ import com.badoo.mvicore.feature.TrampolineFeatureSchedulerTest.TestFeature.Wish
 import com.badoo.mvicore.feature.FeatureSchedulers.TrampolineFeatureScheduler
 import io.reactivex.Observable
 import io.reactivex.Scheduler
-import io.reactivex.schedulers.Schedulers
 import io.reactivex.schedulers.TestScheduler
 import org.junit.Test
 import java.util.concurrent.TimeUnit
@@ -33,7 +32,7 @@ class TrampolineFeatureSchedulerTest {
 
     class TestFeature(
         featureScheduler: FeatureScheduler,
-        computationScheduler: Scheduler = Schedulers.computation()
+        computationScheduler: Scheduler
     ) : ActorReducerFeature<Wish, Effect, State, Nothing>(
         initialState = State(),
         actor = ActorImpl(scheduler = computationScheduler),

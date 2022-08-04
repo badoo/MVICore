@@ -8,6 +8,20 @@ import com.badoo.mvicore.element.Reducer
 import io.reactivex.Observable
 import io.reactivex.Observable.just
 
+/**
+ * An implementation of a single threaded feature.
+ *
+ * Please be aware of the following threading behaviours based on whether a 'featureScheduler' is provided.
+ *
+ * No 'featureScheduler' provided:
+ * The feature must execute on the thread that created the class. If the bootstrapper/actor observables
+ * change to a different thread it is your responsibility to switch back to the feature's original
+ * thread via observeOn, otherwise an exception will be thrown.
+ *
+ * 'featureScheduler' provided (this must be single threaded):
+ * The feature does not have to execute on the thread that created the class. It automatically
+ * switches to the feature scheduler thread when necessary.
+ */
 open class ReducerFeature<Wish : Any, State : Any, News : Any>(
     initialState: State,
     reducer: Reducer<State, Wish>,

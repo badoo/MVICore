@@ -43,5 +43,6 @@ dependencies {
     implementation deps('io.reactivex.rxjava2:rxandroid')
 
     implementation project(":mvicore")
+    implementation project(":mvicore-android")
     implementation project(':mvicore-demo:mvicore-demo-catapi')
 }

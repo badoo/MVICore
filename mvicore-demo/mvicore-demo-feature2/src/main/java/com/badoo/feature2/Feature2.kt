@@ -11,6 +11,7 @@ import com.badoo.feature2.Feature2.News
 import com.badoo.feature2.Feature2.State
 import com.badoo.feature2.Feature2.Wish
 import com.badoo.feature2.Feature2.Wish.LoadNewImage
+import com.badoo.mvicore.android.AndroidMainThreadFeatureScheduler
 import com.badoo.mvicore.element.Actor
 import com.badoo.mvicore.element.Bootstrapper
 import com.badoo.mvicore.element.NewsPublisher
@@ -19,7 +20,6 @@ import com.badoo.mvicore.element.TimeCapsule
 import com.badoo.mvicore.feature.ActorReducerFeature
 import io.reactivex.Observable
 import io.reactivex.Observable.just
-import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.parcel.Parcelize
 
 class Feature2(
@@ -29,7 +29,8 @@ class Feature2(
     bootstrapper = BootStrapperImpl(),
     actor = ActorImpl(),
     reducer = ReducerImpl(),
-    newsPublisher = NewsPublisherImpl()
+    newsPublisher = NewsPublisherImpl(),
+    featureScheduler = AndroidMainThreadFeatureScheduler
 ) {
     init {
         timeCapsule?.register(Feature2::class.java) { state.copy(
@@ -74,7 +75,6 @@ class Feature2(
         fun loadRandomImage(): Observable<Response> {
             return service.getRandomImage()
                 .randomlyThrowAnException()
-                .observeOn(AndroidSchedulers.mainThread())
         }
     }
 

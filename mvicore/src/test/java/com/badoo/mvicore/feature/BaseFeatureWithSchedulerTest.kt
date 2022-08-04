@@ -19,42 +19,65 @@ import com.badoo.mvicore.TestHelper.TestWish.TranslatesTo3Effects
 import com.badoo.mvicore.TestHelper.TestWish.Unfulfillable
 import com.badoo.mvicore.extension.SameThreadVerifier
 import com.badoo.mvicore.onNextEvents
+import com.badoo.mvicore.utils.RxErrorRule
+import io.reactivex.Observable
+import io.reactivex.Scheduler
+import io.reactivex.disposables.Disposable
 import io.reactivex.observers.TestObserver
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.schedulers.TestScheduler
 import io.reactivex.subjects.PublishSubject
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.mockito.MockitoAnnotations
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import kotlin.test.assertEquals
+import kotlin.test.fail
 
-class BaseFeatureTest {
+class BaseFeatureWithSchedulerTest {
     private lateinit var feature: Feature<TestWish, TestState, TestNews>
     private lateinit var states: TestObserver<TestState>
     private lateinit var newsSubject: PublishSubject<TestNews>
     private lateinit var actorInvocationLog: PublishSubject<Pair<TestWish, TestState>>
     private lateinit var actorInvocationLogTest: TestObserver<Pair<TestWish, TestState>>
-    private lateinit var actorScheduler: TestScheduler
+    private lateinit var actorScheduler: Scheduler
+    private val featureScheduler = TestThreadFeatureScheduler()
+
+    @get:Rule
+    val rxRule = RxErrorRule()
 
     @Before
     fun prepare() {
-        MockitoAnnotations.initMocks(this)
-        SameThreadVerifier.isEnabled = false
+        SameThreadVerifier.isEnabled = true
 
         newsSubject = PublishSubject.create<TestNews>()
         actorInvocationLog = PublishSubject.create<Pair<TestWish, TestState>>()
         actorInvocationLogTest = actorInvocationLog.test()
         actorScheduler = TestScheduler()
+    }
 
+    private fun initFeature() {
         feature = BaseFeature(
             initialState = TestState(),
+            bootstrapper = TestHelper.TestEmptyBootstrapper(),
             wishToAction = { wish -> wish },
             actor = TestHelper.TestActor(
-                { wish, state -> actorInvocationLog.onNext(wish to state) },
+                { wish, state ->
+                    if (!featureScheduler.isOnFeatureThread) {
+                        fail("Actor was not invoked on the feature thread")
+                    }
+                    actorInvocationLog.onNext(wish to state)
+                },
                 actorScheduler
             ),
-            reducer = TestHelper.TestReducer(),
-            newsPublisher = TestHelper.TestNewsPublisher()
+            reducer = TestHelper.TestReducer(invocationCallback = {
+                if (!featureScheduler.isOnFeatureThread) {
+                    fail("Reducer was not invoked on the feature thread")
+                }
+            }),
+            newsPublisher = TestHelper.TestNewsPublisher(),
+            featureScheduler = featureScheduler
         )
 
         val subscription = PublishSubject.create<TestState>()
@@ -63,13 +86,20 @@ class BaseFeatureTest {
         feature.news.subscribe(newsSubject)
     }
 
+    private fun initAndObserveFeature(): TestObserver<TestState> {
+        initFeature()
+        return Observable.wrap(feature).test()
+    }
+
     @Test
     fun `if there are no wishes, feature only emits initial state`() {
+        initFeature()
         assertEquals(1, states.onNextEvents().size)
     }
 
     @Test
     fun `emitted initial state is correct`() {
+        initFeature()
         val state: TestState = states.onNextEvents().first() as TestState
         assertEquals(initialCounter, state.counter)
         assertEquals(initialLoading, state.loading)
@@ -77,15 +107,19 @@ class BaseFeatureTest {
 
     @Test
     fun `there should be no state emission besides the initial one for unfulfillable wishes`() {
+        initFeature()
         feature.accept(Unfulfillable)
         feature.accept(Unfulfillable)
         feature.accept(Unfulfillable)
+
+        actorInvocationLogTest.awaitAndAssertCount(3)
 
         assertEquals(1, states.onNextEvents().size)
     }
 
     @Test
     fun `there should be the same amount of states as wishes that translate 1 - 1 to effects plus one for initial state`() {
+        val testObserver = initAndObserveFeature()
         val wishes = listOf<TestWish>(
             // all of them are mapped to 1 effect each
             FulfillableInstantly1,
@@ -95,11 +129,12 @@ class BaseFeatureTest {
 
         wishes.forEach { feature.accept(it) }
 
-        assertEquals(1 + wishes.size, states.onNextEvents().size)
+        testObserver.awaitAndAssertCount(1 + wishes.size)
     }
 
     @Test
     fun `there should be 3 times as many states as wishes that translate 1 - 3 to effects plus one for initial state`() {
+        val testObserver = initAndObserveFeature()
         val wishes = listOf<TestWish>(
             TranslatesTo3Effects,
             TranslatesTo3Effects,
@@ -108,11 +143,12 @@ class BaseFeatureTest {
 
         wishes.forEach { feature.accept(it) }
 
-        assertEquals(1 + wishes.size * 3, states.onNextEvents().size)
+        testObserver.awaitAndAssertCount(1 + wishes.size * 3)
     }
 
     @Test
     fun `last state correctly reflects expected changes in simple case`() {
+        val testObserver = initAndObserveFeature()
         val wishes = listOf<TestWish>(
             FulfillableInstantly1,
             FulfillableInstantly1,
@@ -121,26 +157,32 @@ class BaseFeatureTest {
 
         wishes.forEach { feature.accept(it) }
 
-        val state = states.onNextEvents().last() as TestState
+        testObserver.awaitAndAssertCount(1 + wishes.size)
+        val state = states.values().last()
         assertEquals(initialCounter + wishes.size * instantFulfillAmount1, state.counter)
         assertEquals(false, state.loading)
     }
 
     @Test
     fun `intermediate state matches expectations in async case`() {
+        val testObserver = initAndObserveFeature()
         val wishes = listOf(
             FulfillableAsync(0)
         )
 
         wishes.forEach { feature.accept(it) }
 
-        val state = states.onNextEvents().last() as TestState
+        testObserver.awaitAndAssertCount(1 + wishes.size)
+        val state = states.values().last()
         assertEquals(true, state.loading)
         assertEquals(initialCounter, state.counter)
     }
 
     @Test
     fun `final state matches expectations in async case`() {
+        val testScheduler = TestScheduler()
+        actorScheduler = testScheduler
+        val testObserver = initAndObserveFeature()
         val mockServerDelayMs: Long = 10
 
         val wishes = listOf(
@@ -149,15 +191,19 @@ class BaseFeatureTest {
 
         wishes.forEach { feature.accept(it) }
 
-        actorScheduler.advanceTimeBy(mockServerDelayMs, TimeUnit.MILLISECONDS)
+        // Must wait until the loading state has started, otherwise the timer is advanced too soon.
+        testObserver.awaitAndAssertCount(1 + wishes.size)
+        testScheduler.advanceTimeBy(mockServerDelayMs, TimeUnit.MILLISECONDS)
 
-        val state = states.onNextEvents().last() as TestState
+        testObserver.awaitAndAssertCount(2 + wishes.size)
+        val state = states.values().last()
         assertEquals(false, state.loading)
         assertEquals(initialCounter + TestHelper.delayedFulfillAmount, state.counter)
     }
 
     @Test
     fun `the number of state emissions should reflect the number of effects plus one for initial state in complex case`() {
+        val testObserver = initAndObserveFeature()
         val wishes = listOf(
             FulfillableInstantly1,  // maps to 1 effect
             FulfillableInstantly1,  // maps to 1 effect
@@ -171,11 +217,12 @@ class BaseFeatureTest {
 
         wishes.forEach { feature.accept(it) }
 
-        assertEquals(8 + 1, states.onNextEvents().size)
+        testObserver.awaitAndAssertCount(8 + 1)
     }
 
     @Test
     fun `last state correctly reflects expected changes in complex case`() {
+        val testObserver = initAndObserveFeature()
         val wishes = listOf(
             FulfillableInstantly1,  // should increase +2 (total: 102)
             FulfillableInstantly1,  // should increase +2 (total: 104)
@@ -189,13 +236,18 @@ class BaseFeatureTest {
 
         wishes.forEach { feature.accept(it) }
 
-        val state = states.onNextEvents().last() as TestState
-        assertEquals((initialCounter + 4 * instantFulfillAmount1) * conditionalMultiplier, state.counter)
+        testObserver.awaitAndAssertCount(8 + 1)
+        val state = states.values().last()
+        assertEquals(
+            (initialCounter + 4 * instantFulfillAmount1) * conditionalMultiplier,
+            state.counter
+        )
         assertEquals(false, state.loading)
     }
 
     @Test
     fun `loopback from news to multiple wishes has access to correct latest state`() {
+        val testObserver = initAndObserveFeature()
         newsSubject.subscribe {
             if (it === TestNews.Loopback) {
                 feature.accept(LoopbackWish2)
@@ -205,9 +257,113 @@ class BaseFeatureTest {
 
         feature.accept(LoopbackWishInitial)
         feature.accept(LoopbackWish1)
-        assertEquals(4, actorInvocationLogTest.onNextEvents().size)
-        assertEquals(LoopbackWish1 to TestHelper.loopBackInitialState, actorInvocationLogTest.onNextEvents()[1])
-        assertEquals(LoopbackWish2 to TestHelper.loopBackState1, actorInvocationLogTest.onNextEvents()[2])
-        assertEquals(LoopbackWish3 to TestHelper.loopBackState2, actorInvocationLogTest.onNextEvents()[3])
+
+        actorInvocationLogTest.awaitAndAssertCount(4)
+        assertEquals(
+            LoopbackWish1 to TestHelper.loopBackInitialState,
+            actorInvocationLogTest.onNextEvents()[1]
+        )
+        assertEquals(
+            LoopbackWish2 to TestHelper.loopBackState1,
+            actorInvocationLogTest.onNextEvents()[2]
+        )
+        assertEquals(
+            LoopbackWish3 to TestHelper.loopBackState2,
+            actorInvocationLogTest.onNextEvents()[3]
+        )
+    }
+
+    @Test
+    fun `if feature created on different thread, feature scheduler accessed once for bootstrapping`() {
+        initFeature()
+
+        assertEquals(1, featureScheduler.schedulerInvocationCount)
+    }
+
+    @Test
+    fun `if feature created on same thread, feature scheduler still accessed for bootstrapping`() {
+        val latch = CountDownLatch(1)
+        featureScheduler.testScheduler.scheduleDirect {
+            initFeature()
+            latch.countDown()
+        }
+
+        latch.await(5, TimeUnit.SECONDS)
+        assertEquals(1, featureScheduler.schedulerInvocationCount)
+    }
+
+    @Test
+    fun `feature scheduler should be accessed 7 times when 3 async wishes invoked`() {
+        actorScheduler = Schedulers.computation()
+
+        val testObserver = initAndObserveFeature()
+
+        feature.accept(FulfillableAsync(0))
+        feature.accept(FulfillableAsync(0))
+        feature.accept(FulfillableAsync(0))
+
+        testObserver.awaitAndAssertCount(7)
+
+        // Bootstrapper (1) is called on test thread and must be moved to feature thread
+        // Each wish (3) is called on test thread and must be moved to feature thread
+        // Each effect (3) is async and must be moved to feature thread
+        assertEquals(7, featureScheduler.schedulerInvocationCount)
+    }
+
+    private fun <T> TestObserver<T>.awaitAndAssertCount(count: Int) {
+        awaitCount(count)
+        assertValueCount(count)
+    }
+
+    private class TestThreadFeatureScheduler : FeatureScheduler {
+        val schedulerInvocationCount: Int
+            get() = countingScheduler.interactionCount
+
+        private val delegate by lazy {
+            FeatureSchedulers.createFeatureScheduler("AsyncTestScheduler")
+        }
+
+        val testScheduler: Scheduler
+            get() = delegate.scheduler
+
+        private val countingScheduler: CountingScheduler by lazy {
+            CountingScheduler(delegate = testScheduler)
+        }
+
+        override val scheduler: Scheduler
+            get() = countingScheduler
+
+        override val isOnFeatureThread: Boolean
+            get() = delegate.isOnFeatureThread
+
+        private class CountingScheduler(private val delegate: Scheduler) : Scheduler() {
+            var interactionCount: Int = 0
+
+            override fun createWorker(): Worker =
+                delegate.createWorker().also { interactionCount++ }
+
+            override fun start() {
+                delegate.start()
+            }
+
+            override fun shutdown() {
+                delegate.shutdown()
+            }
+
+            override fun scheduleDirect(run: Runnable): Disposable =
+                delegate.scheduleDirect(run).also { interactionCount++ }
+
+            override fun scheduleDirect(run: Runnable, delay: Long, unit: TimeUnit): Disposable =
+                delegate.scheduleDirect(run, delay, unit).also { interactionCount++ }
+
+            override fun schedulePeriodicallyDirect(
+                run: Runnable,
+                initialDelay: Long,
+                period: Long,
+                unit: TimeUnit
+            ): Disposable =
+                delegate.schedulePeriodicallyDirect(run, initialDelay, period, unit)
+                    .also { interactionCount++ }
+        }
     }
 }

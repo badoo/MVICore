@@ -22,8 +22,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 /**
- * Tests async functionality of [BaseFeature].
- * Basic tests are inside [BaseFeatureTest].
+ * Tests async functionality of [BaseAsyncFeature].
  */
 class AsyncBaseFeatureTest {
 
@@ -49,11 +48,6 @@ class AsyncBaseFeatureTest {
         featureExecutor.shutdown()
         observationExecutor.shutdown()
         disposable.clear()
-    }
-
-    @Test
-    fun `allows creation without schedulers specification`() {
-        feature = testFeature(featureScheduler = null, observationScheduler = null)
     }
 
     @Test
@@ -176,15 +170,15 @@ class AsyncBaseFeatureTest {
     }
 
     private fun testFeature(
-        featureScheduler: Scheduler? = this.featureScheduler,
-        observationScheduler: Scheduler? = this.observationScheduler,
+        featureScheduler: Scheduler = this.featureScheduler,
+        observationScheduler: Scheduler = this.observationScheduler,
         bootstrapper: Bootstrapper<Action>? = { Observable.just(Action()).observeOn(Schedulers.single()) },
         wishToAction: WishToAction<Wish, Action> = { Action() },
         actor: Actor<State, Action, Effect> = { _, _ -> Observable.just(Effect()).observeOn(Schedulers.single()) },
         reducer: Reducer<State, Effect> = { _, _ -> State() },
         postProcessor: PostProcessor<Action, Effect, State> = { _, _, _ -> null },
         newsPublisher: NewsPublisher<Action, Effect, State, News> = { _, _, _ -> News() }
-    ) = BaseFeature(
+    ) = BaseAsyncFeature(
         initialState = State(),
         bootstrapper = bootstrapper,
         wishToAction = wishToAction,
@@ -192,14 +186,10 @@ class AsyncBaseFeatureTest {
         reducer = reducer,
         newsPublisher = newsPublisher,
         postProcessor = postProcessor,
-        schedulers = if (featureScheduler != null && observationScheduler != null) {
-            FeatureSchedulers(
-                featureScheduler = featureScheduler,
-                observationScheduler = observationScheduler
-            )
-        } else {
-            null
-        }
+        schedulers = AsyncFeatureSchedulers(
+            featureScheduler = featureScheduler,
+            observationScheduler = observationScheduler
+        )
     )
 
     private fun <T> ObservableSource<T>.wrap() =

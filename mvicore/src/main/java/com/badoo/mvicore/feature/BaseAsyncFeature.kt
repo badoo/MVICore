@@ -9,10 +9,10 @@ import com.badoo.mvicore.element.Reducer
 import com.badoo.mvicore.element.WishToAction
 import com.badoo.mvicore.extension.SameThreadVerifier
 import com.badoo.mvicore.extension.asConsumer
-import com.badoo.mvicore.extension.subscribeOnNullable
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import io.reactivex.Observer
+import io.reactivex.Scheduler
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
@@ -20,22 +20,9 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
+import java.util.concurrent.atomic.AtomicReference
 
-/**
- * A base implementation of a single threaded feature.
- *
- * Please be aware of the following threading behaviours based on whether a 'featureScheduler' is provided.
- *
- * No 'featureScheduler' provided:
- * The feature must execute on the thread that created the class. If the bootstrapper/actor observables
- * change to a different thread it is your responsibility to switch back to the feature's original
- * thread via observeOn, otherwise an exception will be thrown.
- *
- * 'featureScheduler' provided (this must be single threaded):
- * The feature does not have to execute on the thread that created the class. It automatically
- * switches to the feature scheduler thread when necessary.
- */
-open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any, News : Any>(
+open class BaseAsyncFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any, News : Any>(
     initialState: State,
     bootstrapper: Bootstrapper<Action>? = null,
     private val wishToAction: WishToAction<Wish, Action>,
@@ -43,13 +30,15 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
     reducer: Reducer<State, Effect>,
     postProcessor: PostProcessor<Action, Effect, State>? = null,
     newsPublisher: NewsPublisher<Action, Effect, State, News>? = null,
-    private val featureScheduler: FeatureScheduler? = null
-) : Feature<Wish, State, News> {
+    private val schedulers: AsyncFeatureSchedulers
+) : AsyncFeature<Wish, State, News> {
 
-    private val threadVerifier = if (featureScheduler == null) SameThreadVerifier() else null
+    private val threadVerifier by lazy { SameThreadVerifier() }
     private val actionSubject = PublishSubject.create<Action>().toSerialized()
-    private val stateSubject = BehaviorSubject.createDefault(initialState)
-    private val newsSubject = PublishSubject.create<News>()
+    // store last state to make best effort to return it in getState()
+    private val lastState = AtomicReference<State>(initialState)
+    private val stateSubject = BehaviorSubject.createDefault(initialState).toSerialized()
+    private val newsSubject = PublishSubject.create<News>().toSerialized()
     private val disposables = CompositeDisposable()
     private val postProcessorWrapper = postProcessor?.let {
         PostProcessorWrapper(
@@ -73,53 +62,59 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
     ).wrapWithMiddleware(wrapperOf = reducer)
 
     private val actorWrapper = ActorWrapper(
-        threadVerifier,
         disposables,
         actor,
         stateSubject,
         reducerWrapper,
-        featureScheduler
+        schedulers.featureScheduler,
+        lazy { threadVerifier } // pass as lazy to not initialize here
     ).wrapWithMiddleware(wrapperOf = actor)
 
     init {
+        disposables += stateSubject.subscribe { lastState.set(it) }
         disposables += actorWrapper
         disposables += reducerWrapper
         disposables += postProcessorWrapper
         disposables += newsPublisherWrapper
-        disposables += actionSubject
-            .observeOnFeatureScheduler(featureScheduler)
-            .subscribe { action -> invokeActor(state, action) }
+        disposables +=
+            actionSubject
+                .observeOn(schedulers.featureScheduler)
+                .subscribe { invokeActor(state, it) }
 
         if (bootstrapper != null) {
-            setupBootstrapper(bootstrapper)
+            actionSubject
+                .asConsumer()
+                .wrapWithMiddleware(
+                    wrapperOf = bootstrapper,
+                    postfix = "output"
+                ).also { output ->
+                    disposables += output
+                    disposables +=
+                        Observable
+                            .defer { bootstrapper() }
+                            .subscribeOn(schedulers.featureScheduler)
+                            .observeOn(schedulers.featureScheduler)
+                            .subscribe { output.accept(it) }
+                }
         }
     }
 
-    private fun setupBootstrapper(bootstrapper: Bootstrapper<Action>) {
-        actionSubject
-            .asConsumer()
-            .wrapWithMiddleware(
-                wrapperOf = bootstrapper,
-                postfix = "output"
-            ).also { output ->
-                disposables += output
-                disposables +=
-                    Observable
-                        .defer { bootstrapper() }
-                        .observeOnFeatureScheduler(featureScheduler)
-                        .subscribeOnNullable(featureScheduler?.scheduler)
-                        .subscribe { action -> output.accept(action) }
-            }
-    }
+    override val backgroundStates: Observable<State>
+        get() = stateSubject
 
-    override val state: State
-        get() = stateSubject.value!!
-
-    override val news: ObservableSource<News>
+    override val backgroundNews: Observable<News>
         get() = newsSubject
 
+    override val state: State
+        get() = lastState.get()
+
+    override val news: ObservableSource<News>
+        get() = newsSubject.observeOn(schedulers.observationScheduler)
+
     override fun subscribe(observer: Observer<in State>) {
-        stateSubject.subscribe(observer)
+        stateSubject
+            .observeOn(schedulers.observationScheduler)
+            .subscribe(observer)
     }
 
     override fun accept(wish: Wish) {
@@ -152,12 +147,12 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
     }
 
     private class ActorWrapper<State : Any, Action : Any, Effect : Any>(
-        private val threadVerifier: SameThreadVerifier?,
         private val disposables: CompositeDisposable,
         private val actor: Actor<State, Action, Effect>,
-        private val stateSubject: BehaviorSubject<State>,
+        private val stateSubject: Subject<State>,
         private val reducerWrapper: Consumer<Triple<State, Action, Effect>>,
-        private val featureScheduler: FeatureScheduler?
+        private val featureScheduler: Scheduler?,
+        private val threadVerifier: Lazy<SameThreadVerifier>
     ) : Consumer<Pair<State, Action>> {
 
         // record-playback entry point
@@ -173,22 +168,29 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
             disposable =
                 actor
                     .invoke(state, action)
-                    .observeOnFeatureScheduler(featureScheduler)
+                    .observeOn(featureScheduler)
                     .doAfterTerminate {
                         // Remove disposables manually because CompositeDisposable does not do it automatically producing memory leaks
                         // Check for null as it might be disposed instantly
                         disposable?.let(disposables::remove)
                     }
-                    .subscribe { effect -> invokeReducer(stateSubject.value!!, action, effect) }
-
+                    .subscribe { effect -> invokeReducer(action, effect) }
             // Disposable might be already disposed in case of no scheduler + Observable.just
             if (!disposable.isDisposed) disposables += disposable
         }
 
-        private fun invokeReducer(state: State, action: Action, effect: Effect) {
+        private fun invokeReducer(action: Action, effect: Effect) {
             if (disposables.isDisposed) return
+            val state =
+                if (stateSubject is BehaviorSubject<State>) {
+                    requireNotNull(stateSubject.value)
+                } else {
+                    // if serialized wait for async processes to complete and get the actual value
+                    // blockingFirst is happening on the featureScheduler in this case
+                    stateSubject.blockingFirst()
+                }
 
-            threadVerifier?.verify()
+            threadVerifier.value.verify()
             if (reducerWrapper is ReducerWrapper) {
                 // there's no middleware around it, so we can optimise here by not creating any extra objects
                 reducerWrapper.processEffect(state, action, effect)
@@ -281,20 +283,5 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
                 news.onNext(it)
             }
         }
-    }
-
-    private companion object {
-        private fun <T : Any> Observable<T>.observeOnFeatureScheduler(
-            scheduler: FeatureScheduler?
-        ): Observable<T> =
-            flatMap { value ->
-                val upstream = Observable.just(value)
-                if (scheduler == null || scheduler.isOnFeatureThread) {
-                    upstream
-                } else {
-                    upstream
-                        .subscribeOn(scheduler.scheduler)
-                }
-            }
     }
 }

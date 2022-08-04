@@ -23,9 +23,11 @@ import com.badoo.mvicore.TestHelper.TestWish.MaybeFulfillable
 import com.badoo.mvicore.TestHelper.TestWish.TranslatesTo3Effects
 import com.badoo.mvicore.TestHelper.TestWish.Unfulfillable
 import com.badoo.mvicore.element.Actor
+import com.badoo.mvicore.element.Bootstrapper
 import com.badoo.mvicore.element.NewsPublisher
 import com.badoo.mvicore.element.Reducer
 import io.reactivex.Observable
+import io.reactivex.Observable.empty
 import io.reactivex.Observable.just
 import io.reactivex.Scheduler
 import java.util.concurrent.TimeUnit
@@ -51,6 +53,10 @@ class TestHelper {
         val counter: Int = initialCounter,
         val loading: Boolean = false
     )
+
+    class TestEmptyBootstrapper : Bootstrapper<TestWish> {
+        override fun invoke(): Observable<out TestWish> = empty()
+    }
 
     sealed class TestWish {
         object Unfulfillable : TestWish()
@@ -134,12 +140,16 @@ class TestHelper {
             )
     }
 
-    class TestReducer : Reducer<TestState, TestEffect> {
-        override fun invoke(state: TestState, effect: TestEffect): TestState =
-            when (effect) {
+    class TestReducer(private val invocationCallback: () -> Unit = {}) : Reducer<TestState, TestEffect> {
+        override fun invoke(state: TestState, effect: TestEffect): TestState {
+            invocationCallback()
+            return when (effect) {
                 is StartedAsync -> state.copy(loading = true)
                 is InstantEffect -> state.copy(counter = state.counter + effect.amount)
-                is FinishedAsync -> state.copy(counter = state.counter + effect.amount, loading = false)
+                is FinishedAsync -> state.copy(
+                    counter = state.counter + effect.amount,
+                    loading = false
+                )
                 is ConditionalThingHappened -> state.copy(counter = state.counter * effect.multiplier)
                 MultipleEffect1 -> state
                 MultipleEffect2 -> state
@@ -149,6 +159,7 @@ class TestHelper {
                 LoopbackEffect2 -> loopBackState2
                 LoopbackEffect3 -> loopBackState3
             }
+        }
     }
 
     class TestNewsPublisher : NewsPublisher<TestWish, TestEffect, TestState, TestNews> {

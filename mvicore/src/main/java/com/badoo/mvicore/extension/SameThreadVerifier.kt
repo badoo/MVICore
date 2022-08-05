@@ -6,14 +6,21 @@ class SameThreadVerifier(private val clazz: Class<*>) {
         var isEnabled : Boolean = true
     }
 
-    private val originalThread = Thread.currentThread()
+    private val originalThreadId: Long
+    private val originalThreadName: String
+
+    init {
+        val currentThread = Thread.currentThread()
+        originalThreadId = currentThread.id
+        originalThreadName = currentThread.name
+    }
 
     fun verify() {
         val currentThread = Thread.currentThread()
-        if (isEnabled && (currentThread.id != originalThread.id)) {
+        if (isEnabled && (currentThread.id != originalThreadId)) {
             throw AssertionError(
                 "${clazz.name} was interacted with on the wrong thread. " +
-                        "Expected: '${originalThread.name}', Actual: '${currentThread.name}'"
+                        "Expected: '$originalThreadName', Actual: '${currentThread.name}'"
             )
         }
     }

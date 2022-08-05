@@ -46,7 +46,7 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
     private val featureScheduler: FeatureScheduler? = null
 ) : Feature<Wish, State, News> {
 
-    private val threadVerifier = if (featureScheduler == null) SameThreadVerifier() else null
+    private val threadVerifier = if (featureScheduler == null) SameThreadVerifier(javaClass) else null
     private val actionSubject = PublishSubject.create<Action>().toSerialized()
     private val stateSubject = BehaviorSubject.createDefault(initialState)
     private val newsSubject = PublishSubject.create<News>()

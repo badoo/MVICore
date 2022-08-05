@@ -33,7 +33,7 @@ open class BaseAsyncFeature<Wish : Any, in Action : Any, in Effect : Any, State 
     private val schedulers: AsyncFeatureSchedulers
 ) : AsyncFeature<Wish, State, News> {
 
-    private val threadVerifier by lazy { SameThreadVerifier() }
+    private val threadVerifier by lazy { SameThreadVerifier(javaClass) }
     private val actionSubject = PublishSubject.create<Action>().toSerialized()
     // store last state to make best effort to return it in getState()
     private val lastState = AtomicReference<State>(initialState)

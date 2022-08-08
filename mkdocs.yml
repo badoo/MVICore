@@ -13,8 +13,8 @@ copyright: 'Copyright &copy; 2020 Badoo Trading Limited'
 theme:
   name: 'material'
   favicon: 'https://badoo.com/favicon.ico'
-  logo:
-    icon: 'code'
+  icon:
+    logo: 'material/code-tags'
   palette:
     primary: 'deep purple'
     accent: 'pink'

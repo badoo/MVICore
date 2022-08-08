@@ -1,6 +1,5 @@
 # MVICore
 [![Version](https://jitpack.io/v/badoo/mvicore.svg)](https://jitpack.io/#badoo/mvicore)
-[![Build Status](https://travis-ci.org/badoo/MVICore.svg?branch=master)](https://travis-ci.org/badoo/MVICore)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 ## What's this?

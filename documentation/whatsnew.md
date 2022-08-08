@@ -1,5 +1,87 @@
 ## Changelog
 
+### Pending changes
+
+#### Additions
+
+([#147](https://github.com/badoo/MVICore/pull/147)):
+Introduced 'async' feature which is moves work to a dedicated single-threaded `feature scheduler`, while being observable on the `observation scheduler`
+
+([#148](https://github.com/badoo/MVICore/pull/148)):
+Updated mockito-kotlin library.
+
+([#150](https://github.com/badoo/MVICore/pull/150)):
+Fixed Bootstrapper variance.
+
+([#150](https://github.com/badoo/MVICore/pull/155)):
+Minor improvements to the new 'async' feature.
+
+([#158](https://github.com/badoo/MVICore/pull/158)):
+Introduced an optional `FeatureScheduler` which can be used with non-async features.
+This is useful when a feature is instantiated on a thread other than the thread it should be bound to (for example the UI thread).
+
+When providing a `FeatureScheduler`, the feature is able to correctly switch to its desired thread rather than throwing an exception.
+
+([#160](https://github.com/badoo/MVICore/pull/160)):
+Changed to Java 8 compatibility
+
+([#161](https://github.com/badoo/MVICore/pull/161)):
+Improved the error message thrown by `SameThreadVerifier`. It now includes the feature's class name and the thread names.
+
+### 1.2.6
+
+#### Bug fixes
+
+([#138](https://github.com/badoo/MVICore/pull/138)):
+Generated templates plugin to be able to work on AndroidStudio 4.1. Fixes ([#135](https://github.com/badoo/MVICore/issues/135)).
+
+### 1.2.5
+
+#### API changes
+
+([#134](https://github.com/badoo/MVICore/pull/134)):
+Migrated project to AndroidX.
+
+([#129](https://github.com/badoo/MVICore/pull/129)):
+Extracted binder from mvicore module. To continue using it, please add this additional dependancy: `com.github.badoo.mvicore:binder:x.x.x`.
+
+### 1.2.4
+
+#### API changes
+
+([#112](https://github.com/badoo/MVICore/pull/112)):
+Update model watcher dsl to support sealed classes.
+
+#### Additions
+
+([#113](https://github.com/badoo/MVICore/pull/113)):
+Updated inspector plugin Android Studio version to 2019.2.
+
+### 1.2.3
+
+#### Additions
+
+([#106](https://github.com/badoo/MVICore/pull/106)):
+Improve type signatures for `ModelWatcher`. This does not impact the existing API.
+
+### 1.2.2
+
+#### Dependency changes
+
+([#102](https://github.com/badoo/MVICore/pull/102)):
+Changed the gradle artifact group id from `com.github.badoo` to `com.github.badoo.mvicore`
+Ensure that you update your gradle build files (i.e. `com.github.badoo.mvicore:binder:x.x.x`)
+
+### 1.2.1
+
+#### Bug fixes
+
+([#98](https://github.com/badoo/MVICore/pull/98)):
+Fix issues with inspector plugin
+
+([#100](https://github.com/badoo/MVICore/pull/100)):
+Fix 1.2.0 debug drawer build
+
 ### 1.2.0
 
 #### API changes

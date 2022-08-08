@@ -1,19 +1,9 @@
-apply plugin: 'java'
-apply plugin: 'maven'
-apply plugin: 'kotlin'
-apply plugin: 'org.jetbrains.dokka'
-
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$rootProject.ext.kotlinVersion"
-    }
+plugins {
+    id 'java'
+    id 'mvi-core-publish-java'
+    id 'kotlin'
+    id 'org.jetbrains.dokka'
 }
-
-
-group = 'com.github.badoo.mvicore'
 
 dependencies {
     def deps = rootProject.ext.deps
@@ -26,30 +16,6 @@ dependencies {
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
-repositories {
-    jcenter()
-}
-
-sourceSets {
-    main {
-        java {}
-    }
-}
-
-task packageSources(type: Jar, dependsOn: 'classes') {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task packageJavadoc(type: Jar, dependsOn: javadoc) {
-    from javadoc.outputDirectory
-    classifier = 'javadoc'
-}
-
-artifacts {
-    archives packageSources
-    archives packageJavadoc
-}
 compileKotlin {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8

@@ -1,0 +1,5 @@
+jdk:
+  - openjdk11
+install:
+  - echo "Building artifacts"
+  - ./gradlew clean publishToMavenLocal

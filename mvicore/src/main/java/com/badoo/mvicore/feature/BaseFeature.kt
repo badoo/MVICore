@@ -47,7 +47,7 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
 ) : Feature<Wish, State, News> {
 
     private val threadVerifier = if (featureScheduler == null) SameThreadVerifier(javaClass) else null
-    private val actionSubject = PublishSubject.create<Action>().toSerialized()
+    private val actionSubject = PublishSubject.create<Action>().toSerialized(featureScheduler)
     private val stateSubject = BehaviorSubject.createDefault(initialState)
     private val newsSubject = PublishSubject.create<News>()
     private val disposables = CompositeDisposable()
@@ -287,14 +287,25 @@ open class BaseFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any
         private fun <T : Any> Observable<T>.observeOnFeatureScheduler(
             scheduler: FeatureScheduler?
         ): Observable<T> =
-            flatMap { value ->
-                val upstream = Observable.just(value)
-                if (scheduler == null || scheduler.isOnFeatureThread) {
-                    upstream
-                } else {
-                    upstream
-                        .subscribeOn(scheduler.scheduler)
+            if (scheduler != null) {
+                flatMap { value ->
+                    val upstream = Observable.just(value)
+                    if (scheduler.isOnFeatureThread) {
+                        upstream
+                    } else {
+                        upstream
+                            .subscribeOn(scheduler.scheduler)
+                    }
                 }
+            } else {
+                this
+            }
+
+        private fun <T> Subject<T>.toSerialized(scheduler: FeatureScheduler?) =
+            if (scheduler != null) {
+                toSerialized()
+            } else {
+                this
             }
     }
 }

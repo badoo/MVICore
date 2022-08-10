@@ -2,6 +2,24 @@
 
 ### Pending changes
 
+No pending changes
+
+### 1.3.1
+
+#### Bug fixes
+
+([#138](https://github.com/badoo/MVICore/issues/167)):
+Fixed regression related to BaseFeature actor.
+
+The Actor subject was made serializable, and was also using a flatMap. Both of these changes caused a change in behaviour relating to the ordering of news (in features that have a PostProcessor which triggers extra actions).
+This change was made as part of introducing the optional `FeatureScheduler` to `BaseFeature`.
+
+If you provide a `FeatureScheduler` and use a PostProcessor, please be aware that the ordering of your news could change.
+
+The previous news ordering behaviour is actually a bug in BaseFeature caused by recursion, and will hopefully be addressed (as an opt in change) in a future release.
+
+### 1.3.0
+
 #### Additions
 
 ([#147](https://github.com/badoo/MVICore/pull/147)):

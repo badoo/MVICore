@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>EmptyCatchBlock:SocketObservable.kt$SocketObservable.&lt;no name provided>${ }</ID>
+    <ID>EmptyFunctionBlock:SocketObservable.kt${ }</ID>
+    <ID>ForbiddenComment:Adb.kt$//TODO: Select device?</ID>
+    <ID>ForbiddenComment:ConnectionList.kt$ConnectionList$// TODO: make more understandable</ID>
+    <ID>MagicNumber:MviPluginToolWindowFactory.kt$MviPluginToolWindowFactory$7675</ID>
+    <ID>MaxLineLength:EventList.kt$EventList.CellRenderer$override</ID>
+    <ID>MaxLineLength:MviPluginToolWindowFactory.kt$MviPluginToolWindowFactory$right.secondComponent = JBScrollPane(currentElement, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED)</ID>
+    <ID>MaxLineLength:MviPluginToolWindowFactory.kt$MviPluginToolWindowFactory$val sideActionsBar = ActionManager.getInstance().createActionToolbar(ActionPlaces.COMMANDER_TOOLBAR, sideActions, false)</ID>
+    <ID>NestedBlockDepth:RunAction.kt$RunAction$private fun JsonElement.parse(): Triple&lt;Long?, String?, JsonElement></ID>
+    <ID>NestedBlockDepth:SocketObservable.kt$SocketObservable.&lt;no name provided>$override fun run()</ID>
+    <ID>ReturnCount:Adb.kt$fun forwardPort(project: Project, port: Int): Boolean</ID>
+    <ID>ReturnCount:Adb.kt$fun stopForwarding(project: Project, port: Int): Boolean</ID>
+    <ID>SwallowedException:SocketObservable.kt$SocketObservable.&lt;no name provided>$e: SocketException</ID>
+    <ID>TooGenericExceptionCaught:SocketObservable.kt$SocketObservable.&lt;no name provided>$e: Exception</ID>
+    <ID>UnusedPrivateMember:MviPluginToolWindowFactory.kt$MviPluginToolWindowFactory$private val logger = Logger.getInstance(javaClass)</ID>
+    <ID>VariableNaming:RunAction.kt$RunAction$private val TIMESTAMP = "\$timestamp"</ID>
+    <ID>VariableNaming:RunAction.kt$RunAction$private val TYPE = "\$type"</ID>
+    <ID>VariableNaming:RunAction.kt$RunAction$private val VALUE = "\$value"</ID>
+  </CurrentIssues>
+</SmellBaseline>

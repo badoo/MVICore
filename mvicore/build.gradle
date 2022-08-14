@@ -3,6 +3,7 @@ plugins {
     id 'mvi-core-publish-java'
     id 'kotlin'
     id 'org.jetbrains.dokka'
+    id 'mvi-core-detekt'
 }
 
 dependencies {

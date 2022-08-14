@@ -1,5 +1,6 @@
 [versions]
 kotlinVersion = "1.6.21"
+detekt = "1.21.0"
 
 # Android
 androidLifecycleVersion = "2.2.0"
@@ -17,7 +18,7 @@ daggerVersion = "2.43.2"
 
 # Utils
 debugDrawerVersion = "0.9.0"
-timberVersion = "4.7.1"
+timberVersion = "5.0.1"
 scalpelVersion = "1.1.2"
 glideVersion = "4.13.2"
 
@@ -86,4 +87,8 @@ androidx-test-runner = { module = "androidx.test:runner", version.ref = "support
 androidx-test-rules = { module = "androidx.test:rules", version.ref = "supportTestVersion" }
 
 plugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinVersion" }
+plugin-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 plugin-android = "com.android.tools.build:gradle:7.2.2"
+
+[plugins]
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }

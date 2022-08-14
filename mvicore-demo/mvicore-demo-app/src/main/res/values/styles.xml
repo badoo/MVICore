@@ -22,16 +22,4 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-
-    <style name="colorButton">
-        <!--<item name="android:layout_width">0dp</item>-->
-        <!--<item name="android:layout_height">0dp</item>-->
-        <!--<item name="android:layout_margin">4dp</item>-->
-        <!--<item name="app:layout_constraintWidth_max">60dp</item>-->
-        <!--<item name="app:layout_constraintHeight_max=">60dp</item>-->
-    </style>
-
 </resources>

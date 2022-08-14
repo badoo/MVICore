@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>MagicNumber:Extensions.kt$10</ID>
+    <ID>TooGenericExceptionThrown:Extensions.kt$throw RuntimeException("Test exception")</ID>
+  </CurrentIssues>
+</SmellBaseline>

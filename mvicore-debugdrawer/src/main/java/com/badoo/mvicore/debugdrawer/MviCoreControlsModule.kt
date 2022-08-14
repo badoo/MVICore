@@ -10,7 +10,10 @@ import android.widget.ImageButton
 import android.widget.Spinner
 import android.widget.Toast
 import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware
-import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore.PlaybackState.*
+import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore.PlaybackState.FINISHED_PLAYBACK
+import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore.PlaybackState.IDLE
+import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore.PlaybackState.PLAYBACK
+import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore.PlaybackState.RECORDING
 import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore.RecordKey
 import io.palaima.debugdrawer.DebugDrawer
 import io.palaima.debugdrawer.base.DebugModuleAdapter

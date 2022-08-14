@@ -3,6 +3,8 @@ plugins {
     id 'kotlin-android'
     id 'org.jetbrains.dokka'
     id 'mvi-core-publish-android'
+    id 'mvi-core-lint'
+    id 'mvi-core-detekt'
 }
 
 group='com.github.badoo.mvicore'

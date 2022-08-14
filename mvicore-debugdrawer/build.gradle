@@ -35,23 +35,21 @@ android {
 }
 
 dependencies {
-    def deps = rootProject.ext.deps
+    implementation libs.androidx.constraintlayout
 
-    implementation deps('androidx.constraintlayout:constraintlayout')
+    implementation libs.rxjava2
+    implementation libs.rxkotlin
 
-    implementation deps('io.reactivex.rxjava2:rxjava')
-    implementation deps('io.reactivex.rxjava2:rxkotlin')
+    implementation libs.kotlin.stdlib
 
-    implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
+    implementation libs.debugdrawer.base
+    debugImplementation libs.debugdrawer.impl
+    debugImplementation libs.debugdrawer.view.impl
+    releaseImplementation libs.debugdrawer.noop
+    releaseImplementation libs.debugdrawer.view.noop
 
-    implementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer-base')
-    debugImplementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer')
-    debugImplementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer-view')
-    releaseImplementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer-no-op')
-    releaseImplementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer-view-no-op')
-
-    testImplementation deps('junit:junit')
-    testImplementation deps('org.jetbrains.kotlin:kotlin-test-junit')
+    testImplementation libs.junit
+    testImplementation libs.kotlin.test.junit
 
     implementation project(':mvicore')
 }

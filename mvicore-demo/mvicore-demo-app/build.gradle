@@ -47,40 +47,40 @@ dependencies {
     implementation project(':mvicore-plugin:middleware')
 
     // Kotlin
-    implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
+    implementation libs.kotlin.stdlib
 
     // Android
-    implementation deps('androidx.appcompat:appcompat')
-    implementation deps('androidx.constraintlayout:constraintlayout')
-    implementation deps('com.google.android.material:material')
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.constraintlayout
+    implementation libs.google.material
 
     // Rx
-    implementation deps('io.reactivex.rxjava2:rxjava')
-    implementation deps('io.reactivex.rxjava2:rxandroid')
+    implementation libs.rxjava2
+    implementation libs.rxandroid
 
     // DI
-    implementation deps('com.google.dagger:dagger')
-    implementation(deps('com.google.dagger:dagger-android'), { exclude group: 'com.google.code.findbugs' })
-    implementation(deps('com.google.dagger:dagger-android-support'), { exclude group: 'com.google.code.findbugs' })
-    kapt deps('com.google.dagger:dagger-compiler')
-    kapt deps('com.google.dagger:dagger-android-processor')
+    implementation libs.dagger.runtime
+    implementation libs.dagger.android.runtime
+    implementation libs.dagger.android.support
+    kapt libs.dagger.compiler
+    kapt libs.dagger.android.processor
 
     // DebugDrawer
-    debugImplementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer')
-    debugImplementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer-view')
-    releaseImplementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer-no-op')
-    releaseImplementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer-view-no-op')
-    implementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer-commons')
-    implementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer-actions')
-    implementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer-scalpel')
-    implementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer-base')
-    implementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer-timber')
-    implementation deps('com.github.lenguyenthanh.debugdrawer:debugdrawer-network-quality')
+    debugImplementation libs.debugdrawer.impl
+    debugImplementation libs.debugdrawer.view.impl
+    releaseImplementation libs.debugdrawer.noop
+    releaseImplementation libs.debugdrawer.view.noop
+    implementation libs.debugdrawer.commons
+    implementation libs.debugdrawer.actions
+    implementation libs.debugdrawer.scalpel
+    implementation libs.debugdrawer.base
+    implementation libs.debugdrawer.timber
+    implementation libs.debugdrawer.networkQuality
 
     // Utils
-    implementation deps('com.jakewharton.timber:timber')
-    implementation deps('com.jakewharton.scalpel:scalpel')
-    implementation deps('com.squareup.okhttp3:okhttp')
-    implementation deps('com.github.bumptech.glide:glide')
-    kapt deps('com.github.bumptech.glide:compiler')
+    implementation libs.timber
+    implementation libs.scalpel
+    implementation libs.okhttp
+    implementation libs.glide.runtime
+    kapt libs.glide.compiler
 }

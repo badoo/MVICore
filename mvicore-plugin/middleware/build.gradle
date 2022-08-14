@@ -8,14 +8,12 @@ plugins {
 archivesBaseName = 'mvicore-plugin-middleware'
 
 dependencies {
-    def deps = rootProject.ext.deps
-
-    implementation deps('io.reactivex.rxjava2:rxjava')
-    implementation deps('io.reactivex.rxjava2:rxkotlin')
-    implementation deps('com.google.code.gson:gson')
+    implementation libs.rxjava2
+    implementation libs.rxkotlin
+    implementation libs.gson
     implementation project(':mvicore')
     implementation project(':mvicore-plugin:common')
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    implementation libs.kotlin.stdlib
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8

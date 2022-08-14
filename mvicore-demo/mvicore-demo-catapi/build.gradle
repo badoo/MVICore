@@ -33,15 +33,15 @@ android {
 }
 
 dependencies {
-    implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
-    implementation deps('androidx.appcompat:appcompat')
+    implementation libs.kotlin.stdlib
+    implementation libs.androidx.appcompat
 
-    implementation deps('io.reactivex.rxjava2:rxjava')
-    implementation deps('io.reactivex.rxjava2:rxandroid')
+    implementation libs.rxjava2
+    implementation libs.rxandroid
 
-    implementation deps('com.squareup.retrofit2:retrofit')
-    implementation deps('com.squareup.retrofit2:adapter-rxjava2')
-    implementation deps('com.squareup.retrofit2:converter-simplexml')
+    implementation libs.retrofit.runtime
+    implementation libs.retrofit.adapter.rxjava2
+    implementation libs.retrofit.converter.simplexml
 
     configurations {
         all*.exclude group: 'xpp3', module: 'xpp3'

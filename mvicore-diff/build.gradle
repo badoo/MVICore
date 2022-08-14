@@ -6,11 +6,10 @@ plugins {
 }
 
 dependencies {
-    def deps = rootProject.ext.deps
-    implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
+    implementation libs.kotlin.stdlib
 
-    testImplementation deps('junit:junit')
-    testImplementation deps('org.jetbrains.kotlin:kotlin-test-junit')
+    testImplementation libs.junit
+    testImplementation libs.kotlin.test.junit
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8

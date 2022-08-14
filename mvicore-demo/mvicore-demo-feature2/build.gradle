@@ -34,11 +34,11 @@ android {
 }
 
 dependencies {
-    implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
-    implementation deps('androidx.appcompat:appcompat')
+    implementation libs.kotlin.stdlib
+    implementation libs.androidx.appcompat
 
-    implementation deps('io.reactivex.rxjava2:rxjava')
-    implementation deps('io.reactivex.rxjava2:rxandroid')
+    implementation libs.rxjava2
+    implementation libs.rxandroid
 
     implementation project(":mvicore")
     implementation project(":mvicore-android")

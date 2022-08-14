@@ -1,15 +1,17 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'org.jetbrains.dokka'
-apply plugin: 'com.github.dcendents.android-maven'
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'org.jetbrains.dokka'
+    id 'mvi-core-publish-android'
+}
 
 group='com.github.badoo.mvicore'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -52,29 +54,4 @@ dependencies {
     testImplementation deps('org.jetbrains.kotlin:kotlin-test-junit')
 
     implementation project(':mvicore')
-}
-
-buildscript {
-    repositories {
-        jcenter()
-        maven { url 'https://jitpack.io' }
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$rootProject.ext.kotlinVersion"
-    }
-}
-
-sourceSets {
-    main {
-        java {}
-    }
-}
-
-task packageSources(type: Jar, dependsOn: 'classes') {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-artifacts {
-    archives packageSources
 }

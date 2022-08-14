@@ -20,7 +20,7 @@ import com.badoo.mvicore.element.TimeCapsule
 import com.badoo.mvicore.feature.ActorReducerFeature
 import io.reactivex.Observable
 import io.reactivex.Observable.just
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 class Feature2(
     timeCapsule: TimeCapsule<Parcelable>? = null

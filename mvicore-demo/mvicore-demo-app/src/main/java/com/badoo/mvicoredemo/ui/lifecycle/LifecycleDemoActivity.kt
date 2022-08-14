@@ -10,13 +10,10 @@ import com.badoo.binder.named
 import com.badoo.mvicore.android.lifecycle.CreateDestroyBinderLifecycle
 import com.badoo.mvicore.android.lifecycle.ResumePauseBinderLifecycle
 import com.badoo.mvicore.android.lifecycle.StartStopBinderLifecycle
-import com.badoo.mvicoredemo.R
+import com.badoo.mvicoredemo.databinding.ActivityLifecycleDemoBinding
 import init
 import io.reactivex.functions.Consumer
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.activity_main.drawerLayout
-import kotlinx.android.synthetic.main.activity_main.navigationView
-import kotlinx.android.synthetic.main.activity_main.toolbar
 
 class LifecycleDemoActivity : AppCompatActivity() {
 
@@ -24,10 +21,12 @@ class LifecycleDemoActivity : AppCompatActivity() {
     private val dummyConsumer = Consumer<String> {
         Log.d("LifecycleDemo", it)
     }
+    private lateinit var binding: ActivityLifecycleDemoBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_lifecycle_demo)
+        binding = ActivityLifecycleDemoBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         Binder(CreateDestroyBinderLifecycle(lifecycle))
             .bind(events to dummyConsumer named "Lifecycle#CreateDestroy")
@@ -43,15 +42,15 @@ class LifecycleDemoActivity : AppCompatActivity() {
     }
 
     private fun setupDrawer() {
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        navigationView.init(drawerLayout, 1)
+        binding.navigationView.init(binding.drawerLayout, 1)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean =
         when (item.itemId) {
             android.R.id.home -> {
-                drawerLayout.openDrawer(GravityCompat.START)
+                binding.drawerLayout.openDrawer(GravityCompat.START)
                 true
             }
             else -> super.onOptionsItemSelected(item)

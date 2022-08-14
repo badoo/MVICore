@@ -1,17 +1,18 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlinVersion = '1.3.72'
+    ext.kotlinVersion = '1.6.21'
 
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.0'
+        classpath 'com.android.tools.build:gradle:7.2.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-        classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.4.0"
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
+        // TODO: Dokka 1.6.21 fails when running publishToMavenLocal. Try aligning with Kotlin version after we upgrade to 1.7.x
+        // Downgrade was suggested here: https://github.com/Kotlin/dokka/issues/2452
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.6.10"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -30,13 +31,13 @@ ext {
     rxAndroidVersion = '2.1.1'
 
     // DI
-    daggerVersion = '2.29.1'
+    daggerVersion = '2.43.2'
 
     // Utils
     debugDrawerVersion = '0.9.0'
     timberVersion = '4.7.1'
     scalpelVersion = '1.1.2'
-    glideVersion = '4.11.0'
+    glideVersion = '4.13.2'
 
     // Network
     okhttpVersion = '3.10.0'
@@ -108,14 +109,6 @@ ext {
         def version = depsWithVersion[key]
         if (version == null) throw new IllegalDependencyNotation("Version for library '$key' unknown. Update root build.gradle")
         "$key:${version}"
-    }
-}
-
-allprojects {
-    repositories {
-        google()
-        jcenter()
-        maven { url 'https://jitpack.io' }
     }
 }
 

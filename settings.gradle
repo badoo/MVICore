@@ -1,3 +1,20 @@
+pluginManagement {
+    repositories {
+        google()
+        gradlePluginPortal()
+    }
+}
+
+dependencyResolutionManagement {
+    // This is not possible as the 'idea' plugin adds 'maven2'
+    // repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
+}
+
 include ':binder'
 include ':mvicore'
 include ':mvicore-diff'
@@ -12,3 +29,4 @@ include ':mvicore-demo:mvicore-demo-feature1'
 include ':mvicore-demo:mvicore-demo-feature2'
 include ':mvicore-demo:mvicore-demo-app'
 
+includeBuild("plugin/publish-plugin")

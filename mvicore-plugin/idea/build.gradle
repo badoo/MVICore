@@ -1,24 +1,29 @@
 plugins {
-    id "org.jetbrains.intellij" version "0.4.10"
+    id 'java'
+    id 'kotlin'
+    id "org.jetbrains.intellij" version "1.8.0"
+    id 'idea'
 }
-
-apply plugin: 'java'
-apply plugin: 'kotlin'
-apply plugin: 'org.jetbrains.intellij'
-apply plugin: 'idea'
 
 group = 'com.github.badoo.mvicore'
 archivesBaseName = 'mvicore-plugin-idea'
 version = '0.0.2'
 
+// Required as the 'intellij' plugin is overriding the repositories from 'settings.gradle'
+repositories {
+    google()
+    mavenCentral()
+}
+
+// TODO: Publish new version - https://github.com/badoo/MVICore/issues/170
 intellij {
-    pluginName 'mvicore-plugin'
-    version "2019.2"
+    pluginName = 'mvicore-plugin'
+    version = "2021.2.1"
     plugins = ['android']
 }
 
 patchPluginXml {
-    sinceBuild '145.0'
+    sinceBuild.set('145.0')
 }
 
 dependencies {
@@ -36,27 +41,3 @@ dependencies {
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
-
-repositories {
-    jcenter()
-
-}
-
-task packageSources(type: Jar, dependsOn: 'classes') {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
-    }
-}
-
-artifacts {
-    archives packageSources
-}
-
-jar {
-    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-}

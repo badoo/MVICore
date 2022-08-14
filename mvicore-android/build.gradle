@@ -35,21 +35,18 @@ android {
 }
 
 dependencies {
-    def deps = rootProject.ext.deps
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.lifecycle.java8
+    implementation libs.kotlin.stdlib
 
-    implementation deps('androidx.appcompat:appcompat')
-    implementation deps('androidx.lifecycle:lifecycle-common-java8')
-    implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
+    implementation libs.rxjava2
+    implementation libs.rxkotlin
+    implementation libs.rxandroid
 
-    implementation deps('io.reactivex.rxjava2:rxjava')
-    implementation deps('io.reactivex.rxjava2:rxkotlin')
-    implementation deps('io.reactivex.rxjava2:rxandroid')
-
-    testImplementation deps('junit:junit')
-    testImplementation deps('org.jetbrains.kotlin:kotlin-test-junit')
-    androidTestImplementation deps("androidx.test:runner")
-    androidTestImplementation deps("androidx.test:rules")
-    androidTestImplementation deps("androidx.test:rules")
+    testImplementation libs.junit
+    testImplementation libs.kotlin.test.junit
+    androidTestImplementation libs.androidx.test.runner
+    androidTestImplementation libs.androidx.test.rules
 
     implementation project(":mvicore")
 }

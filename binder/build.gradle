@@ -6,15 +6,13 @@ plugins {
 }
 
 dependencies {
-    def deps = rootProject.ext.deps
+    implementation libs.rxjava2
+    implementation libs.rxkotlin
+    implementation libs.kotlin.stdlib
 
-    implementation deps('io.reactivex.rxjava2:rxjava')
-    implementation deps('io.reactivex.rxjava2:rxkotlin')
-    implementation deps("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
-
-    testImplementation deps('junit:junit')
-    testImplementation deps('org.jetbrains.kotlin:kotlin-test-junit')
-    testImplementation deps('org.mockito.kotlin:mockito-kotlin')
+    testImplementation libs.junit
+    testImplementation libs.kotlin.test.junit
+    testImplementation libs.mockito.kotlin
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8

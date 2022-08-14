@@ -1,114 +1,18 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlinVersion = '1.6.21'
-
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath libs.plugin.android
+        classpath libs.plugin.kotlin
         // TODO: Dokka 1.6.21 fails when running publishToMavenLocal. Try aligning with Kotlin version after we upgrade to 1.7.x
         // Downgrade was suggested here: https://github.com/Kotlin/dokka/issues/2452
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.6.10"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
-    }
-}
-
-ext {
-    // Android
-    androidLifecycleVersion = '2.2.0'
-    androidAppCompatVersion = '1.3.1'
-    androidMaterialVersion = '1.2.1'
-    constraintLayoutVersion = '2.0.2'
-
-    // Rx
-    rxJavaVersion = '2.2.10'
-    rxKotlinVersion = '2.2.0'
-    rxAndroidVersion = '2.1.1'
-
-    // DI
-    daggerVersion = '2.43.2'
-
-    // Utils
-    debugDrawerVersion = '0.9.0'
-    timberVersion = '4.7.1'
-    scalpelVersion = '1.1.2'
-    glideVersion = '4.13.2'
-
-    // Network
-    okhttpVersion = '3.10.0'
-    retrofitVersion = '2.4.0'
-    gsonVersion = '2.8.5'
-
-    // Testing
-    junitVersion = '4.12'
-    supportTestVersion = '1.3.0'
-    mockitoKotlinVersion = '4.0.0'
-
-    depsWithVersion = [
-            // Kotlin
-            "org.jetbrains.kotlin:kotlin-stdlib-jdk7"           : kotlinVersion,
-
-            // Android
-            "androidx.lifecycle:lifecycle-common-java8"         : androidLifecycleVersion,
-            "androidx.appcompat:appcompat"                      : androidAppCompatVersion,
-            "androidx.constraintlayout:constraintlayout"        : constraintLayoutVersion,
-            "com.google.android.material:material"              : androidMaterialVersion,
-
-            // Rx
-            "io.reactivex.rxjava2:rxjava"                       : rxJavaVersion,
-            "io.reactivex.rxjava2:rxkotlin"                     : rxKotlinVersion,
-            "io.reactivex.rxjava2:rxandroid"                    : rxAndroidVersion,
-
-            // DI
-            "com.google.dagger:dagger"                          : daggerVersion,
-            "com.google.dagger:dagger-android"                  : daggerVersion,
-            "com.google.dagger:dagger-android-support"          : daggerVersion,
-            "com.google.dagger:dagger-compiler"                 : daggerVersion,
-            "com.google.dagger:dagger-android-processor"        : daggerVersion,
-
-            // DebugDrawer
-            "com.github.lenguyenthanh.debugdrawer:debugdrawer"                : debugDrawerVersion,
-            "com.github.lenguyenthanh.debugdrawer:debugdrawer-base"           : debugDrawerVersion,
-            "com.github.lenguyenthanh.debugdrawer:debugdrawer-view"           : debugDrawerVersion,
-            "com.github.lenguyenthanh.debugdrawer:debugdrawer-no-op"          : debugDrawerVersion,
-            "com.github.lenguyenthanh.debugdrawer:debugdrawer-view-no-op"     : debugDrawerVersion,
-            "com.github.lenguyenthanh.debugdrawer:debugdrawer-commons"        : debugDrawerVersion,
-            "com.github.lenguyenthanh.debugdrawer:debugdrawer-actions"        : debugDrawerVersion,
-            "com.github.lenguyenthanh.debugdrawer:debugdrawer-scalpel"        : debugDrawerVersion,
-            "com.github.lenguyenthanh.debugdrawer:debugdrawer-timber"         : debugDrawerVersion,
-            "com.github.lenguyenthanh.debugdrawer:debugdrawer-network-quality": debugDrawerVersion,
-
-            // Utils
-            "com.jakewharton.timber:timber"                     : timberVersion,
-            "com.jakewharton.scalpel:scalpel"                   : scalpelVersion,
-            "com.github.bumptech.glide:glide"                   : glideVersion,
-            "com.github.bumptech.glide:compiler"                : glideVersion,
-
-            // Network
-            "com.squareup.okhttp3:okhttp"                       : okhttpVersion,
-            "com.squareup.retrofit2:retrofit"                   : retrofitVersion,
-            "com.squareup.retrofit2:adapter-rxjava2"            : retrofitVersion,
-            "com.squareup.retrofit2:converter-simplexml"        : retrofitVersion,
-            "com.google.code.gson:gson"                         : gsonVersion,
-
-            // Testing
-            "junit:junit"                                       : junitVersion,
-            "org.jetbrains.kotlin:kotlin-test-junit"            : kotlinVersion,
-            "org.mockito.kotlin:mockito-kotlin"                 : mockitoKotlinVersion,
-            "androidx.test:runner"                              : supportTestVersion,
-            "androidx.test:orchestrator"                        : supportTestVersion,
-            "androidx.test:rules"                               : supportTestVersion,
-    ]
-
-    deps = { String key ->
-        def version = depsWithVersion[key]
-        if (version == null) throw new IllegalDependencyNotation("Version for library '$key' unknown. Update root build.gradle")
-        "$key:${version}"
     }
 }
 

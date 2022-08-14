@@ -6,10 +6,9 @@ plugins {
 archivesBaseName = 'mvicore-plugin-common'
 
 dependencies {
-    def deps = rootProject.ext.deps
-    implementation deps('com.google.code.gson:gson')
+    implementation libs.gson
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+    implementation libs.kotlin.stdlib
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8

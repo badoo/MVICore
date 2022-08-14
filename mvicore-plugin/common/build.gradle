@@ -1,6 +1,7 @@
 plugins {
     id 'kotlin'
     id 'mvi-core-publish-java'
+    id 'mvi-core-detekt'
 }
 
 archivesBaseName = 'mvicore-plugin-common'

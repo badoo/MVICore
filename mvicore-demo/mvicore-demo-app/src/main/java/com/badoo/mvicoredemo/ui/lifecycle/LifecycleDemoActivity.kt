@@ -1,7 +1,6 @@
 package com.badoo.mvicoredemo.ui.lifecycle
 
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -14,12 +13,13 @@ import com.badoo.mvicoredemo.databinding.ActivityLifecycleDemoBinding
 import init
 import io.reactivex.functions.Consumer
 import io.reactivex.subjects.PublishSubject
+import timber.log.Timber
 
 class LifecycleDemoActivity : AppCompatActivity() {
 
     private val events = PublishSubject.create<String>()
     private val dummyConsumer = Consumer<String> {
-        Log.d("LifecycleDemo", it)
+        Timber.tag("LifecycleDemo").d(it)
     }
     private lateinit var binding: ActivityLifecycleDemoBinding
 

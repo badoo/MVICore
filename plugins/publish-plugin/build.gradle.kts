@@ -1,27 +1,21 @@
-import org.gradle.accessors.dm.LibrariesForLibs
-
-val libs = the<LibrariesForLibs>()
-
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-
 plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    alias(libs.plugins.detekt)
 }
 
 dependencies {
     implementation(libs.plugin.android)
     implementation(libs.plugin.kotlin)
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile::class.java).configureEach {
+    kotlinOptions.jvmTarget = JavaVersion.VERSION_11.name
+}
+
+detekt {
+    buildUponDefaultConfig = true
+    config.from(file("../../detekt.yml"))
 }
 
 gradlePlugin {

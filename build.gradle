@@ -16,6 +16,10 @@ buildscript {
     }
 }
 
+plugins {
+    id 'mvi-core-collect-sarif'
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }

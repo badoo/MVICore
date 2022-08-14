@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ForbiddenComment:DefaultPluginStore.kt$DefaultPluginStore$// TODO: log?</ID>
+    <ID>MagicNumber:PluginSocketThread.kt$PluginSocketThread$100</ID>
+    <ID>RethrowCaughtException:PluginSocketThread.kt$PluginSocketThread$throw e</ID>
+    <ID>SwallowedException:PluginSocketThread.kt$PluginSocketThread$e: IOException</ID>
+    <ID>TooGenericExceptionCaught:PluginSocketThread.kt$PluginSocketThread$e: Exception</ID>
+    <ID>UnusedPrivateMember:DefaultPluginStore.kt$DefaultPluginStore$event: PluginSocketThread.Connected</ID>
+  </CurrentIssues>
+</SmellBaseline>

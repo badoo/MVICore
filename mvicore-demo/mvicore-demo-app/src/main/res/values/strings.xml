@@ -1,13 +1,13 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">MVICore Demo</string>
     <string name="action_sign_in">Sign in</string>
     <string name="action_sign_out">Sign out</string>
-    <string name="action_ok">Ok</string>
+    <string name="action_ok">OK</string>
     <string name="drawer_main">Main</string>
     <string name="drawer_lifecycle">Lifecycle</string>
     <string name="settings_show_toasts">Toasts</string>
 
-    <string name="help_dialog_main">
+    <string name="help_dialog_main" tools:ignore="Typos">
     <![CDATA[
         <h2>UI controls</h2>
         <ul>

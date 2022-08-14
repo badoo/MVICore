@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>MagicNumber:ViewModelTransformer.kt$ViewModelTransformer$3</ID>
+    <ID>MagicNumber:ViewModelTransformer1.kt$ViewModelTransformer1$3</ID>
+    <ID>MaxLineLength:MainActivityBindings.kt$MainActivityBindings$binder.bind(combineLatest(feature1, feature2) to view using ViewModelTransformer() named "MainActivity.ViewModels")</ID>
+    <ID>TooManyFunctions:LifecycleDemoActivity.kt$LifecycleDemoActivity : AppCompatActivity</ID>
+    <ID>UtilityClassWithPublicConstructor:Auth.kt$PrefsHelper</ID>
+    <ID>WildcardImport:UiEventTransformer1.kt$import com.badoo.feature1.Feature1.Wish.*</ID>
+    <ID>WildcardImport:UiEventTransformer2.kt$import com.badoo.feature2.Feature2.Wish.*</ID>
+  </CurrentIssues>
+</SmellBaseline>

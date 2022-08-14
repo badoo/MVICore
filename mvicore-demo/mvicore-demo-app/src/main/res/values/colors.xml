@@ -3,7 +3,4 @@
     <color name="colorPrimary">@color/grey_800</color>
     <color name="colorPrimaryDark">@color/grey_900</color>
     <color name="colorAccent">#FF4081</color>
-
-    <color name="darkYellow">#a3951a</color>
-    <color name="darkLime">#778c20</color>
 </resources>

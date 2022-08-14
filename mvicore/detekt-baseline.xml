@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>LongParameterList:AsyncBaseFeatureTest.kt$AsyncBaseFeatureTest$( featureScheduler: Scheduler = this.featureScheduler, observationScheduler: Scheduler = this.observationScheduler, bootstrapper: Bootstrapper&lt;Action>? = { Observable.just(Action()).observeOn(Schedulers.single()) }, wishToAction: WishToAction&lt;Wish, Action> = { Action() }, actor: Actor&lt;State, Action, Effect> = { _, _ -> Observable.just(Effect()).observeOn(Schedulers.single()) }, reducer: Reducer&lt;State, Effect> = { _, _ -> State() }, postProcessor: PostProcessor&lt;Action, Effect, State> = { _, _, _ -> null }, newsPublisher: NewsPublisher&lt;Action, Effect, State, News> = { _, _, _ -> News() } )</ID>
+    <ID>LongParameterList:BaseAsyncFeature.kt$BaseAsyncFeature$( initialState: State, bootstrapper: Bootstrapper&lt;Action>? = null, private val wishToAction: WishToAction&lt;Wish, Action>, actor: Actor&lt;State, Action, Effect>, reducer: Reducer&lt;State, Effect>, postProcessor: PostProcessor&lt;Action, Effect, State>? = null, newsPublisher: NewsPublisher&lt;Action, Effect, State, News>? = null, private val schedulers: AsyncFeatureSchedulers )</ID>
+    <ID>LongParameterList:BaseFeature.kt$BaseFeature$( initialState: State, bootstrapper: Bootstrapper&lt;Action>? = null, private val wishToAction: WishToAction&lt;Wish, Action>, actor: Actor&lt;State, Action, Effect>, reducer: Reducer&lt;State, Effect>, postProcessor: PostProcessor&lt;Action, Effect, State>? = null, newsPublisher: NewsPublisher&lt;Action, Effect, State, News>? = null, private val featureScheduler: FeatureScheduler? = null )</ID>
+    <ID>MaxLineLength:AsyncBaseFeatureTest.kt$AsyncBaseFeatureTest$feature = testFeature(featureScheduler = Schedulers.trampoline(), observationScheduler = Schedulers.trampoline())</ID>
+    <ID>MaxLineLength:BaseAsyncFeature.kt$BaseAsyncFeature.ActorWrapper$// Remove disposables manually because CompositeDisposable does not do it automatically producing memory leaks</ID>
+    <ID>MaxLineLength:BaseFeature.kt$BaseFeature.ActorWrapper$// Remove disposables manually because CompositeDisposable does not do it automatically producing memory leaks</ID>
+    <ID>MaxLineLength:BaseFeaturePostProcessorTest.kt$BaseFeaturePostProcessorTest$fun</ID>
+    <ID>MaxLineLength:BaseFeatureWithSchedulerTest.kt$BaseFeatureWithSchedulerTest$fun</ID>
+    <ID>MaxLineLength:BaseFeatureWithoutSchedulerTest.kt$BaseFeatureWithoutSchedulerTest$fun</ID>
+    <ID>MaxLineLength:BootstrapperTest.kt$BootstrapperTest$fun</ID>
+    <ID>MaxLineLength:MemoryRecordStore.kt$MemoryRecordStore$override</ID>
+    <ID>MaxLineLength:NewsPublishingTest.kt$NewsPublishingTest$fun</ID>
+    <ID>MaxLineLength:NewsPublishingTest.kt$Parameter$override fun toString(): String</ID>
+    <ID>MaxLineLength:NewsPublishingTest.kt$private fun &lt;T : Any> createMiddlewareStub(consumer: Consumer&lt;T>): ConsumerMiddleware&lt;T></ID>
+    <ID>MaxLineLength:PlaybackMiddleware.kt$PlaybackMiddleware.RecordStore$fun &lt;Out: Any, In: Any> record(middleware: PlaybackMiddleware&lt;Out, In>, endpoints: Connection&lt;Out, In>, element: In)</ID>
+    <ID>MaxLineLength:ReducerFeature.kt$ReducerFeature.SimpleNewsPublisher$abstract</ID>
+    <ID>MaxLineLength:SameThreadVerifierTest.kt$SameThreadVerifierTest$"java.lang.String was interacted with on the wrong thread. Expected: '$testWorkerThreadName', Actual: 'wrong-thread'"</ID>
+    <ID>ThrowingExceptionFromFinally:RxErrorRule.kt$RxErrorRule.&lt;no name provided>$throw CompositeException(errors)</ID>
+    <ID>UseCheckOrError:MemoryRecordStore.kt$MemoryRecordStore$throw IllegalStateException("Trying to playback while still recording")</ID>
+  </CurrentIssues>
+</SmellBaseline>

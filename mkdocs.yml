@@ -44,7 +44,7 @@ docs_dir: documentation
 
 nav:
 - Overview: index.md
-- What's new: whatsnew.md
+- Changelog: changelog.md
 - Features:
   - Core concepts: features/coreconcepts.md
   - Your first and simplest feature: features/reducerfeature.md

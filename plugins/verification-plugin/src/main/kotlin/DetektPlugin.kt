@@ -10,9 +10,12 @@ class DetektPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         target.plugins.apply("io.gitlab.arturbosch.detekt")
         target.plugins.withId("io.gitlab.arturbosch.detekt") {
+            val rootProject = target.rootProject
+
             target.extensions.configure<DetektExtension> {
                 buildUponDefaultConfig = true
                 baseline = target.file("detekt-baseline.xml")
+                basePath = rootProject.projectDir.absolutePath
 
                 val localDetektConfig = target.file("detekt.yml")
                 val rootDetektConfig = target.rootProject.file("detekt.yml")
@@ -28,7 +31,6 @@ class DetektPlugin : Plugin<Project> {
                 reports.sarif.required.set(true)
             }
 
-            val rootProject = target.rootProject
             rootProject.plugins.withId("mvi-core-collect-sarif") {
                 rootProject.tasks.named(
                     CollectSarifPlugin.MERGE_DETEKT_TASK_NAME,

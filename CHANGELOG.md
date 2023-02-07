@@ -4,7 +4,10 @@
 
 #### Additions
 
-([#173](https://github.com/badoo/MVICore/pull/162)):
+([#176](https://github.com/badoo/MVICore/pull/176)):
+Updated RxJava to 2.2.21 and RxKotlin to 2.4.0
+
+([#173](https://github.com/badoo/MVICore/pull/173)):
 Updated Kotlin to 1.7.10
 
 ([#162](https://github.com/badoo/MVICore/pull/162)):

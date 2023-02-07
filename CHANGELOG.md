@@ -4,6 +4,9 @@
 
 #### Additions
 
+([#177](https://github.com/badoo/MVICore/pull/177)):
+Updated AndroidX appcompat to 1.4.1 and lifecycle to 2.5.1. Also updated Compile and Target SDK to API 33.
+
 ([#176](https://github.com/badoo/MVICore/pull/176)):
 Updated RxJava to 2.2.21 and RxKotlin to 2.4.0
 

@@ -37,7 +37,7 @@ binder.bind(output to input using OutputToInput)
 
 ## Naming connections
 
-And you can optionally give names to any connection:
+You can optionally give names to any connection:
 ```kotlin
 binder.bind(input to output named "MyConnection")
 // or
@@ -49,3 +49,20 @@ Naming a connection signals that it's important to you. This will make more sens
 - You'll see connections with their respective names in the time-travel debug menu
 - You'll see connection names in logs if you use LoggingMiddleware
 - You can opt to dynamically add `Middlewares` only to named connections (if that's what you want)
+
+## Setting connections observation scheduler
+
+You can optionally set the observation scheduler for any connection:
+```kotlin
+binder.bind(input to output observeOn scheduler)
+```
+
+You can also use `Binder.observeOn` to reduce repetition:
+```kotlin
+binder.observeOn(scheduler) {
+    bind(input1 to output1)
+    bind(input2 to output2)
+}
+```
+
+Specifying an observation scheduler ensures that the output is called on the specified scheduler.

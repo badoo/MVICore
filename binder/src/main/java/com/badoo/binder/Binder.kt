@@ -8,13 +8,14 @@ import com.badoo.binder.middleware.wrapWithMiddleware
 import io.reactivex.Observable
 import io.reactivex.Observable.wrap
 import io.reactivex.ObservableSource
+import io.reactivex.Scheduler
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
 import io.reactivex.rxkotlin.plusAssign
 
 class Binder(
-    private val lifecycle: Lifecycle? = null
+    private val lifecycle: Lifecycle? = null,
 ) : Disposable {
     private val disposables = CompositeDisposable()
     private val connections = mutableListOf<Pair<Connection<*, *>, Middleware<*, *>?>>()
@@ -31,7 +32,7 @@ class Binder(
 
     // region bind
 
-    fun <T: Any> bind(connection: Pair<ObservableSource<out T>, Consumer<in T>>) {
+    fun <T : Any> bind(connection: Pair<ObservableSource<out T>, Consumer<in T>>) {
         bind(
             Connection(
                 from = connection.first,
@@ -41,7 +42,7 @@ class Binder(
         )
     }
 
-    fun <Out: Any, In: Any> bind(connection: Connection<Out, In>) {
+    fun <Out : Any, In : Any> bind(connection: Connection<Out, In>) {
         val consumer = connection.to
         val middleware = consumer.wrapWithMiddleware(
             standalone = false,
@@ -85,12 +86,14 @@ class Binder(
                     middleware.onBind(connection)
 
                     this
+                        .optionalObserveOn(connection.observeScheduler)
                         .doOnNext { middleware.onElement(connection, it) }
                         .doFinally { middleware.onComplete(connection) }
                         .subscribe(middleware)
 
                 } else {
-                    subscribe(connection.to)
+                    optionalObserveOn(connection.observeScheduler)
+                        .subscribe(connection.to)
                 }
             }
 
@@ -139,7 +142,41 @@ class Binder(
         disposables.dispose()
     }
 
+    /**
+     * Any binds that occur within [BinderObserveOnScope] will be observed on the provided scheduler
+     */
+    fun observeOn(scheduler: Scheduler, observeOnScopeFunc: BinderObserveOnScope.() -> Unit) {
+        BinderObserveOnScope(this, scheduler).apply(observeOnScopeFunc)
+    }
+
     fun clear() {
         disposables.clear()
+    }
+
+    private fun <T> Observable<T>.optionalObserveOn(scheduler: Scheduler?) =
+        if (scheduler != null) {
+            observeOn(scheduler)
+        } else {
+            this
+        }
+
+    class BinderObserveOnScope(
+        private val binder: Binder,
+        private val observeScheduler: Scheduler
+    ) {
+        fun <T : Any> bind(connection: Pair<ObservableSource<out T>, Consumer<in T>>) {
+            binder.bind(
+                Connection(
+                    from = connection.first,
+                    to = connection.second,
+                    connector = null,
+                    observeScheduler = observeScheduler
+                )
+            )
+        }
+
+        fun <Out : Any, In : Any> bind(connection: Connection<Out, In>) {
+            binder.bind(connection.observeOn(observeScheduler))
+        }
     }
 }

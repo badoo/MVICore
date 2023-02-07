@@ -8,9 +8,7 @@ buildscript {
     dependencies {
         classpath libs.plugin.android
         classpath libs.plugin.kotlin
-        // TODO: Dokka 1.6.21 fails when running publishToMavenLocal. Try aligning with Kotlin version after we upgrade to 1.7.x
-        // Downgrade was suggested here: https://github.com/Kotlin/dokka/issues/2452
-        classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.6.10"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:${libs.versions.kotlinVersion.get()}"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }

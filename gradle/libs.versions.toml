@@ -1,5 +1,5 @@
 [versions]
-kotlinVersion = "1.6.21"
+kotlinVersion = "1.7.10"
 detekt = "1.21.0"
 
 # Android
@@ -88,7 +88,7 @@ androidx-test-rules = { module = "androidx.test:rules", version.ref = "supportTe
 
 plugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinVersion" }
 plugin-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
-plugin-android = "com.android.tools.build:gradle:7.2.2"
+plugin-android = "com.android.tools.build:gradle:7.3.1"
 
 [plugins]
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }

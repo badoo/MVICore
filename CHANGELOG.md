@@ -4,6 +4,9 @@
 
 #### Additions
 
+([#173](https://github.com/badoo/MVICore/pull/162)):
+Updated Kotlin to 1.7.10
+
 ([#162](https://github.com/badoo/MVICore/pull/162)):
 Updated Kotlin to 1.6.21 (the plan is to update to 1.7.x fairly soon)
 

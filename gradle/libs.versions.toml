@@ -1,5 +1,5 @@
 [versions]
-kotlinVersion = "1.6.21"
+kotlinVersion = "1.7.10"
 detekt = "1.21.0"
 
 # Android

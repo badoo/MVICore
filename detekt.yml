@@ -1,2 +1,14 @@
 config:
   warningsAsErrors: true
+
+style:
+  ForbiddenComment:
+    allowedPatterns: 'https://github.com/badoo/MVICore/issues/*'
+  MagicNumber:
+    excludes: [ '**/test/**', '**/*Test.kt' ]
+  MaxLineLength:
+    excludes: [ '**/test/**', '**/*.Test.kt', '**/*.Spec.kt' ]
+    excludeCommentStatements: true
+  WildcardImport:
+    active: true
+    excludeImports: [ ]

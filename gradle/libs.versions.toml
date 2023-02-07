@@ -9,8 +9,8 @@ androidMaterialVersion = "1.2.1"
 constraintLayoutVersion = "2.0.2"
 
 # Rx
-rxJavaVersion = "2.2.10"
-rxKotlinVersion = "2.2.0"
+rxJavaVersion = "2.2.21"
+rxKotlinVersion = "2.4.0"
 rxAndroidVersion = "2.1.1"
 
 # DI

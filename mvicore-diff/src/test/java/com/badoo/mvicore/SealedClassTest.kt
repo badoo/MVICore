@@ -3,10 +3,11 @@ package com.badoo.mvicore
 import com.badoo.mvicore.util.Nested
 import com.badoo.mvicore.util.SealedModel
 import com.badoo.mvicore.util.testWatcher
-import org.junit.Test
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 class SealedClassTest {
+
     @Test
     fun `sealed class subtypes are triggered every time type has changed`() {
         val results = testWatcher<List<String>, SealedModel>(
@@ -16,7 +17,7 @@ class SealedClassTest {
                 SealedModel.Value(list = listOf(""))
             )
         ) { updates ->
-            type<SealedModel.Value> {
+            type {
                 SealedModel.Value::list {
                     updates += it
                 }
@@ -56,7 +57,7 @@ class SealedClassTest {
                 SealedModel.Value()
             )
         ) { updates ->
-            type<SealedModel.Value> {
+            type {
                 SealedModel.Value::list {
                     updates += it
                 }
@@ -85,7 +86,7 @@ class SealedClassTest {
             )
         ) { updates ->
             type<Nested.SubNested> {
-                type<Nested.SubNested.Value> {
+                type {
                     Nested.SubNested.Value::list {
                         updates += it
                     }

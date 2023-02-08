@@ -50,8 +50,5 @@ dependencies {
     releaseImplementation libs.debugdrawer.noop
     releaseImplementation libs.debugdrawer.view.noop
 
-    testImplementation libs.junit
-    testImplementation libs.kotlin.test.junit
-
     implementation project(':mvicore')
 }

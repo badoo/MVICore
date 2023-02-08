@@ -34,6 +34,15 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11
     }
+
+    testOptions {
+        unitTests {
+            all {
+                useJUnitPlatform()
+            }
+        }
+    }
+
 }
 
 dependencies {
@@ -45,8 +54,11 @@ dependencies {
     implementation libs.rxkotlin
     implementation libs.rxandroid
 
-    testImplementation libs.junit
-    testImplementation libs.kotlin.test.junit
+    testImplementation libs.junit5
+    testImplementation libs.junit.params
+    testImplementation libs.junit.platform.launcher
+
+    androidTestImplementation libs.junit
     androidTestImplementation libs.androidx.test.runner
     androidTestImplementation libs.androidx.test.rules
 

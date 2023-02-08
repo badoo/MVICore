@@ -13,9 +13,9 @@ import com.badoo.mvicore.feature.Feature
 import io.reactivex.Observable
 import io.reactivex.observers.TestObserver
 import io.reactivex.subjects.ReplaySubject
-import junit.framework.Assert.assertEquals
-import org.junit.After
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
@@ -34,7 +34,7 @@ class BootstrapperTest {
     private lateinit var feature: Feature<Any, Any, Any>
     private lateinit var actionHandler: TestObserver<Action>
 
-    @After
+    @AfterEach
     fun tearDown() {
         Middlewares.configurations.clear()
     }
@@ -100,7 +100,7 @@ class BootstrapperTest {
         Middlewares.configurations.add(
             MiddlewareConfiguration(
                 condition = WrappingCondition.Always,
-                factories = listOf { _ -> middlewareStub }
+                factories = listOf { middlewareStub }
             )
         )
 
@@ -112,7 +112,7 @@ class BootstrapperTest {
         feature = BaseFeature<Any, Action, Any, Any, Any>(
             initialState = Any(),
             bootstrapper = bootstrapper,
-            wishToAction = { _ -> Action1 },
+            wishToAction = { Action1 },
             actor = { _, action ->
                 actions.onNext(action)
                 Observable.empty()

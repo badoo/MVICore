@@ -13,17 +13,18 @@ import io.reactivex.Scheduler
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
-import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Rule
-import org.junit.Test
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 
 /**
  * Tests async functionality of [BaseAsyncFeature].
  */
+@ExtendWith(RxErrorRule::class)
 class AsyncBaseFeatureTest {
 
     private val featureExecutor = Executors.newSingleThreadExecutor { Thread(it, THREAD_FEATURE) }
@@ -34,10 +35,7 @@ class AsyncBaseFeatureTest {
 
     private lateinit var feature: AsyncFeature<Wish, State, News>
 
-    @get:Rule
-    val rxRule = RxErrorRule()
-
-    @After
+    @AfterEach
     fun after() {
         if (this::feature.isInitialized) {
             feature.dispose()
@@ -52,7 +50,10 @@ class AsyncBaseFeatureTest {
 
     @Test
     fun `allows creation with both schedulers`() {
-        feature = testFeature(featureScheduler = Schedulers.trampoline(), observationScheduler = Schedulers.trampoline())
+        feature = testFeature(
+            featureScheduler = Schedulers.trampoline(),
+            observationScheduler = Schedulers.trampoline()
+        )
     }
 
     @Test
@@ -172,9 +173,13 @@ class AsyncBaseFeatureTest {
     private fun testFeature(
         featureScheduler: Scheduler = this.featureScheduler,
         observationScheduler: Scheduler = this.observationScheduler,
-        bootstrapper: Bootstrapper<Action>? = { Observable.just(Action()).observeOn(Schedulers.single()) },
+        bootstrapper: Bootstrapper<Action>? = {
+            Observable.just(Action()).observeOn(Schedulers.single())
+        },
         wishToAction: WishToAction<Wish, Action> = { Action() },
-        actor: Actor<State, Action, Effect> = { _, _ -> Observable.just(Effect()).observeOn(Schedulers.single()) },
+        actor: Actor<State, Action, Effect> = { _, _ ->
+            Observable.just(Effect()).observeOn(Schedulers.single())
+        },
         reducer: Reducer<State, Effect> = { _, _ -> State() },
         postProcessor: PostProcessor<Action, Effect, State> = { _, _, _ -> null },
         newsPublisher: NewsPublisher<Action, Effect, State, News> = { _, _, _ -> News() }
@@ -220,7 +225,11 @@ class AsyncBaseFeatureTest {
 
         fun waitAndAssert() {
             countDownLatch.await(10, TimeUnit.SECONDS)
-            assertEquals("Expected '$expected' but was executed on '$actual'", expected, actual)
+            assertEquals(
+                expected,
+                actual,
+                "Expected '$expected' but was executed on '$actual'"
+            )
         }
     }
 

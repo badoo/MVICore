@@ -11,8 +11,9 @@ dependencies {
     implementation libs.rxkotlin
     implementation libs.kotlin.stdlib
 
-    testImplementation libs.junit
-    testImplementation libs.kotlin.test.junit
+    testImplementation libs.junit5
+    testImplementation libs.junit.params
+    testImplementation libs.junit.platform.launcher
     testImplementation libs.mockito.kotlin
 }
 
@@ -23,4 +24,8 @@ compileKotlin {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11
     }
+}
+
+test {
+    useJUnitPlatform()
 }

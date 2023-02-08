@@ -4,7 +4,7 @@ import com.badoo.binder.connector.Connector
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import io.reactivex.subjects.PublishSubject
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class BinderTest {
 

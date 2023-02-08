@@ -3,16 +3,22 @@ package com.badoo.mvicore.android.lifecycle
 import androidx.arch.core.executor.ArchTaskExecutor
 import androidx.arch.core.executor.TaskExecutor
 import androidx.lifecycle.Lifecycle
+import com.badoo.binder.Binder
 import com.badoo.binder.observeOn
 import io.reactivex.functions.Consumer
 import io.reactivex.internal.schedulers.RxThreadFactory
 import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.subjects.PublishSubject
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
 import java.util.concurrent.CountDownLatch
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
+
+typealias LifecycleEvent = Lifecycle.(Binder.() -> Unit) -> Unit
 
 class LifecycleExtensionsTest {
     private val subject = PublishSubject.create<Unit>()
@@ -27,7 +33,7 @@ class LifecycleExtensionsTest {
         .createSingleScheduler(RxThreadFactory("background", Thread.NORM_PRIORITY, false))
         .apply { start() }
 
-    @Before
+    @BeforeEach
     fun setup() {
         ArchTaskExecutor.getInstance()
             .setDelegate(object : TaskExecutor() {
@@ -37,204 +43,32 @@ class LifecycleExtensionsTest {
             })
     }
 
-    @After
+    @AfterEach
     fun teardown() {
         ArchTaskExecutor.getInstance().setDelegate(null)
     }
 
-    @Test
-    fun `GIVEN initial lifecycle not set AND createDestroy WHEN event emitted THEN consumer not invoked`() {
-        testLifecycleOwner.lifecycle.createDestroy {
+    @ParameterizedTest(name = "GIVEN lifecycle event {0} AND lifecycle states {1} THEN event consumption should be {2}")
+    @MethodSource("generateTestData")
+    fun `GIVEN lifecycle event AND lifecycle state THEN event consumption should be handled correctly`(
+        lifecycleEvent: LifecycleEvent,
+        lifecycleStates: List<Lifecycle.State>,
+        eventShouldBeConsumed: Boolean
+    ) {
+        testLifecycleOwner.lifecycle.lifecycleEvent {
             bind(subject to consumerTester)
         }
 
+        lifecycleStates.forEach { testLifecycleOwner.state = it }
+
         subject.onNext(Unit)
 
-        consumerTester.verifyNotInvoked()
-        assertEquals(false, subject.hasObservers())
-    }
-
-    @Test
-    fun `GIVEN initial lifecycle is created AND createDestroy WHEN event emitted THEN consumer invoked AND observers exist`() {
-        testLifecycleOwner.lifecycle.createDestroy {
-            bind(subject to consumerTester)
+        if (eventShouldBeConsumed) {
+            consumerTester.verifyInvoked()
+        } else {
+            consumerTester.verifyNotInvoked()
         }
-        testLifecycleOwner.state = Lifecycle.State.CREATED
-
-        subject.onNext(Unit)
-
-        consumerTester.verifyInvoked()
-        assertEquals(true, subject.hasObservers())
-    }
-
-    @Test
-    fun `GIVEN initial lifecycle is started AND createDestroy WHEN event emitted THEN consumer invoked AND observers exist`() {
-        testLifecycleOwner.lifecycle.createDestroy {
-            bind(subject to consumerTester)
-        }
-        testLifecycleOwner.state = Lifecycle.State.STARTED
-
-        subject.onNext(Unit)
-
-        consumerTester.verifyInvoked()
-        assertEquals(true, subject.hasObservers())
-    }
-
-    @Test
-    fun `GIVEN initial lifecycle is resumed AND createDestroy WHEN event emitted THEN consumer invoked AND observers exist`() {
-        testLifecycleOwner.lifecycle.createDestroy {
-            bind(subject to consumerTester)
-        }
-        testLifecycleOwner.state = Lifecycle.State.RESUMED
-
-        subject.onNext(Unit)
-
-        consumerTester.verifyInvoked()
-        assertEquals(true, subject.hasObservers())
-    }
-
-    @Test
-    fun `GIVEN initial lifecycle is created AND createDestroy AND lifecycle moved to destroyed WHEN event emitted THEN consumer not invoked AND no observers`() {
-        testLifecycleOwner.lifecycle.createDestroy {
-            bind(subject to consumerTester)
-        }
-        testLifecycleOwner.state = Lifecycle.State.CREATED
-        testLifecycleOwner.state = Lifecycle.State.DESTROYED
-
-        subject.onNext(Unit)
-
-        consumerTester.verifyNotInvoked()
-        assertEquals(false, subject.hasObservers())
-    }
-
-    @Test
-    fun `GIVEN initial lifecycle not set AND startStop WHEN event emitted THEN consumer not invoked AND no observers`() {
-        testLifecycleOwner.lifecycle.startStop {
-            bind(subject to consumerTester)
-        }
-
-        subject.onNext(Unit)
-
-        consumerTester.verifyNotInvoked()
-        assertEquals(false, subject.hasObservers())
-    }
-
-    @Test
-    fun `GIVEN initial lifecycle is created AND startStop WHEN event emitted THEN consumer not invoked AND no observers`() {
-        testLifecycleOwner.lifecycle.startStop {
-            bind(subject to consumerTester)
-        }
-        testLifecycleOwner.state = Lifecycle.State.CREATED
-
-        subject.onNext(Unit)
-
-        consumerTester.verifyNotInvoked()
-        assertEquals(false, subject.hasObservers())
-    }
-
-    @Test
-    fun `GIVEN initial lifecycle is started AND startStop WHEN event emitted THEN consumer invoked AND observers exist`() {
-        testLifecycleOwner.lifecycle.startStop {
-            bind(subject to consumerTester)
-        }
-        testLifecycleOwner.state = Lifecycle.State.STARTED
-
-        subject.onNext(Unit)
-
-        consumerTester.verifyInvoked()
-        assertEquals(true, subject.hasObservers())
-    }
-
-    @Test
-    fun `GIVEN initial lifecycle is resumed AND startStop WHEN event emitted THEN consumer invoked AND observers exist`() {
-        testLifecycleOwner.lifecycle.startStop {
-            bind(subject to consumerTester)
-        }
-        testLifecycleOwner.state = Lifecycle.State.RESUMED
-
-        subject.onNext(Unit)
-
-        consumerTester.verifyInvoked()
-        assertEquals(true, subject.hasObservers())
-    }
-
-    @Test
-    fun `GIVEN initial lifecycle is created AND startStop AND lifecycle moved to destroyed WHEN event emitted THEN consumer not invoked AND no observers`() {
-        testLifecycleOwner.lifecycle.startStop {
-            bind(subject to consumerTester)
-        }
-        testLifecycleOwner.state = Lifecycle.State.CREATED
-        testLifecycleOwner.state = Lifecycle.State.DESTROYED
-
-        subject.onNext(Unit)
-
-        consumerTester.verifyNotInvoked()
-        assertEquals(false, subject.hasObservers())
-    }
-
-    @Test
-    fun `GIVEN initial lifecycle not set AND resumePause WHEN event emitted THEN consumer not invoked AND no observers`() {
-        testLifecycleOwner.lifecycle.resumePause {
-            bind(subject to consumerTester)
-        }
-
-        subject.onNext(Unit)
-
-        consumerTester.verifyNotInvoked()
-        assertEquals(false, subject.hasObservers())
-    }
-
-    @Test
-    fun `GIVEN initial lifecycle is created AND resumePause WHEN event emitted THEN consumer not invoked AND no observers`() {
-        testLifecycleOwner.lifecycle.resumePause {
-            bind(subject to consumerTester)
-        }
-        testLifecycleOwner.state = Lifecycle.State.CREATED
-
-        subject.onNext(Unit)
-
-        consumerTester.verifyNotInvoked()
-        assertEquals(false, subject.hasObservers())
-    }
-
-    @Test
-    fun `GIVEN initial lifecycle is started AND resumePause WHEN event emitted THEN consumer not invoked AND no observers`() {
-        testLifecycleOwner.lifecycle.resumePause {
-            bind(subject to consumerTester)
-        }
-        testLifecycleOwner.state = Lifecycle.State.STARTED
-
-        subject.onNext(Unit)
-
-        consumerTester.verifyNotInvoked()
-        assertEquals(false, subject.hasObservers())
-    }
-
-    @Test
-    fun `GIVEN initial lifecycle is resumed AND resumePause WHEN event emitted THEN consumer invoked AND observers exist`() {
-        testLifecycleOwner.lifecycle.resumePause {
-            bind(subject to consumerTester)
-        }
-        testLifecycleOwner.state = Lifecycle.State.RESUMED
-
-        subject.onNext(Unit)
-
-        consumerTester.verifyInvoked()
-        assertEquals(true, subject.hasObservers())
-    }
-
-    @Test
-    fun `GIVEN initial lifecycle is created AND resumePause AND lifecycle moved to destroyed WHEN event emitted THEN consumer not invoked AND no observers`() {
-        testLifecycleOwner.lifecycle.resumePause {
-            bind(subject to consumerTester)
-        }
-        testLifecycleOwner.state = Lifecycle.State.CREATED
-        testLifecycleOwner.state = Lifecycle.State.DESTROYED
-
-        subject.onNext(Unit)
-
-        consumerTester.verifyNotInvoked()
-        assertEquals(false, subject.hasObservers())
+        assertEquals(eventShouldBeConsumed, subject.hasObservers())
     }
 
     @Test
@@ -312,6 +146,105 @@ class LifecycleExtensionsTest {
         backgroundThreadConsumerTester.verifyThreadName("background")
         unconfinedThreadConsumerTester.verifyThreadName(testThreadName)
     }
+
+    companion object {
+        @JvmStatic
+        @Suppress("LongMethod")
+        fun generateTestData(): List<Arguments> {
+            return listOf(
+                TestData(
+                    lifecycleEvent = Lifecycle::createDestroy,
+                    lifecycleStates = emptyList(),
+                    eventShouldBeConsumed = false
+                ),
+                TestData(
+                    lifecycleEvent = Lifecycle::createDestroy,
+                    lifecycleStates = listOf(Lifecycle.State.CREATED),
+                    eventShouldBeConsumed = true
+                ),
+                TestData(
+                    lifecycleEvent = Lifecycle::createDestroy,
+                    lifecycleStates = listOf(Lifecycle.State.STARTED),
+                    eventShouldBeConsumed = true
+                ),
+                TestData(
+                    lifecycleEvent = Lifecycle::createDestroy,
+                    lifecycleStates = listOf(Lifecycle.State.RESUMED),
+                    eventShouldBeConsumed = true
+                ),
+                TestData(
+                    lifecycleEvent = Lifecycle::createDestroy,
+                    lifecycleStates = listOf(
+                        Lifecycle.State.CREATED,
+                        Lifecycle.State.DESTROYED
+                    ),
+                    eventShouldBeConsumed = false
+                ),
+                TestData(
+                    lifecycleEvent = Lifecycle::startStop,
+                    lifecycleStates = emptyList(),
+                    eventShouldBeConsumed = false
+                ),
+                TestData(
+                    lifecycleEvent = Lifecycle::startStop,
+                    lifecycleStates = listOf(Lifecycle.State.CREATED),
+                    eventShouldBeConsumed = false
+                ),
+                TestData(
+                    lifecycleEvent = Lifecycle::startStop,
+                    lifecycleStates = listOf(Lifecycle.State.STARTED),
+                    eventShouldBeConsumed = true
+                ),
+                TestData(
+                    lifecycleEvent = Lifecycle::startStop,
+                    lifecycleStates = listOf(Lifecycle.State.RESUMED),
+                    eventShouldBeConsumed = true
+                ),
+                TestData(
+                    lifecycleEvent = Lifecycle::startStop,
+                    lifecycleStates = listOf(
+                        Lifecycle.State.CREATED,
+                        Lifecycle.State.DESTROYED
+                    ),
+                    eventShouldBeConsumed = false
+                ),
+                TestData(
+                    lifecycleEvent = Lifecycle::resumePause,
+                    lifecycleStates = emptyList(),
+                    eventShouldBeConsumed = false
+                ),
+                TestData(
+                    lifecycleEvent = Lifecycle::resumePause,
+                    lifecycleStates = listOf(Lifecycle.State.CREATED),
+                    eventShouldBeConsumed = false
+                ),
+                TestData(
+                    lifecycleEvent = Lifecycle::resumePause,
+                    lifecycleStates = listOf(Lifecycle.State.STARTED),
+                    eventShouldBeConsumed = false
+                ),
+                TestData(
+                    lifecycleEvent = Lifecycle::resumePause,
+                    lifecycleStates = listOf(Lifecycle.State.RESUMED),
+                    eventShouldBeConsumed = true
+                ),
+                TestData(
+                    lifecycleEvent = Lifecycle::resumePause,
+                    lifecycleStates = listOf(
+                        Lifecycle.State.CREATED,
+                        Lifecycle.State.DESTROYED
+                    ),
+                    eventShouldBeConsumed = false
+                )
+            ).map { Arguments.of(it.lifecycleEvent, it.lifecycleStates, it.eventShouldBeConsumed) }
+        }
+    }
+
+    data class TestData(
+        val lifecycleEvent: LifecycleEvent,
+        val lifecycleStates: List<Lifecycle.State>,
+        val eventShouldBeConsumed: Boolean
+    )
 
     private class ConsumerTester : Consumer<Unit> {
         private var wasCalled: Boolean = false

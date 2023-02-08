@@ -4,14 +4,19 @@ import com.badoo.mvicore.element.Actor
 import com.badoo.mvicore.element.NewsPublisher
 import com.badoo.mvicore.element.PostProcessor
 import com.badoo.mvicore.element.Reducer
-import com.badoo.mvicore.feature.PostProcessorTestFeature.*
+import com.badoo.mvicore.feature.PostProcessorTestFeature.Effect
+import com.badoo.mvicore.feature.PostProcessorTestFeature.News
+import com.badoo.mvicore.feature.PostProcessorTestFeature.State
+import com.badoo.mvicore.feature.PostProcessorTestFeature.Wish
 import io.reactivex.Observable
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class BaseFeaturePostProcessorTest {
+
     @Test
     fun `GIVEN feature scheduler provided AND InitialTrigger sent WHEN post processor sends PostProcessorTrigger THEN news is in wish order`() {
-        val feature = PostProcessorTestFeature(featureScheduler = FeatureSchedulers.TrampolineFeatureScheduler)
+        val feature =
+            PostProcessorTestFeature(featureScheduler = FeatureSchedulers.TrampolineFeatureScheduler)
         val newsTestObserver = Observable.wrap(feature.news).test()
         feature.accept(Wish.InitialTrigger)
 

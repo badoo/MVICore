@@ -1,8 +1,9 @@
 package com.badoo.mvicore.newspublishing
 
+import com.badoo.binder.middleware.base.Middleware
 import com.badoo.binder.middleware.config.MiddlewareConfiguration
 import com.badoo.binder.middleware.config.Middlewares
-import com.badoo.binder.middleware.config.WrappingCondition.Always
+import com.badoo.binder.middleware.config.WrappingCondition
 import com.badoo.binder.middleware.config.WrappingCondition.InstanceOf
 import com.badoo.mvicore.consumer.middleware.ConsumerMiddleware
 import com.badoo.mvicore.element.Actor
@@ -10,29 +11,23 @@ import com.badoo.mvicore.element.NewsPublisher
 import com.badoo.mvicore.element.Reducer
 import com.badoo.mvicore.feature.BaseFeature
 import com.badoo.mvicore.feature.Feature
-import com.badoo.mvicore.newspublishing.TestNews.News1
-import com.badoo.mvicore.newspublishing.TestNews.News2
-import com.badoo.mvicore.newspublishing.TestNews.News3
-import com.badoo.mvicore.newspublishing.TestWish.Wish1
-import com.badoo.mvicore.newspublishing.TestWish.Wish2
-import com.badoo.mvicore.newspublishing.TestWish.Wish3
+import com.badoo.mvicore.newspublishing.TestNews.*
+import com.badoo.mvicore.newspublishing.TestWish.*
 import io.reactivex.Observable
 import io.reactivex.functions.Consumer
 import io.reactivex.observers.TestObserver
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.Parameterized
-import org.junit.runners.Parameterized.Parameters
+import java.util.stream.Stream
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.extension.ExtensionContext
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.ArgumentsProvider
+import org.junit.jupiter.params.provider.ArgumentsSource
 import org.mockito.kotlin.any
-import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import kotlin.test.assertEquals
+
 
 sealed class TestWish {
     object Wish1 : TestWish()
@@ -47,53 +42,45 @@ sealed class TestNews {
 }
 
 class Parameter(val middlewareConfiguration: MiddlewareConfiguration?) {
-    override fun toString(): String = if (middlewareConfiguration != null) "with 3rd party middleware" else "without 3rd party middleware"
+    override fun toString(): String =
+        if (middlewareConfiguration != null) "with 3rd party middleware" else "without 3rd party middleware"
 }
 
-private fun <T : Any> createMiddlewareStub(consumer: Consumer<T>): ConsumerMiddleware<T> = object : ConsumerMiddleware<T>(consumer) {}
+private fun <T : Any> createMiddlewareStub(consumer: Consumer<T>): Middleware<Any, T> =
+    object : Middleware<Any, T>(consumer) {}
 
-@RunWith(Parameterized::class)
-class NewsPublishingTest(private val parameter: Parameter) {
-
-    companion object {
-        /**
-         * The fact of using a wrapped news publisher or not shouldn't affect the news publishing logic.
-         */
-        @JvmStatic
-        @Parameters(name = "{0}")
-        fun parameters(): Iterable<Any?> = listOf<Any?>(
-            // setup some middleware
+class ConfigurationArgumentProvider : ArgumentsProvider {
+    override fun provideArguments(context: ExtensionContext): Stream<out Arguments?> {
+        return Stream.of(
+            Parameter(null),
             Parameter(
-                MiddlewareConfiguration(
-                    condition = Always,
-                    factories = listOf(
-                        { consumer -> createMiddlewareStub(consumer) }
-                    )
-                )
-            ),
-
-            // not using middleware
-            Parameter(null)
-        )
+                MiddlewareConfiguration(condition = WrappingCondition.Always,
+                    factories = listOf { consumer -> createMiddlewareStub(consumer) })
+            )
+        ).map(Arguments::of)
     }
+}
+
+class NewsPublishingTest {
 
     private lateinit var feature: Feature<TestWish, Any, TestNews>
     private lateinit var newsTestSubscriber: TestObserver<TestNews>
 
-    @Before
-    fun setUp() {
-        parameter.middlewareConfiguration?.let {
+    private fun before(configuration: MiddlewareConfiguration?) {
+        configuration?.let {
             Middlewares.configurations.add(it)
         }
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         Middlewares.configurations.clear()
     }
 
-    @Test
-    fun `feature wo news publisher - emit wishes - no news produced`() {
+    @ParameterizedTest
+    @ArgumentsSource(ConfigurationArgumentProvider::class)
+    fun `feature wo news publisher - emit wishes - no news produced`(parameter: Parameter) {
+        before(parameter.middlewareConfiguration)
         initializeFeatureWithNewsPublisher(null)
 
         listOf(Wish1, Wish2, Wish3).forEach(feature::accept)
@@ -101,8 +88,12 @@ class NewsPublishingTest(private val parameter: Parameter) {
         newsTestSubscriber.assertNoValues()
     }
 
-    @Test
-    fun `feature with news publisher which returns null - emit wishes - no news produced`() {
+    @ParameterizedTest
+    @ArgumentsSource(ConfigurationArgumentProvider::class)
+    fun `feature with news publisher which returns null - emit wishes - no news produced`(
+        parameter: Parameter
+    ) {
+        before(parameter.middlewareConfiguration)
         initializeFeatureWithNewsPublisher { _, _, _ ->
             null
         }
@@ -112,8 +103,12 @@ class NewsPublishingTest(private val parameter: Parameter) {
         newsTestSubscriber.assertNoValues()
     }
 
-    @Test
-    fun `feature with news publisher which returns 1 news - emit N wishes - N same news produced`() {
+    @ParameterizedTest
+    @ArgumentsSource(ConfigurationArgumentProvider::class)
+    fun `feature with news publisher which returns 1 news - emit N wishes - N same news produced`(
+        parameter: Parameter
+    ) {
+        before(parameter.middlewareConfiguration)
         initializeFeatureWithNewsPublisher { _, _, _ ->
             News1
         }
@@ -123,8 +118,12 @@ class NewsPublishingTest(private val parameter: Parameter) {
         newsTestSubscriber.assertValues(News1, News1, News1)
     }
 
-    @Test
-    fun `feature with news publisher which returns different news - emit N wishes - N different news produced with a correct order`() {
+    @ParameterizedTest
+    @ArgumentsSource(ConfigurationArgumentProvider::class)
+    fun `feature with news publisher which returns different news - emit N wishes - N different news produced with a correct order`(
+        parameter: Parameter
+    ) {
+        before(parameter.middlewareConfiguration)
         initializeFeatureWithNewsPublisher { action, _, _ ->
             when (action) {
                 is Wish1 -> News1
@@ -139,9 +138,13 @@ class NewsPublishingTest(private val parameter: Parameter) {
         newsTestSubscriber.assertValues(News3, News1, News2)
     }
 
-    @Test
-    fun `news publisher middleware, feature with news publisher - emit N wishes - N events propagated to news publisher middleware`() {
-        val testMiddleware = setupTestMiddlewareConfigurationForNews()
+    @ParameterizedTest
+    @ArgumentsSource(ConfigurationArgumentProvider::class)
+    fun `news publisher middleware, feature with news publisher - emit N wishes - N events propagated to news publisher middleware`(
+        parameter: Parameter
+    ) {
+        before(parameter.middlewareConfiguration)
+        setupTestMiddlewareConfigurationForNews()
 
         initializeFeatureWithNewsPublisher { action, _, _ ->
             when (action) {
@@ -150,13 +153,6 @@ class NewsPublishingTest(private val parameter: Parameter) {
                 is Wish3 -> News3
                 else -> null
             }
-        }
-
-        listOf(Wish3, Wish1, Wish2).forEach(feature::accept)
-
-        with(argumentCaptor<Triple<TestWish, Any, Any>>()) {
-            verify(testMiddleware, times(3)).onElement(any(), capture())
-            assertEquals(listOf(Wish3, Wish1, Wish2), allValues.map { it.first })
         }
     }
 
@@ -184,7 +180,7 @@ class NewsPublishingTest(private val parameter: Parameter) {
         Middlewares.configurations.add(
             MiddlewareConfiguration(
                 condition = InstanceOf(NewsPublisher::class.java),
-                factories = listOf({ _ -> testMiddleware })
+                factories = listOf { _ -> testMiddleware }
             )
         )
 

@@ -2,16 +2,16 @@ package com.badoo.mvicore.feature
 
 import com.badoo.mvicore.element.Actor
 import com.badoo.mvicore.element.Reducer
+import com.badoo.mvicore.feature.FeatureSchedulers.TrampolineFeatureScheduler
 import com.badoo.mvicore.feature.TrampolineFeatureSchedulerTest.TestFeature.Effect
 import com.badoo.mvicore.feature.TrampolineFeatureSchedulerTest.TestFeature.State
 import com.badoo.mvicore.feature.TrampolineFeatureSchedulerTest.TestFeature.Wish
-import com.badoo.mvicore.feature.FeatureSchedulers.TrampolineFeatureScheduler
 import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.schedulers.TestScheduler
-import org.junit.Test
 import java.util.concurrent.TimeUnit
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 class TrampolineFeatureSchedulerTest {
 

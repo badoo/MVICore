@@ -2,6 +2,8 @@
 
 ### Pending changes
 
+### 1.4.0
+
 #### Additions
 
 ([#179](https://github.com/badoo/MVICore/pull/179)):

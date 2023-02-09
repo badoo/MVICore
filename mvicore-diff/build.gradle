@@ -9,8 +9,9 @@ plugins {
 dependencies {
     implementation libs.kotlin.stdlib
 
-    testImplementation libs.junit
-    testImplementation libs.kotlin.test.junit
+    testImplementation libs.junit5
+    testImplementation libs.junit.params
+    testImplementation libs.junit.platform.launcher
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
@@ -25,4 +26,8 @@ compileTestKotlin {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11
     }
+}
+
+test {
+    useJUnitPlatform()
 }

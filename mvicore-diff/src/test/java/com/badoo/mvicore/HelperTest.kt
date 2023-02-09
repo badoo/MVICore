@@ -2,10 +2,11 @@ package com.badoo.mvicore
 
 import com.badoo.mvicore.util.Model
 import com.badoo.mvicore.util.testWatcher
-import org.junit.Test
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 class HelperTest {
+
     @Test
     fun `by value strategy compares by value`() {
         val results = testWatcher<List<String>, Model>(

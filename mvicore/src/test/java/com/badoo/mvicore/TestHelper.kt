@@ -114,7 +114,7 @@ class TestHelper {
         }
 
         private fun noop(): Observable<TestEffect> =
-            Observable.empty()
+            empty()
 
         private fun conditional(state: TestState): Observable<TestEffect> =
             // depends on current state
@@ -129,7 +129,7 @@ class TestHelper {
         private fun asyncJob(wish: FulfillableAsync): Observable<TestEffect> =
             just(delayedFulfillAmount)
                 .delay(wish.delayMs, TimeUnit.MILLISECONDS, asyncWorkScheduler)
-                .map { FinishedAsync(it) as TestEffect }
+                .map<TestEffect> { FinishedAsync(it) }
                 .startWith(StartedAsync)
 
         private fun emit3effects(): Observable<TestEffect> =

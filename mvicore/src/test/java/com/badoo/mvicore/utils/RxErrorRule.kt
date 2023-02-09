@@ -2,26 +2,25 @@ package com.badoo.mvicore.utils
 
 import io.reactivex.exceptions.CompositeException
 import io.reactivex.plugins.RxJavaPlugins
-import org.junit.rules.TestRule
-import org.junit.runner.Description
-import org.junit.runners.model.Statement
 import java.util.Collections
+import org.junit.jupiter.api.Assertions.fail
+import org.junit.jupiter.api.extension.AfterEachCallback
+import org.junit.jupiter.api.extension.BeforeEachCallback
+import org.junit.jupiter.api.extension.ExtensionContext
 
-class RxErrorRule : TestRule {
-    override fun apply(base: Statement, description: Description): Statement =
-        object : Statement() {
-            override fun evaluate() {
-                val handler = RxJavaPlugins.getErrorHandler()
-                val errors = Collections.synchronizedCollection(ArrayList<Throwable>())
-                RxJavaPlugins.setErrorHandler { errors.add(it) }
-                try {
-                    base.evaluate()
-                } finally {
-                    RxJavaPlugins.setErrorHandler(handler)
-                    if (errors.isNotEmpty()) {
-                        throw CompositeException(errors)
-                    }
-                }
-            }
+class RxErrorRule : BeforeEachCallback, AfterEachCallback {
+
+    private val errors = Collections.synchronizedCollection(ArrayList<Throwable>())
+
+    override fun beforeEach(context: ExtensionContext?) {
+        errors.clear()
+        RxJavaPlugins.setErrorHandler { errors += it }
+    }
+
+    override fun afterEach(context: ExtensionContext?) {
+        RxJavaPlugins.reset()
+        if (errors.isNotEmpty()) {
+            fail<Unit>("RxJava errors found", CompositeException(errors))
         }
+    }
 }

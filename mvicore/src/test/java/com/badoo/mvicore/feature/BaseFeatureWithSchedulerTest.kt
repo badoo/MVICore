@@ -27,14 +27,15 @@ import io.reactivex.observers.TestObserver
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.schedulers.TestScheduler
 import io.reactivex.subjects.PublishSubject
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
-import kotlin.test.assertEquals
-import kotlin.test.fail
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.fail
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 
+@ExtendWith(RxErrorRule::class)
 class BaseFeatureWithSchedulerTest {
     private lateinit var feature: Feature<TestWish, TestState, TestNews>
     private lateinit var states: TestObserver<TestState>
@@ -44,15 +45,12 @@ class BaseFeatureWithSchedulerTest {
     private lateinit var actorScheduler: Scheduler
     private val featureScheduler = TestThreadFeatureScheduler()
 
-    @get:Rule
-    val rxRule = RxErrorRule()
-
-    @Before
+    @BeforeEach
     fun prepare() {
         SameThreadVerifier.isEnabled = true
 
-        newsSubject = PublishSubject.create<TestNews>()
-        actorInvocationLog = PublishSubject.create<Pair<TestWish, TestState>>()
+        newsSubject = PublishSubject.create()
+        actorInvocationLog = PublishSubject.create()
         actorInvocationLogTest = actorInvocationLog.test()
         actorScheduler = TestScheduler()
     }
@@ -65,7 +63,7 @@ class BaseFeatureWithSchedulerTest {
             actor = TestHelper.TestActor(
                 { wish, state ->
                     if (!featureScheduler.isOnFeatureThread) {
-                        fail("Actor was not invoked on the feature thread")
+                        fail<Unit>("Actor was not invoked on the feature thread")
                     }
                     actorInvocationLog.onNext(wish to state)
                 },
@@ -73,7 +71,7 @@ class BaseFeatureWithSchedulerTest {
             ),
             reducer = TestHelper.TestReducer(invocationCallback = {
                 if (!featureScheduler.isOnFeatureThread) {
-                    fail("Reducer was not invoked on the feature thread")
+                    fail<Unit>("Reducer was not invoked on the feature thread")
                 }
             }),
             newsPublisher = TestHelper.TestNewsPublisher(),
@@ -247,7 +245,7 @@ class BaseFeatureWithSchedulerTest {
 
     @Test
     fun `loopback from news to multiple wishes has access to correct latest state`() {
-        val testObserver = initAndObserveFeature()
+        initAndObserveFeature()
         newsSubject.subscribe {
             if (it === TestNews.Loopback) {
                 feature.accept(LoopbackWish2)

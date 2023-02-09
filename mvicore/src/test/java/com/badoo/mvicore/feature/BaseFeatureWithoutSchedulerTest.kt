@@ -22,11 +22,11 @@ import com.badoo.mvicore.onNextEvents
 import io.reactivex.observers.TestObserver
 import io.reactivex.schedulers.TestScheduler
 import io.reactivex.subjects.PublishSubject
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
 import java.util.concurrent.TimeUnit
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class BaseFeatureWithoutSchedulerTest {
     private lateinit var feature: Feature<TestWish, TestState, TestNews>
@@ -36,7 +36,7 @@ class BaseFeatureWithoutSchedulerTest {
     private lateinit var actorInvocationLogTest: TestObserver<Pair<TestWish, TestState>>
     private lateinit var actorScheduler: TestScheduler
 
-    @Before
+    @BeforeEach
     fun prepare() {
         SameThreadVerifier.isEnabled = false
 
@@ -63,7 +63,7 @@ class BaseFeatureWithoutSchedulerTest {
         feature.news.subscribe(newsSubject)
     }
 
-    @After
+    @AfterEach
     fun teardown() {
         // Reset back to the default to ensure we don't introduce flaky behaviours
         SameThreadVerifier.isEnabled = true
@@ -196,7 +196,10 @@ class BaseFeatureWithoutSchedulerTest {
         wishes.forEach { feature.accept(it) }
 
         val state = states.values().last()
-        assertEquals((initialCounter + 4 * instantFulfillAmount1) * conditionalMultiplier, state.counter)
+        assertEquals(
+            (initialCounter + 4 * instantFulfillAmount1) * conditionalMultiplier,
+            state.counter
+        )
         assertEquals(false, state.loading)
     }
 
@@ -212,8 +215,17 @@ class BaseFeatureWithoutSchedulerTest {
         feature.accept(LoopbackWishInitial)
         feature.accept(LoopbackWish1)
         assertEquals(4, actorInvocationLogTest.onNextEvents().size)
-        assertEquals(LoopbackWish1 to TestHelper.loopBackInitialState, actorInvocationLogTest.onNextEvents()[1])
-        assertEquals(LoopbackWish2 to TestHelper.loopBackState1, actorInvocationLogTest.onNextEvents()[2])
-        assertEquals(LoopbackWish3 to TestHelper.loopBackState2, actorInvocationLogTest.onNextEvents()[3])
+        assertEquals(
+            LoopbackWish1 to TestHelper.loopBackInitialState,
+            actorInvocationLogTest.onNextEvents()[1]
+        )
+        assertEquals(
+            LoopbackWish2 to TestHelper.loopBackState1,
+            actorInvocationLogTest.onNextEvents()[2]
+        )
+        assertEquals(
+            LoopbackWish3 to TestHelper.loopBackState2,
+            actorInvocationLogTest.onNextEvents()[3]
+        )
     }
 }

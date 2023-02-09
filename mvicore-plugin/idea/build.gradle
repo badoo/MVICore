@@ -33,9 +33,6 @@ dependencies {
     implementation libs.gson
     implementation project(':mvicore-plugin:common')
     implementation libs.kotlin.stdlib
-
-    testImplementation libs.junit
-    testImplementation libs.kotlin.test.junit
 }
 
 sourceCompatibility = JavaVersion.VERSION_11

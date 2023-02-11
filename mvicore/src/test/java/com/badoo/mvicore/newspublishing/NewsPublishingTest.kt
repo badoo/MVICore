@@ -11,8 +11,12 @@ import com.badoo.mvicore.element.NewsPublisher
 import com.badoo.mvicore.element.Reducer
 import com.badoo.mvicore.feature.BaseFeature
 import com.badoo.mvicore.feature.Feature
-import com.badoo.mvicore.newspublishing.TestNews.*
-import com.badoo.mvicore.newspublishing.TestWish.*
+import com.badoo.mvicore.newspublishing.TestNews.News1
+import com.badoo.mvicore.newspublishing.TestNews.News2
+import com.badoo.mvicore.newspublishing.TestNews.News3
+import com.badoo.mvicore.newspublishing.TestWish.Wish1
+import com.badoo.mvicore.newspublishing.TestWish.Wish2
+import com.badoo.mvicore.newspublishing.TestWish.Wish3
 import io.reactivex.Observable
 import io.reactivex.functions.Consumer
 import io.reactivex.observers.TestObserver

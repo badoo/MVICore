@@ -10,6 +10,7 @@ plugins {
 group = "com.github.badoo.mvicore"
 
 android {
+    namespace = "com.badoo.mvicore.android"
     compileSdk = 33
 
     defaultConfig {

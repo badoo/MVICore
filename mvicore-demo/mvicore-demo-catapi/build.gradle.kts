@@ -6,6 +6,7 @@ plugins {
 }
 
 android {
+    namespace = "com.badoo.catapi"
     compileSdk = 33
 
     defaultConfig {

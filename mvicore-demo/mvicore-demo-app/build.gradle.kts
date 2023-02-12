@@ -7,6 +7,7 @@ plugins {
 }
 
 android {
+    namespace = "com.badoo.mvicoredemo"
     compileSdk = 33
     defaultConfig {
         applicationId = "com.badoo.mvicoredemo"

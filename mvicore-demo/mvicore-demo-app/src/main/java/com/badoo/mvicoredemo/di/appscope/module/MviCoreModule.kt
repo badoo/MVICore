@@ -3,17 +3,20 @@ package com.badoo.mvicoredemo.di.appscope.module
 import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore
 import com.badoo.mvicore.consumer.playback.MemoryRecordStore
 import com.badoo.mvicore.debugdrawer.MviCoreControlsModule
-import com.badoo.mvicoredemo.di.appscope.scope.AppScope
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import io.reactivex.android.schedulers.AndroidSchedulers
 import timber.log.Timber
+import javax.inject.Singleton
 
 @Module
+@InstallIn(SingletonComponent::class)
 class MviCoreModule {
 
     @Provides
-    @AppScope
+    @Singleton
     fun recordStore(): RecordStore =
         MemoryRecordStore(
             playbackScheduler = AndroidSchedulers.mainThread(),

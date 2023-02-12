@@ -13,7 +13,11 @@ class FakeAnalyticsTracker(
 
     override fun accept(uiEvent: UiEvent) {
         if (showToasts) {
-            Toast.makeText(context, "Analytics: ${uiEvent.javaClass.simpleName}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                "Analytics: ${uiEvent.javaClass.simpleName}",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 }

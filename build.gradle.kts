@@ -17,6 +17,7 @@ buildscript {
 plugins {
     id("mvi-core-collect-sarif")
     id("com.autonomousapps.dependency-analysis") version libs.versions.dependencyAnalysis.get()
+    id("com.google.dagger.hilt.android") version("2.45") apply false
 }
 
 dependencyAnalysis {

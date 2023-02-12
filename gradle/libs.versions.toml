@@ -52,6 +52,8 @@ rxandroid = { module = "io.reactivex.rxjava2:rxandroid", version.ref = "rxAndroi
 # DI
 dagger-runtime = { module = "com.google.dagger:dagger", version.ref = "daggerVersion" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "daggerVersion" }
+hilt-runtime = { module = "com.google.dagger:hilt-android", version.ref = "daggerVersion" }
+hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "daggerVersion" }
 
 # DebugDrawer
 debugdrawer-impl = { module = "com.github.lenguyenthanh.debugdrawer:debugdrawer", version.ref = "debugDrawerVersion" }

@@ -1,6 +1,5 @@
 package com.badoo.mvicoredemo
 
-import android.annotation.SuppressLint
 import android.app.Application
 import com.badoo.binder.middleware.config.MiddlewareConfiguration
 import com.badoo.binder.middleware.config.Middlewares
@@ -10,34 +9,22 @@ import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware
 import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore
 import com.badoo.mvicore.middleware.DefaultPluginStore
 import com.badoo.mvicore.middleware.IdeaPluginMiddleware
-import com.badoo.mvicoredemo.di.appscope.component.AppScopedComponent
+import dagger.hilt.android.HiltAndroidApp
 import io.palaima.debugdrawer.timber.data.LumberYard
 import timber.log.Timber
 import javax.inject.Inject
 
-
+@HiltAndroidApp
 class App : Application() {
 
     @Inject lateinit var recordStore: RecordStore
 
     private val defaultStore = DefaultPluginStore(BuildConfig.APPLICATION_ID)
 
-    companion object {
-        @SuppressLint("StaticFieldLeak")
-        lateinit var component: AppScopedComponent
-            private set
-    }
-
     override fun onCreate() {
         super.onCreate()
-        dagger()
         middlewares()
         timber()
-    }
-
-    private fun dagger() {
-        component = AppScopedComponent(this)
-        component.get().inject(this)
     }
 
     private fun middlewares() {

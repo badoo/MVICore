@@ -1,49 +1,44 @@
 package com.badoo.mvicoredemo.ui.main.di.module
 
-import android.content.Context
-import com.badoo.feature1.Feature1
-import com.badoo.feature2.Feature2
-import com.badoo.mvicoredemo.di.activityscope.scope.ActivityScope
-import com.badoo.mvicoredemo.ui.main.MainActivity
+import android.app.Application
+import com.badoo.mvicoredemo.di.usersessionscope.component.UserComponentEntryPoint
 import com.badoo.mvicoredemo.ui.main.MainActivityBindings
 import com.badoo.mvicoredemo.ui.main.analytics.FakeAnalyticsTracker
 import com.badoo.mvicoredemo.ui.main.news.NewsListener
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.android.scopes.ActivityScoped
 
 @Module
-class MainScreenModule(
-    private val mainActivity: MainActivity
-) {
+@InstallIn(ActivityComponent::class)
+class MainScreenModule {
 
     @Provides
-    fun mainActivity() =
-        mainActivity
-
-    @Provides
-    @ActivityScope
+    @ActivityScoped
     fun bindings(
-        view: MainActivity,
-        feature1: Feature1,
-        feature2: Feature2,
+        application: Application,
         analyticsTracker: FakeAnalyticsTracker,
         newsListener: NewsListener
-    ): MainActivityBindings =
-        MainActivityBindings(
-            view = view,
-            feature1 = feature1,
-            feature2 = feature2,
+    ): MainActivityBindings {
+        val userPartsEntryPoint = UserComponentEntryPoint.get(application)
+
+        return MainActivityBindings(
+            feature1 = userPartsEntryPoint.feature1(),
+            feature2 = userPartsEntryPoint.feature2(),
             analyticsTracker = analyticsTracker,
             newsListener = newsListener
         )
+    }
 
     @Provides
-    @ActivityScope
-    fun analyticsTracker(context: Context) =
-        FakeAnalyticsTracker(context)
+    @ActivityScoped
+    fun analyticsTracker(application: Application) =
+        FakeAnalyticsTracker(application)
 
     @Provides
-    @ActivityScope
-    fun newsListener(context: Context) =
-        NewsListener(context)
+    @ActivityScoped
+    fun newsListener(application: Application) =
+        NewsListener(application)
 }

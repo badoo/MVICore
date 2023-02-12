@@ -10,6 +10,7 @@ plugins {
 group = "com.github.badoo.mvicore"
 
 android {
+    namespace = "com.badoo.mvicore.debugdrawer"
     compileSdk = 33
     defaultConfig {
         minSdk = 19

@@ -6,6 +6,7 @@ plugins {
 }
 
 android {
+    namespace = "com.badoo.feature1"
     compileSdk = 33
 
     defaultConfig {

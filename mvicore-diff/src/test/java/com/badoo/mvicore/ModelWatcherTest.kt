@@ -103,7 +103,7 @@ class ModelWatcherTest {
     }
 
     @Test
-    fun `invokes callback with combined diffStrategy using "or"`() {
+    fun `invokes callback with combined diffStrategy using 'or'`() {
         val results = testWatcher<Model, Model>(
             listOf(
                 Model(list = listOf(""), int = 1),
@@ -120,7 +120,7 @@ class ModelWatcherTest {
     }
 
     @Test
-    fun `invokes callback with combined diffStrategy using "and"`() {
+    fun `invokes callback with combined diffStrategy using 'and'`() {
         val results = testWatcher<Model, Model>(
             listOf(
                 Model(list = listOf(""), int = 1),

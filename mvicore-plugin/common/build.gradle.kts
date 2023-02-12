@@ -12,6 +12,7 @@ java {
 base.archivesBaseName = "mvicore-plugin-common"
 
 dependencies {
-    implementation(libs.gson)
+    api(libs.gson)
+
     implementation(libs.kotlin.stdlib)
 }

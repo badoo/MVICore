@@ -36,21 +36,21 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.lifecycle.java8)
-    implementation(libs.kotlin.stdlib)
+    api(project(":mvicore"))
+    api(project(":binder"))
+    api(libs.androidx.lifecycle.common)
+    api(libs.rxjava2)
 
-    implementation(libs.rxjava2)
-    implementation(libs.rxkotlin)
+    implementation(libs.kotlin.stdlib)
     implementation(libs.rxandroid)
 
-    testImplementation(libs.junit5)
-    testImplementation(libs.junit.params)
-    testImplementation(libs.junit.platform.launcher)
+    testRuntimeOnly(libs.junit5.engine)
+    testImplementation(libs.junit5.api)
+    testImplementation(libs.junit5.params)
+    testImplementation(libs.androidx.arch.core.runtime)
+    testImplementation(libs.androidx.lifecycle.runtime)
 
-    androidTestImplementation(libs.junit)
+    androidTestImplementation(libs.junit4)
     androidTestImplementation(libs.androidx.test.runner)
-    androidTestImplementation(libs.androidx.test.rules)
-
-    implementation(project(":mvicore"))
+    androidTestImplementation(libs.hamcrest.core)
 }

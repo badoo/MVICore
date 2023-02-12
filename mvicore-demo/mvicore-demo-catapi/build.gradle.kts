@@ -27,13 +27,10 @@ android {
 }
 
 dependencies {
+    api(libs.rxjava2)
+    api(libs.retrofit.runtime)
+
     implementation(libs.kotlin.stdlib)
-    implementation(libs.androidx.appcompat)
-
-    implementation(libs.rxjava2)
-    implementation(libs.rxandroid)
-
-    implementation(libs.retrofit.runtime)
     implementation(libs.retrofit.adapter.rxjava2)
     implementation(libs.retrofit.converter.simplexml)
 

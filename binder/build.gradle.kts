@@ -16,12 +16,11 @@ tasks.withType<Test> {
 }
 
 dependencies {
-    implementation(libs.rxjava2)
+    api(libs.rxjava2)
     implementation(libs.rxkotlin)
     implementation(libs.kotlin.stdlib)
 
-    testImplementation(libs.junit5)
-    testImplementation(libs.junit.params)
-    testImplementation(libs.junit.platform.launcher)
+    testRuntimeOnly(libs.junit5.engine)
+    testImplementation(libs.junit5.api)
     testImplementation(libs.mockito.kotlin)
 }

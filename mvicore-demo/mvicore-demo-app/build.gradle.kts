@@ -41,6 +41,7 @@ dependencies {
     implementation(project(":mvicore-demo:mvicore-demo-feature1"))
     implementation(project(":mvicore-demo:mvicore-demo-feature2"))
     implementation(project(":mvicore-plugin:middleware"))
+    implementation(project(":binder"))
 
     // Kotlin
     implementation(libs.kotlin.stdlib)
@@ -56,18 +57,12 @@ dependencies {
 
     // DI
     implementation(libs.dagger.runtime)
-    implementation(libs.dagger.android.runtime)
-    implementation(libs.dagger.android.support)
     kapt(libs.dagger.compiler)
-    kapt(libs.dagger.android.processor)
 
     // DebugDrawer
     debugImplementation(libs.debugdrawer.impl)
-    debugImplementation(libs.debugdrawer.view.impl)
     releaseImplementation(libs.debugdrawer.noop)
-    releaseImplementation(libs.debugdrawer.view.noop)
     implementation(libs.debugdrawer.commons)
-    implementation(libs.debugdrawer.actions)
     implementation(libs.debugdrawer.scalpel)
     implementation(libs.debugdrawer.base)
     implementation(libs.debugdrawer.timber)
@@ -76,7 +71,6 @@ dependencies {
     // Utils
     implementation(libs.timber)
     implementation(libs.scalpel)
-    implementation(libs.okhttp)
     implementation(libs.glide.runtime)
     kapt(libs.glide.compiler)
 }

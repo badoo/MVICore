@@ -18,7 +18,6 @@ tasks.withType<Test> {
 dependencies {
     implementation(libs.kotlin.stdlib)
 
-    testImplementation(libs.junit5)
-    testImplementation(libs.junit.params)
-    testImplementation(libs.junit.platform.launcher)
+    testRuntimeOnly(libs.junit5.engine)
+    testImplementation(libs.junit5.api)
 }

@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("kotlin-kapt")
+    id("dagger.hilt.android.plugin")
     id("mvi-core-lint")
     id("mvi-core-detekt")
 }
@@ -58,7 +59,9 @@ dependencies {
 
     // DI
     implementation(libs.dagger.runtime)
+    implementation(libs.hilt.runtime)
     kapt(libs.dagger.compiler)
+    kapt(libs.hilt.compiler)
 
     // DebugDrawer
     debugImplementation(libs.debugdrawer.impl)

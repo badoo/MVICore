@@ -1,7 +1,6 @@
 package com.badoo.mvicoredemo.ui.main.event
 
 import com.badoo.feature1.Feature1
-import com.badoo.feature1.Feature1.Wish.*
 import com.badoo.mvicoredemo.ui.main.event.UiEvent.ButtonClicked
 import com.badoo.mvicoredemo.ui.main.event.UiEvent.ImageClicked
 import com.badoo.mvicoredemo.ui.main.event.UiEvent.PlusClicked

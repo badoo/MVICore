@@ -14,10 +14,11 @@ java {
 base.archivesBaseName = "mvicore-plugin-middleware"
 
 dependencies {
-    implementation(libs.rxjava2)
-    implementation(libs.rxkotlin)
-    implementation(libs.gson)
-    implementation(project(":mvicore"))
-    implementation(project(":mvicore-plugin:common"))
+    api(project(":binder"))
+    api(project(":mvicore-plugin:common"))
+    api(libs.rxjava2)
+    api(libs.gson)
+
     implementation(libs.kotlin.stdlib)
+    implementation(libs.rxkotlin)
 }

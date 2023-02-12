@@ -27,11 +27,7 @@ android {
 }
 
 dependencies {
+    api(project(":mvicore"))
+
     implementation(libs.kotlin.stdlib)
-    implementation(libs.androidx.appcompat)
-
-    implementation(libs.rxjava2)
-    implementation(libs.rxandroid)
-
-    implementation(project(":mvicore"))
 }

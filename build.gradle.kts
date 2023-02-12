@@ -16,6 +16,32 @@ buildscript {
 
 plugins {
     id("mvi-core-collect-sarif")
+    id("com.autonomousapps.dependency-analysis") version libs.versions.dependencyAnalysis.get()
+}
+
+dependencyAnalysis {
+    issues {
+        all {
+            onIncorrectConfiguration {
+                severity("fail")
+            }
+            onUnusedDependencies {
+                severity("fail")
+            }
+        }
+        project(":mvicore-demo:mvicore-demo-app") {
+            onUnusedDependencies {
+                severity("fail")
+                exclude("com.jakewharton.scalpel:scalpel") // Accessed using reflection
+            }
+        }
+        project(":mvicore-android") {
+            onUnusedDependencies {
+                severity("fail")
+                exclude("androidx.test:runner") // Accessed using reflection
+            }
+        }
+    }
 }
 
 tasks.register("clean", Delete::class) {

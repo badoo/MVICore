@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
-          java-version: '11'
+          java-version: '17'
       - uses: gradle/wrapper-validation-action@v1
       - name: "Build project & run tests"
         uses: gradle/gradle-build-action@v2
@@ -60,7 +60,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
-          java-version: '11'
+          java-version: '17'
       - uses: gradle/wrapper-validation-action@v1
       - uses: gradle/gradle-build-action@v2
       - name: Pre build sources before launching emulator

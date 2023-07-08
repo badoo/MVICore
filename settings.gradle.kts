@@ -13,8 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-enableFeaturePreview("VERSION_CATALOGS")
-
 include(
     ":binder",
     ":mvicore",

@@ -17,7 +17,7 @@ buildscript {
 plugins {
     id("mvi-core-collect-sarif")
     id("com.autonomousapps.dependency-analysis") version libs.versions.dependencyAnalysis.get()
-    id("com.google.dagger.hilt.android") version("2.45") apply false
+    id("com.google.dagger.hilt.android") version(libs.versions.daggerVersion.get()) apply false
 }
 
 dependencyAnalysis {
@@ -34,6 +34,10 @@ dependencyAnalysis {
             onUnusedDependencies {
                 severity("fail")
                 exclude("com.jakewharton.scalpel:scalpel") // Accessed using reflection
+
+                // AGP 8.0.2 seems to insist that an app module has these even if there are not tests
+                exclude("junit:junit")
+                exclude("androidx.test:runner")
             }
         }
         project(":mvicore-android") {

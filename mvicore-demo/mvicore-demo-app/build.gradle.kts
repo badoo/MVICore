@@ -77,4 +77,7 @@ dependencies {
     implementation(libs.scalpel)
     implementation(libs.glide.runtime)
     kapt(libs.glide.compiler)
+
+    androidTestImplementation(libs.junit4)
+    androidTestImplementation(libs.androidx.test.runner)
 }

@@ -2,6 +2,9 @@
 
 ### Pending changes
 
+([#193](https://github.com/badoo/MVICore/pull/193)):
+Updated Kotlin to 1.8.10
+
 ### 1.4.0
 
 #### Additions

@@ -1,10 +1,10 @@
 [versions]
-kotlinVersion = "1.7.10"
+kotlinVersion = "1.8.10"
 detekt = "1.22.0"
 dependencyAnalysis = "1.19.0"
 
 # Android
-androidLifecycleVersion = "2.5.1"
+androidLifecycleVersion = "2.6.1"
 androidAppCompatVersion = "1.4.1"
 androidMaterialVersion = "1.4.0"
 constraintLayoutVersion = "2.1.0"
@@ -15,7 +15,7 @@ rxKotlinVersion = "2.4.0"
 rxAndroidVersion = "2.1.1"
 
 # DI
-daggerVersion = "2.45"
+daggerVersion = "2.46.1"
 
 # Utils
 debugDrawerVersion = "0.9.0"

@@ -13,5 +13,6 @@ class TestLifecycleOwner : LifecycleOwner {
             registry.currentState = value
         }
 
-    override fun getLifecycle(): Lifecycle = registry
+    override val lifecycle: Lifecycle
+        get() = registry
 }

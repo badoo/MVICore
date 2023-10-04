@@ -6,39 +6,66 @@ import io.reactivex.ObservableSource
 import io.reactivex.functions.Consumer
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
-import kotlin.test.assertEquals
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class BinderMissingPreBindEventsTest {
 
     @Test
-    fun `consumer consumes the events produced before the binding`() {
+    fun `GIVEN the producer stores the latest state WHEN consumer reacts to the latest event produced before the binding THEN should receives the corresponding update`() {
         val lifecycle: ManualLifecycle = Lifecycle.manual()
-        val scoreConsumer = ScoreConsumer()
-        val testObserver = scoreConsumer.state.test()
-        val scoreState = ScoreState()
-        val binder = Binder(lifecycle)
-        binder.bind(scoreState to scoreConsumer using { state -> ScoreConsumer.State(state) })
-        binder.bind(scoreConsumer to scoreState using { event ->
-            when (event) {
-                ScoreConsumer.Event.Start -> ScoreState.Message.Start
+        val consumerEvents = PublishSubject.create<ScoreConsumer.Event>()
+        val scoreConsumer = ScoreConsumer(consumerEvents, onStateUpdate = {
+            if (it.points == 0) {
+                consumerEvents.onNext(ScoreConsumer.Event.Score)
             }
         })
+        val testObserver = scoreConsumer.inbox.test()
+        val scoreState = ScoreState()
+        val binder = Binder(lifecycle)
+        bind(binder, scoreState, scoreConsumer)
 
         lifecycle.begin()
 
         testObserver.onComplete()
-        testObserver.assertValueCount(2)
-        assertEquals(PENDING, testObserver.values()[0].points)
-        assertEquals(INITIAL, testObserver.values()[1].points)
+        testObserver.assertValues(
+            ScoreConsumer.State(0),
+            ScoreConsumer.State(1),
+        )
+    }
+
+    @Test
+    fun `GIVEN the producer stores the latest state WHEN consumer reacts to the latest event produced before the binding THEN an additional consumer should consume the corresponding event`() {
+        val lifecycle: ManualLifecycle = Lifecycle.manual()
+        val consumerEvents = AccumulatorSubject.create<ScoreConsumer.Event>()
+        val scoreConsumer = ScoreConsumer(consumerEvents, onStateUpdate = {
+            if (it.points == 0) {
+                consumerEvents.accept(ScoreConsumer.Event.Score)
+            }
+        })
+        val scoreState = ScoreState()
+        val eventConsumerInbox = PublishSubject.create<ScoreConsumer.Event>()
+        val eventConsumer = Consumer<ScoreConsumer.Event> { eventConsumerInbox.onNext(it) }
+        val testObserver = eventConsumerInbox.test()
+        val binder = Binder(lifecycle)
+        bind(binder, scoreState, scoreConsumer)
+        binder.bind(scoreConsumer to eventConsumer)
+
+        lifecycle.begin()
+
+        testObserver.onComplete()
+        testObserver.assertValues(ScoreConsumer.Event.Score)
     }
 
     private class ScoreState(
-        private val events: BehaviorSubject<Int> = BehaviorSubject.create<Int>()
-    ) : ObservableSource<Int> by events, Consumer<ScoreState.Message> {
+        private val events: BehaviorSubject<State> = BehaviorSubject.createDefault(State.Idle)
+    ) : ObservableSource<ScoreState.State> by events, Consumer<ScoreState.Message> {
 
-        var score = PENDING
-            private set
+        sealed interface State {
+            object Idle : State
+            data class InProgress(val score: Int) : State
+        }
+
+        private var state: State? = events.value
 
         init {
             accept(Message.Prepare)
@@ -46,40 +73,57 @@ class BinderMissingPreBindEventsTest {
 
         sealed class Message {
             object Prepare : Message()
-            object Start : Message()
+            object Score : Message()
         }
 
-        override fun accept(message: Message) = when (message) {
-            Message.Prepare -> events.onNext(score)
-            Message.Start -> {
-                score = INITIAL
-                events.onNext(score)
+        override fun accept(message: Message) {
+            state = when (message) {
+                Message.Prepare -> State.InProgress(0)
+                Message.Score -> when (state) {
+                    is State.InProgress -> (state as State.InProgress).copy(score = (state as State.InProgress).score.inc())
+                    else -> error("Not valid state")
+                }
             }
+            state?.also { events.onNext(it) }
         }
     }
 
     private class ScoreConsumer(
-        private val events: PublishSubject<Event> = PublishSubject.create()
-    ) : ObservableSource<ScoreConsumer.Event> by events, Consumer<ScoreConsumer.State> {
+        private val events: ObservableSource<Event>,
+        private val onStateUpdate: ((state: State) -> Unit)?
+    ) : ObservableSource<ScoreConsumer.Event> by events,
+        Consumer<ScoreConsumer.State> {
 
-        val state = PublishSubject.create<State>()
+        data class State(val points: Int?)
+
+        sealed interface Event {
+            object Score : Event
+        }
+
+        val inbox = PublishSubject.create<State>()
 
         override fun accept(state: State) {
-            this.state.onNext(state)
-            if (state.points == PENDING) {
-                events.onNext(Event.Start)
-            }
+            inbox.onNext(state)
+            onStateUpdate?.invoke(state)
         }
-
-        sealed class Event {
-            object Start : Event()
-        }
-
-        data class State(val points: Int)
     }
 
-    private companion object {
-        const val PENDING = -1
-        const val INITIAL = 0
+    private fun bind(
+        binder: Binder,
+        scoreState: ScoreState,
+        scoreConsumer: ScoreConsumer,
+    ) {
+        (scoreState to scoreConsumer using { state ->
+            when (state) {
+                is ScoreState.State.Idle -> ScoreConsumer.State(null)
+                is ScoreState.State.InProgress -> ScoreConsumer.State(state.score)
+            }
+        })
+
+        binder.bind(scoreConsumer to scoreState using { event ->
+            when (event) {
+                is ScoreConsumer.Event.Score -> ScoreState.Message.Score
+            }
+        })
     }
 }

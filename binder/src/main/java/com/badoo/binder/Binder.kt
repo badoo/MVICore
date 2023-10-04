@@ -13,11 +13,11 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
 import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.subjects.UnicastSubject
 
 class Binder(
     private val lifecycle: Lifecycle? = null,
 ) : Disposable {
+    private var drained: Boolean = false
     private val bindings = mutableListOf<Binding>()
     private val disposables = CompositeDisposable()
     private val connectionDisposables = CompositeDisposable()
@@ -54,9 +54,12 @@ class Binder(
             lifecycle != null -> {
                 with(Binding(connection, middleware)) {
                     bindings.add(this)
+                    if (drained) {
+                        this.drain()
+                    }
+                    accumulate()
                     if (isActive) {
-                        accumulate()
-                        subscribeWithLifecycle<Out, In>(this)
+                        subscribeWithLifecycle<In>(this)
                     }
                 }
             }
@@ -64,14 +67,12 @@ class Binder(
         }
     }
 
-    private fun <Out, In> subscribeWithLifecycle(binding: Binding) {
-        (binding.source as? UnicastSubject<Out>)?.let { source ->
-            connectionDisposables += wrap(source)
-                .subscribeWithMiddleware(
-                    binding.connection as Connection<Out, In>,
-                    binding.middleware as? Middleware<Out, In>
-                )
-        }
+    private fun <In> subscribeWithLifecycle(binding: Binding) {
+        connectionDisposables += wrap(binding.source)
+            .subscribeWithMiddleware(
+                binding.connection as Connection<Any?, In>,
+                binding.middleware as? Middleware<Any?, In>,
+            )
     }
 
     private fun <Out, In> subscribe(
@@ -127,7 +128,7 @@ class Binder(
     private fun bindConnections() {
         isActive = true
         bindings.forEach { it.accumulate() }
-        bindings.forEach { subscribeWithLifecycle<Any, Any>(it) }
+        bindings.forEach { subscribeWithLifecycle<Any>(it) }
     }
 
     private fun unbindConnections() {
@@ -161,6 +162,13 @@ class Binder(
         } else {
             this
         }
+
+    fun drain() {
+        if (!drained) {
+            bindings.forEach { it.drain() }
+            drained = true
+        }
+    }
 
     class BinderObserveOnScope(
         private val binder: Binder,

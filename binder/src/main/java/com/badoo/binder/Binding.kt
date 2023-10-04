@@ -1,6 +1,7 @@
 package com.badoo.binder
 
 import com.badoo.binder.middleware.base.Middleware
+import io.reactivex.ObservableSource
 import io.reactivex.subjects.UnicastSubject
 
 internal class Binding(
@@ -8,7 +9,7 @@ internal class Binding(
     val middleware: Middleware<*, *>?
 ) {
 
-    var source: UnicastSubject<*>? = null
+    var source: ObservableSource<*>? = null
         private set
 
     fun accumulate() {
@@ -16,5 +17,9 @@ internal class Binding(
             UnicastSubject.create<Any>()
                 .also { observer -> source.subscribe(observer) }
         }
+    }
+
+    fun drain() {
+        (connection.from as? Drainable)?.drain()
     }
 }

@@ -59,36 +59,36 @@ class TestHelper {
     }
 
     sealed class TestWish {
-        object Unfulfillable : TestWish()
-        object MaybeFulfillable : TestWish()
-        object FulfillableInstantly1 : TestWish()
-        object FulfillableInstantly2 : TestWish()
+        data object Unfulfillable : TestWish()
+        data object MaybeFulfillable : TestWish()
+        data object FulfillableInstantly1 : TestWish()
+        data object FulfillableInstantly2 : TestWish()
         data class FulfillableAsync(val delayMs: Long) : TestWish()
-        object TranslatesTo3Effects : TestWish()
-        object LoopbackWishInitial : TestWish()
-        object LoopbackWish1 : TestWish()
-        object LoopbackWish2 : TestWish()
-        object LoopbackWish3 : TestWish()
+        data object TranslatesTo3Effects : TestWish()
+        data object LoopbackWishInitial : TestWish()
+        data object LoopbackWish1 : TestWish()
+        data object LoopbackWish2 : TestWish()
+        data object LoopbackWish3 : TestWish()
         data class IncreasCounterBy(val value: Int) : TestWish()
     }
 
     sealed class TestEffect {
-        object StartedAsync : TestEffect()
+        data object StartedAsync : TestEffect()
         data class InstantEffect(val amount: Int) : TestEffect()
         data class FinishedAsync(val amount: Int) : TestEffect()
         data class ConditionalThingHappened(val multiplier: Int) : TestEffect()
-        object MultipleEffect1 : TestEffect()
-        object MultipleEffect2 : TestEffect()
-        object MultipleEffect3 : TestEffect()
-        object LoopbackEffectInitial : TestEffect()
-        object LoopbackEffect1 : TestEffect()
-        object LoopbackEffect2 : TestEffect()
-        object LoopbackEffect3 : TestEffect()
+        data object MultipleEffect1 : TestEffect()
+        data object MultipleEffect2 : TestEffect()
+        data object MultipleEffect3 : TestEffect()
+        data object LoopbackEffectInitial : TestEffect()
+        data object LoopbackEffect1 : TestEffect()
+        data object LoopbackEffect2 : TestEffect()
+        data object LoopbackEffect3 : TestEffect()
     }
 
     sealed class TestNews {
-        object ConditionalThingHappened : TestNews()
-        object Loopback : TestNews()
+        data object ConditionalThingHappened : TestNews()
+        data object Loopback : TestNews()
     }
 
     class TestActor(

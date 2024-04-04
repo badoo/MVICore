@@ -45,11 +45,11 @@ class Feature2(
     ) : Parcelable
 
     sealed class Wish {
-        object LoadNewImage : Wish()
+        data object LoadNewImage : Wish()
     }
 
     sealed class Effect {
-        object StartedLoading : Effect()
+        data object StartedLoading : Effect()
         data class LoadedImage(val url: String) : Effect()
         data class ErrorLoading(val throwable: Throwable) : Effect()
     }

@@ -26,9 +26,9 @@ import org.mockito.kotlin.verify
 class BootstrapperTest {
 
     private sealed class Action {
-        object Action1 : Action()
-        object Action2 : Action()
-        object Action3 : Action()
+        data object Action1 : Action()
+        data object Action2 : Action()
+        data object Action3 : Action()
     }
 
     private lateinit var feature: Feature<Any, Any, Any>

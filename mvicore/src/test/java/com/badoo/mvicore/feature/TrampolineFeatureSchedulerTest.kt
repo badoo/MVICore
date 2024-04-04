@@ -40,11 +40,11 @@ class TrampolineFeatureSchedulerTest {
         featureScheduler = featureScheduler
     ) {
         sealed class Wish {
-            object Trigger : Wish()
+            data object Trigger : Wish()
         }
 
         sealed class Effect {
-            object Mutate : Effect()
+            data object Mutate : Effect()
         }
 
         data class State(val mutated: Boolean = false)

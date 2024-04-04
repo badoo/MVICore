@@ -1,7 +1,8 @@
 [versions]
-kotlinVersion = "1.8.10"
+kotlinVersion = "1.9.23"
 detekt = "1.22.0"
 dependencyAnalysis = "1.19.0"
+dokka = "1.9.20" # Dokka versions no longer match Kotlin 1:1
 
 # Android
 androidLifecycleVersion = "2.6.1"

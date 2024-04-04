@@ -17,7 +17,7 @@ class Feature1 : ReducerFeature<Wish, State, Nothing>(
     )
 
     sealed class Wish {
-        object IncreaseCounter : Wish()
+        data object IncreaseCounter : Wish()
         data class SetActiveButton(val idx: Int) : Wish()
     }
 

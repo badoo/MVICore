@@ -48,20 +48,20 @@ private class PostProcessorTestFeature(featureScheduler: FeatureScheduler?) :
     ) {
 
     sealed class Wish {
-        object InitialTrigger : Wish()
-        object PostProcessorTrigger : Wish()
+        data object InitialTrigger : Wish()
+        data object PostProcessorTrigger : Wish()
     }
 
     sealed class Effect {
-        object TriggerEffect : Effect()
-        object PostProcessorEffect : Effect()
+        data object TriggerEffect : Effect()
+        data object PostProcessorEffect : Effect()
     }
 
     object State
 
     sealed class News {
-        object TriggerNews : News()
-        object PostProcessorNews : News()
+        data object TriggerNews : News()
+        data object PostProcessorNews : News()
     }
 
     class ActorImpl : Actor<State, Wish, Effect> {

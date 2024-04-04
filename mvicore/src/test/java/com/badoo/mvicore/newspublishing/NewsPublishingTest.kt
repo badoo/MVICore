@@ -34,15 +34,15 @@ import org.mockito.kotlin.whenever
 
 
 sealed class TestWish {
-    object Wish1 : TestWish()
-    object Wish2 : TestWish()
-    object Wish3 : TestWish()
+    data object Wish1 : TestWish()
+    data object Wish2 : TestWish()
+    data object Wish3 : TestWish()
 }
 
 sealed class TestNews {
-    object News1 : TestNews()
-    object News2 : TestNews()
-    object News3 : TestNews()
+    data object News1 : TestNews()
+    data object News2 : TestNews()
+    data object News3 : TestNews()
 }
 
 class Parameter(val middlewareConfiguration: MiddlewareConfiguration?) {

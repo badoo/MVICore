@@ -9,11 +9,10 @@ plugins {
 
 android {
     namespace = "com.badoo.mvicoredemo"
-    compileSdk = 33
+    compileSdk = 34
     defaultConfig {
         applicationId = "com.badoo.mvicoredemo"
         minSdk = 21
-        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 

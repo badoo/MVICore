@@ -11,11 +11,10 @@ group = "com.github.badoo.mvicore"
 
 android {
     namespace = "com.badoo.mvicore.android"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         minSdk = 15
-        targetSdk = 33
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

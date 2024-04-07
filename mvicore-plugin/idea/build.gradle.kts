@@ -1,7 +1,7 @@
 plugins {
     id("java")
     id("kotlin")
-    id("org.jetbrains.intellij") version "1.15.0"
+    id("org.jetbrains.intellij") version "1.17.3"
     id("idea")
     id("mvi-core-detekt")
 }

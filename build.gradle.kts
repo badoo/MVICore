@@ -37,16 +37,6 @@ dependencyAnalysis {
             onUnusedDependencies {
                 severity("fail")
                 exclude("com.jakewharton.scalpel:scalpel") // Accessed using reflection
-
-                // AGP 8.0.2 seems to insist that an app module has these even if there are not tests
-                exclude("junit:junit")
-                exclude("androidx.test:runner")
-            }
-        }
-        project(":mvicore-android") {
-            onUnusedDependencies {
-                severity("fail")
-                exclude("androidx.test:runner") // Accessed using reflection
             }
         }
     }

@@ -4,7 +4,7 @@ import com.badoo.binder.named
 import com.badoo.binder.using
 import com.badoo.feature1.Feature1
 import com.badoo.feature2.Feature2
-import com.badoo.mvicore.android.lifecycle.createDestroy
+import com.badoo.mvicore.android.lifecycle.BinderController
 import com.badoo.mvicoredemo.ui.main.analytics.FakeAnalyticsTracker
 import com.badoo.mvicoredemo.ui.main.event.UiEventTransformer1
 import com.badoo.mvicoredemo.ui.main.event.UiEventTransformer2
@@ -18,8 +18,10 @@ class MainActivityBindings(
     private val analyticsTracker: FakeAnalyticsTracker,
     private val newsListener: NewsListener
 ) {
+
     fun setup(view: MainActivity) {
-        view.lifecycle.createDestroy {
+        val binderController = BinderController()
+        binderController.createDestroy(view.lifecycle) {
             bind(
                 combineLatest(
                     feature1,
@@ -31,5 +33,6 @@ class MainActivityBindings(
             bind(view to analyticsTracker named "MainActivity.Analytics")
             bind(feature2.news to newsListener named "MainActivity.News")
         }
+        binderController.drain()
     }
 }

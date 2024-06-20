@@ -11,11 +11,29 @@ import io.reactivex.android.schedulers.AndroidSchedulers
  *
  * It also uses the 'isOnFeatureThread' field to avoid observing on the main thread if it is already
  * the current thread.
+ *
+ * To help facilitate testing, you can override the scheduler using
+ * [MviCoreAndroidPlugins.setMainThreadFeatureScheduler]
  */
-object AndroidMainThreadFeatureScheduler: FeatureScheduler {
+object AndroidMainThreadFeatureScheduler : FeatureScheduler {
+    private val featureSchedulerDelegate: FeatureScheduler
+        get() = MviCoreAndroidPlugins.mainThreadFeatureScheduler
+
     override val scheduler: Scheduler
-        get() = AndroidSchedulers.mainThread()
+        get() = featureSchedulerDelegate.scheduler
 
     override val isOnFeatureThread: Boolean
-        get() = Looper.myLooper() == Looper.getMainLooper()
+        get() = featureSchedulerDelegate.isOnFeatureThread
+
+    /**
+     * The default implementation of the [AndroidMainThreadFeatureScheduler] which delegates to the
+     * RxAndroid main thread scheduler
+     */
+    object Default : FeatureScheduler {
+        override val scheduler: Scheduler
+            get() = AndroidSchedulers.mainThread()
+
+        override val isOnFeatureThread: Boolean
+            get() = Looper.myLooper() == Looper.getMainLooper()
+    }
 }

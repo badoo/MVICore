@@ -8,6 +8,9 @@ Updated Kotlin to 1.9.23
 ([#193](https://github.com/badoo/MVICore/pull/193)):
 Updated Kotlin to 1.8.10
 
+([#194](https://github.com/badoo/MVICore/pull/194)):
+Introduced the ability to override `AndroidMainThreadFeatureScheduler` via `MviCoreAndroidPlugins` (similar to `RxAndroidPlugins` within RxAndroid).
+
 ### 1.4.0
 
 #### Additions

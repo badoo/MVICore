@@ -9,17 +9,17 @@ import com.badoo.mvicore.element.Reducer
 import com.badoo.mvicore.element.WishToAction
 import com.badoo.mvicore.extension.SameThreadVerifier
 import com.badoo.mvicore.extension.asConsumer
-import io.reactivex.Observable
-import io.reactivex.ObservableSource
-import io.reactivex.Observer
-import io.reactivex.Scheduler
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Consumer
-import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.subjects.BehaviorSubject
-import io.reactivex.subjects.PublishSubject
-import io.reactivex.subjects.Subject
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.ObservableSource
+import io.reactivex.rxjava3.core.Observer
+import io.reactivex.rxjava3.core.Scheduler
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.functions.Consumer
+import io.reactivex.rxjava3.kotlin.plusAssign
+import io.reactivex.rxjava3.subjects.BehaviorSubject
+import io.reactivex.rxjava3.subjects.PublishSubject
+import io.reactivex.rxjava3.subjects.Subject
 import java.util.concurrent.atomic.AtomicReference
 
 open class BaseAsyncFeature<Wish : Any, in Action : Any, in Effect : Any, State : Any, News : Any>(
@@ -151,7 +151,7 @@ open class BaseAsyncFeature<Wish : Any, in Action : Any, in Effect : Any, State 
         private val actor: Actor<State, Action, Effect>,
         private val stateSubject: Subject<State>,
         private val reducerWrapper: Consumer<Triple<State, Action, Effect>>,
-        private val featureScheduler: Scheduler?,
+        private val featureScheduler: Scheduler,
         private val threadVerifier: Lazy<SameThreadVerifier>
     ) : Consumer<Pair<State, Action>> {
 

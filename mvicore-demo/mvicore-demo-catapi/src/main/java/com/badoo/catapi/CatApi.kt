@@ -1,11 +1,11 @@
 package com.badoo.catapi
 
-import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.schedulers.Schedulers
 import org.simpleframework.xml.convert.AnnotationStrategy
 import org.simpleframework.xml.core.Persister
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -25,7 +25,7 @@ interface CatApi {
         private var retrofit = Retrofit.Builder()
             .baseUrl("https://thecatapi.com/api/")
             .addCallAdapterFactory(
-                RxJava2CallAdapterFactory.createWithScheduler(
+                RxJava3CallAdapterFactory.createWithScheduler(
                     Schedulers.io()
                 )
             )

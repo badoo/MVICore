@@ -26,10 +26,10 @@ import com.badoo.mvicore.element.Actor
 import com.badoo.mvicore.element.Bootstrapper
 import com.badoo.mvicore.element.NewsPublisher
 import com.badoo.mvicore.element.Reducer
-import io.reactivex.Observable
-import io.reactivex.Observable.empty
-import io.reactivex.Observable.just
-import io.reactivex.Scheduler
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Observable.empty
+import io.reactivex.rxjava3.core.Observable.just
+import io.reactivex.rxjava3.core.Scheduler
 import java.util.concurrent.TimeUnit
 
 class TestHelper {
@@ -130,7 +130,7 @@ class TestHelper {
             just(delayedFulfillAmount)
                 .delay(wish.delayMs, TimeUnit.MILLISECONDS, asyncWorkScheduler)
                 .map<TestEffect> { FinishedAsync(it) }
-                .startWith(StartedAsync)
+                .startWith(just(StartedAsync))
 
         private fun emit3effects(): Observable<TestEffect> =
             just(

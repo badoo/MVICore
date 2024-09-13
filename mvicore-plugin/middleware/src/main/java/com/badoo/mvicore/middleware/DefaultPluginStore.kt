@@ -9,13 +9,13 @@ import com.badoo.mvicore.middleware.socket.PluginSocketThread
 import com.badoo.mvicore.plugin.model.ConnectionData
 import com.badoo.mvicore.plugin.model.Event
 import com.google.gson.GsonBuilder
-import io.reactivex.Observable
-import io.reactivex.Single
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
-import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.PublishSubject
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.kotlin.plusAssign
+import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.subjects.PublishSubject
 import java.lang.ref.ReferenceQueue
 import java.util.concurrent.ConcurrentLinkedDeque
 import java.util.concurrent.CopyOnWriteArrayList
@@ -97,11 +97,11 @@ class DefaultPluginStore(
         ))
     }
 
-    private fun <T> runInBackground(element: T, block: (T) -> Unit) {
+    private fun <T : Any> runInBackground(element: T, block: (T) -> Unit) {
         disposables += Single.just(element)
             .observeOn(Schedulers.computation())
-            .subscribe(block, {
+            .subscribe(block) {
                 // TODO: log?
-            })
+            }
     }
 }

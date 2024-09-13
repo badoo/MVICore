@@ -2,9 +2,9 @@ package com.badoo.binder
 
 import com.badoo.binder.lifecycle.Lifecycle
 import com.badoo.binder.lifecycle.ManualLifecycle
-import io.reactivex.ObservableSource
-import io.reactivex.functions.Consumer
-import io.reactivex.subjects.PublishSubject
+import io.reactivex.rxjava3.core.ObservableSource
+import io.reactivex.rxjava3.functions.Consumer
+import io.reactivex.rxjava3.subjects.PublishSubject
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock

@@ -6,8 +6,8 @@ import com.badoo.mvicore.plugin.utils.stopForwarding
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import com.intellij.openapi.project.Project
-import io.reactivex.Observable
-import io.reactivex.ObservableSource
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.ObservableSource
 import java.net.InetAddress
 import java.net.ServerSocket
 import java.net.SocketException

@@ -9,7 +9,7 @@ class ModelWatcherTest {
 
     @Test
     fun `invokes callback when field changes`() {
-        val results = testWatcher<Int, Model>(
+        val results = testWatcher(
             listOf(
                 Model(int = 0),
                 Model(int = 1)
@@ -25,7 +25,7 @@ class ModelWatcherTest {
 
     @Test
     fun `does not invoke callback when field does not change`() {
-        val results = testWatcher<Int, Model>(
+        val results = testWatcher(
             listOf(
                 Model(int = 0),
                 Model(int = 0)
@@ -41,7 +41,7 @@ class ModelWatcherTest {
 
     @Test
     fun `emits nullable fields on start`() {
-        val results = testWatcher<Boolean?, Model>(
+        val results = testWatcher(
             listOf(
                 Model(nullable = null)
             )
@@ -72,7 +72,7 @@ class ModelWatcherTest {
 
     @Test
     fun `invokes callback using dsl`() {
-        val results = testWatcher<Int, Model>(
+        val results = testWatcher(
             listOf(
                 Model(int = 0), Model(int = 1)
             )
@@ -104,7 +104,7 @@ class ModelWatcherTest {
 
     @Test
     fun `invokes callback with combined diffStrategy using 'or'`() {
-        val results = testWatcher<Model, Model>(
+        val results = testWatcher(
             listOf(
                 Model(list = listOf(""), int = 1),
                 Model(list = listOf(""), int = 1, nullable = false),
@@ -121,7 +121,7 @@ class ModelWatcherTest {
 
     @Test
     fun `invokes callback with combined diffStrategy using 'and'`() {
-        val results = testWatcher<Model, Model>(
+        val results = testWatcher(
             listOf(
                 Model(list = listOf(""), int = 1),
                 Model(int = 1),
@@ -139,7 +139,7 @@ class ModelWatcherTest {
     @Test
     fun `invokes callback after clear`() {
         val results = mutableListOf<List<String>>()
-        val watcher = modelWatcher<Model> {
+        val watcher = modelWatcher {
             Model::list {
                 results += it
             }

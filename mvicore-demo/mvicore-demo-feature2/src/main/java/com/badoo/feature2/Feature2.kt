@@ -18,8 +18,8 @@ import com.badoo.mvicore.element.NewsPublisher
 import com.badoo.mvicore.element.Reducer
 import com.badoo.mvicore.element.TimeCapsule
 import com.badoo.mvicore.feature.ActorReducerFeature
-import io.reactivex.Observable
-import io.reactivex.Observable.just
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Observable.just
 import kotlinx.parcelize.Parcelize
 
 class Feature2(

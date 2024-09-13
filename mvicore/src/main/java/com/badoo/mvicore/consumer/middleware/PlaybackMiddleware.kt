@@ -3,8 +3,8 @@ package com.badoo.mvicore.consumer.middleware
 import com.badoo.binder.Connection
 import com.badoo.binder.middleware.base.Middleware
 import com.badoo.mvicore.consumer.util.Logger
-import io.reactivex.Observable
-import io.reactivex.functions.Consumer
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.functions.Consumer
 
 open class PlaybackMiddleware<Out: Any, In: Any>(
     wrapped: Consumer<In>,

@@ -1,7 +1,7 @@
 package com.badoo.mvicore.utils
 
-import io.reactivex.exceptions.CompositeException
-import io.reactivex.plugins.RxJavaPlugins
+import io.reactivex.rxjava3.exceptions.CompositeException
+import io.reactivex.rxjava3.plugins.RxJavaPlugins
 import java.util.Collections
 import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.extension.AfterEachCallback

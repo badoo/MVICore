@@ -29,7 +29,7 @@ internal class QueueWatcher(
         }
     }
 
-    fun <T, R> add(ref: Connection<T, R>, data: ConnectionData) {
+    fun <T : Any, R : Any> add(ref: Connection<T, R>, data: ConnectionData) {
         references.add(
             ConnectionReference(ref, referenceQueue, data)
         )

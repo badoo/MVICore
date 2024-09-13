@@ -16,7 +16,7 @@ import com.badoo.mvicoredemo.ui.main.event.UiEvent.PlusClicked
 import com.badoo.mvicoredemo.ui.main.viewmodel.ViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import init
-import io.reactivex.functions.Consumer
+import io.reactivex.rxjava3.functions.Consumer
 import javax.inject.Inject
 
 @AndroidEntryPoint

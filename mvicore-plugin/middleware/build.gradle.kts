@@ -16,7 +16,7 @@ base.archivesBaseName = "mvicore-plugin-middleware"
 dependencies {
     api(project(":binder"))
     api(project(":mvicore-plugin:common"))
-    api(libs.rxjava2)
+    api(libs.rxjava3)
     api(libs.gson)
 
     implementation(libs.kotlin.stdlib)

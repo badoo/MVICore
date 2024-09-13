@@ -17,9 +17,9 @@ import com.badoo.mvicore.newspublishing.TestNews.News3
 import com.badoo.mvicore.newspublishing.TestWish.Wish1
 import com.badoo.mvicore.newspublishing.TestWish.Wish2
 import com.badoo.mvicore.newspublishing.TestWish.Wish3
-import io.reactivex.Observable
-import io.reactivex.functions.Consumer
-import io.reactivex.observers.TestObserver
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.functions.Consumer
+import io.reactivex.rxjava3.observers.TestObserver
 import java.util.stream.Stream
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.extension.ExtensionContext

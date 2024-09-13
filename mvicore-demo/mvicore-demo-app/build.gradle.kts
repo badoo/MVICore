@@ -58,7 +58,7 @@ dependencies {
     implementation(libs.google.material)
 
     // Rx
-    implementation(libs.rxjava2)
+    implementation(libs.rxjava3)
     implementation(libs.rxandroid)
 
     // DI

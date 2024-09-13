@@ -1,9 +1,9 @@
 package com.badoo.binder.middleware.base
 
 import com.badoo.binder.Connection
-import io.reactivex.functions.Consumer
+import io.reactivex.rxjava3.functions.Consumer
 
-abstract class Middleware<Out, In>(
+abstract class Middleware<Out : Any, In : Any>(
     protected val wrapped: Consumer<In>
 ): Consumer<In> {
 

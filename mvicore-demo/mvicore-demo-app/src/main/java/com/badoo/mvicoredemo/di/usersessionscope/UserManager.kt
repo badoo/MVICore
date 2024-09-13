@@ -4,7 +4,7 @@ import android.app.Application
 import com.badoo.mvicoredemo.di.usersessionscope.component.UserComponentEntryPoint
 import com.badoo.mvicoredemo.di.usersessionscope.component.UserSessionComponent
 import dagger.hilt.EntryPoints
-import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton

@@ -11,9 +11,9 @@ androidMaterialVersion = "1.4.0"
 constraintLayoutVersion = "2.1.0"
 
 # Rx
-rxJavaVersion = "2.2.21"
-rxKotlinVersion = "2.4.0"
-rxAndroidVersion = "2.1.1"
+rxJavaVersion = "3.1.9"
+rxKotlinVersion = "3.0.1"
+rxAndroidVersion = "3.0.2"
 
 # DI
 daggerVersion = "2.46.1"
@@ -25,7 +25,7 @@ scalpelVersion = "1.1.2"
 glideVersion = "4.13.2"
 
 # Testing
-retrofitVersion = "2.4.0"
+retrofitVersion = "2.11.0"
 gsonVersion = "2.10.1"
 
 # Testing
@@ -46,9 +46,9 @@ androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayo
 google-material = { module = "com.google.android.material:material", version.ref = "androidMaterialVersion" }
 
 # Rx
-rxjava2 = { module = "io.reactivex.rxjava2:rxjava", version.ref = "rxJavaVersion" }
-rxkotlin = { module = "io.reactivex.rxjava2:rxkotlin", version.ref = "rxKotlinVersion" }
-rxandroid = { module = "io.reactivex.rxjava2:rxandroid", version.ref = "rxAndroidVersion" }
+rxjava3 = { module = "io.reactivex.rxjava3:rxjava", version.ref = "rxJavaVersion" }
+rxkotlin = { module = "io.reactivex.rxjava3:rxkotlin", version.ref = "rxKotlinVersion" }
+rxandroid = { module = "io.reactivex.rxjava3:rxandroid", version.ref = "rxAndroidVersion" }
 
 # DI
 dagger-runtime = { module = "com.google.dagger:dagger", version.ref = "daggerVersion" }
@@ -75,7 +75,7 @@ glide-compiler = { module = "com.github.bumptech.glide:compiler", version.ref = 
 
 # Network
 retrofit-runtime = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofitVersion" }
-retrofit-adapter-rxjava2 = { module = "com.squareup.retrofit2:adapter-rxjava2", version.ref = "retrofitVersion" }
+retrofit-adapter-rxjava3 = { module = "com.squareup.retrofit2:adapter-rxjava3", version.ref = "retrofitVersion" }
 retrofit-converter-simplexml = { module = "com.squareup.retrofit2:converter-simplexml", version.ref = "retrofitVersion" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gsonVersion" }
 

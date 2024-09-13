@@ -16,7 +16,7 @@ tasks.withType<Test> {
 }
 
 dependencies {
-    api(libs.rxjava2)
+    api(libs.rxjava3)
     implementation(libs.rxkotlin)
     implementation(libs.kotlin.stdlib)
 

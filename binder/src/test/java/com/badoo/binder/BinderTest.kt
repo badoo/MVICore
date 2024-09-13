@@ -1,9 +1,9 @@
 package com.badoo.binder
 
 import com.badoo.binder.connector.Connector
-import io.reactivex.Observable
-import io.reactivex.ObservableSource
-import io.reactivex.subjects.PublishSubject
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.ObservableSource
+import io.reactivex.rxjava3.subjects.PublishSubject
 import org.junit.jupiter.api.Test
 
 class BinderTest {
@@ -36,7 +36,7 @@ class BinderTest {
 
     @Test
     fun `covariant endpoints compile for connection dsl`() {
-        val anyConsumer = TestConsumer<Any?>()
+        val anyConsumer = TestConsumer<Any>()
         binder.bind(source to anyConsumer using IntToString)
     }
 

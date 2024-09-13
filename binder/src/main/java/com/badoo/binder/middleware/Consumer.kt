@@ -4,7 +4,7 @@ import com.badoo.binder.middleware.base.Middleware
 import com.badoo.binder.middleware.base.StandaloneMiddleware
 import com.badoo.binder.middleware.config.Middlewares
 import com.badoo.binder.middleware.config.NonWrappable
-import io.reactivex.functions.Consumer
+import io.reactivex.rxjava3.functions.Consumer
 
 /**
  * Wraps a Consumer<T> with Middlewares. The list of Middlewares that will be applied is resolved
@@ -19,7 +19,7 @@ import io.reactivex.functions.Consumer
  * @param postfix       Passed on to [ConsumerMiddleware], in most cases you shouldn't need to override this.
  * @param wrapperOf     Passed on to [ConsumerMiddleware], in most cases you shouldn't need to override this.
  */
-fun <In> Consumer<In>.wrapWithMiddleware(
+fun <In : Any> Consumer<In>.wrapWithMiddleware(
     standalone: Boolean = true,
     name: String? = null,
     postfix: String? = null,

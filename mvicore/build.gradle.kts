@@ -17,7 +17,7 @@ tasks.withType<Test> {
 
 dependencies {
     api(project(":binder"))
-    api(libs.rxjava2)
+    api(libs.rxjava3)
     implementation(libs.rxkotlin)
     implementation(libs.kotlin.stdlib)
 

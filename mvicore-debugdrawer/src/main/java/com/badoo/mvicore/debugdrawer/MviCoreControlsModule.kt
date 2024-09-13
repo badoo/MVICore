@@ -17,7 +17,7 @@ import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore.Play
 import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore.RecordKey
 import io.palaima.debugdrawer.DebugDrawer
 import io.palaima.debugdrawer.base.DebugModuleAdapter
-import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class MviCoreControlsModule(
     private val recordStore: PlaybackMiddleware.RecordStore

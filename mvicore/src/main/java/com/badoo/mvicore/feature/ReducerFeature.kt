@@ -5,8 +5,8 @@ import com.badoo.mvicore.element.Actor
 import com.badoo.mvicore.element.Bootstrapper
 import com.badoo.mvicore.element.NewsPublisher
 import com.badoo.mvicore.element.Reducer
-import io.reactivex.Observable
-import io.reactivex.Observable.just
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Observable.just
 
 /**
  * An implementation of a single threaded feature.

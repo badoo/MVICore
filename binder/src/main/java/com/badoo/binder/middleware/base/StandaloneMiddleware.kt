@@ -1,9 +1,9 @@
 package com.badoo.binder.middleware.base
 
 import com.badoo.binder.Connection
-import io.reactivex.disposables.Disposable
+import io.reactivex.rxjava3.disposables.Disposable
 
-internal class StandaloneMiddleware<In>(
+internal class StandaloneMiddleware<In : Any>(
     private val wrappedMiddleware: Middleware<In, In>,
     name: String? = null,
     postfix: String? = null

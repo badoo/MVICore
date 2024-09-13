@@ -9,7 +9,6 @@ import com.badoo.mvicore.plugin.ui.EventList
 import com.badoo.mvicore.plugin.ui.JsonRootNode
 import com.badoo.mvicore.plugin.utils.mainThreadScheduler
 import com.google.gson.JsonElement
-import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
@@ -23,8 +22,8 @@ import com.intellij.ui.JBSplitter
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.treeStructure.Tree
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import java.awt.BorderLayout
 import javax.swing.JPanel
 import javax.swing.JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED
@@ -68,7 +67,7 @@ class MviPluginToolWindowFactory : ToolWindowFactory {
         eventsObservable = Observable.wrap(SocketObservable(project, 7675))
             .observeOn(mainThreadScheduler)
 
-        Disposer.register(project, Disposable { disposables.clear() })
+        Disposer.register(project) { disposables.clear() }
 
         // Left
         val sideActions = createSidePanelActions()

@@ -5,14 +5,14 @@ import com.badoo.binder.lifecycle.Lifecycle.Event.BEGIN
 import com.badoo.binder.lifecycle.Lifecycle.Event.END
 import com.badoo.binder.middleware.base.Middleware
 import com.badoo.binder.middleware.wrapWithMiddleware
-import io.reactivex.Observable
-import io.reactivex.Observable.wrap
-import io.reactivex.ObservableSource
-import io.reactivex.Scheduler
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Consumer
-import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Observable.wrap
+import io.reactivex.rxjava3.core.ObservableSource
+import io.reactivex.rxjava3.core.Scheduler
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.functions.Consumer
+import io.reactivex.rxjava3.kotlin.plusAssign
 
 class Binder(
     private val lifecycle: Lifecycle? = null,
@@ -56,27 +56,32 @@ class Binder(
                     subscribeWithLifecycle(connection, middleware)
                 }
             }
+
             else -> subscribe(connection, middleware)
         }
     }
 
-    private fun <Out, In> subscribeWithLifecycle(
+    private fun <Out : Any, In : Any> subscribeWithLifecycle(
         connection: Connection<Out, In>,
         middleware: Middleware<Out, In>?
     ) {
-        connectionDisposables += wrap(connection.from)
-            .subscribeWithMiddleware(connection, middleware)
+        connection.from?.let {
+            connectionDisposables += wrap(it)
+                .subscribeWithMiddleware(connection, middleware)
+        }
     }
 
-    private fun <Out, In> subscribe(
+    private fun <Out : Any, In : Any> subscribe(
         connection: Connection<Out, In>,
         middleware: Middleware<Out, In>?
     ) {
-        disposables += wrap(connection.from)
-            .subscribeWithMiddleware(connection, middleware)
+        connection.from?.let {
+            disposables += wrap(it)
+                .subscribeWithMiddleware(connection, middleware)
+        }
     }
 
-    private fun <Out, In> Observable<out Out>.subscribeWithMiddleware(
+    private fun <Out : Any, In : Any> Observable<out Out>.subscribeWithMiddleware(
         connection: Connection<Out, In>,
         middleware: Middleware<Out, In>?
     ): Disposable =
@@ -97,7 +102,7 @@ class Binder(
                 }
             }
 
-    private fun <Out, In> Observable<out Out>.applyTransformer(
+    private fun <Out : Any, In : Any> Observable<out Out>.applyTransformer(
         connection: Connection<Out, In>
     ): Observable<In> =
         connection.connector?.let {
@@ -153,7 +158,7 @@ class Binder(
         disposables.clear()
     }
 
-    private fun <T> Observable<T>.optionalObserveOn(scheduler: Scheduler?) =
+    private fun <T : Any> Observable<T>.optionalObserveOn(scheduler: Scheduler?) =
         if (scheduler != null) {
             observeOn(scheduler)
         } else {

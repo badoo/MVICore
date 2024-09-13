@@ -114,34 +114,33 @@ class MemoryRecordStore(
             throw IllegalStateException("Trying to playback while still recording")
         }
 
-        cachedEvents.keys
+        val firstKey = cachedEvents.keys
             .first { it.id == recordKey.id }
-            .let { key ->
-                cachedEvents[key]?.let { event ->
-                    Observable.fromIterable(event)
-                        .delay { Observable.timer(it.delayNanos, TimeUnit.NANOSECONDS) }
-                        .observeOn(playbackScheduler)
-                        .doOnNext { logger?.invoke("MemoryRecordStore: PLAYBACK: ts: ${it.delayNanos}, event: ${it.obj}") }
-                        .map { it.obj }
-                        .doOnSubscribe {
-                            state.onNext(PLAYBACK)
-                            key.middleWare.startPlayback()
-                        }
-                        .doOnTerminate {
-                            logger?.invoke("MemoryRecordStore: PLAYBACK FINISHED")
-                            state.onNext(FINISHED_PLAYBACK)
-                            state.onNext(IDLE)
-                            key.middleWare.stopPlayback()
-                        }
-                        .subscribe {
-                            key.middleWare.replay(
-                                // restore last state before playback started if needed
-                                if (it == EndSignal) lastElementBuffer[key]
-                                else it
-                            )
-                        }
+        val event = cachedEvents[firstKey]
+        if (event != null) {
+            Observable.fromIterable(event)
+                .delay { Observable.timer(it.delayNanos, TimeUnit.NANOSECONDS) }
+                .observeOn(playbackScheduler)
+                .doOnNext { logger?.invoke("MemoryRecordStore: PLAYBACK: ts: ${it.delayNanos}, event: ${it.obj}") }
+                .map { it.obj }
+                .doOnSubscribe {
+                    state.onNext(PLAYBACK)
+                    firstKey.middleWare.startPlayback()
                 }
-            }
+                .doOnTerminate {
+                    logger?.invoke("MemoryRecordStore: PLAYBACK FINISHED")
+                    state.onNext(FINISHED_PLAYBACK)
+                    state.onNext(IDLE)
+                    firstKey.middleWare.stopPlayback()
+                }
+                .subscribe {
+                    firstKey.middleWare.replay(
+                        // restore last state before playback started if needed
+                        if (it == EndSignal) lastElementBuffer[firstKey]
+                        else it
+                    )
+                }
+        }
     }
 
     private data class Key<Out : Any, In : Any>(

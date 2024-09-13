@@ -4,7 +4,7 @@
   <CurrentIssues>
     <ID>MaxLineLength:Connection.kt$infix</ID>
     <ID>MaxLineLength:ManualLifecycle.kt$ManualLifecycle$class</ID>
-    <ID>ReturnCount:Consumer.kt$fun &lt;In> Consumer&lt;In>.wrapWithMiddleware( standalone: Boolean = true, name: String? = null, postfix: String? = null, wrapperOf: Any? = null ): Consumer&lt;In></ID>
+    <ID>ReturnCount:Consumer.kt$fun &lt;In : Any> Consumer&lt;In>.wrapWithMiddleware( standalone: Boolean = true, name: String? = null, postfix: String? = null, wrapperOf: Any? = null ): Consumer&lt;In></ID>
     <ID>TooManyFunctions:Binder.kt$Binder : Disposable</ID>
     <ID>UseCheckOrError:StandaloneMiddleware.kt$StandaloneMiddleware$throw IllegalStateException("Middleware was initialised in standalone mode, can't accept other connections")</ID>
   </CurrentIssues>

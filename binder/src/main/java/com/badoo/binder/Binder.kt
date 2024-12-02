@@ -17,8 +17,9 @@ import io.reactivex.rxkotlin.plusAssign
 class Binder(
     private val lifecycle: Lifecycle? = null,
 ) : Disposable {
+    private var drained: Boolean = false
+    private val bindings = mutableListOf<Binding>()
     private val disposables = CompositeDisposable()
-    private val connections = mutableListOf<Pair<Connection<*, *>, Middleware<*, *>?>>()
     private val connectionDisposables = CompositeDisposable()
     private var isActive = false
 
@@ -51,21 +52,27 @@ class Binder(
 
         when {
             lifecycle != null -> {
-                connections += (connection to middleware)
-                if (isActive) {
-                    subscribeWithLifecycle(connection, middleware)
+                with(Binding(connection, middleware)) {
+                    bindings.add(this)
+                    if (drained) {
+                        this.drain()
+                    }
+                    accumulate()
+                    if (isActive) {
+                        subscribeWithLifecycle<In>(this)
+                    }
                 }
             }
             else -> subscribe(connection, middleware)
         }
     }
 
-    private fun <Out, In> subscribeWithLifecycle(
-        connection: Connection<Out, In>,
-        middleware: Middleware<Out, In>?
-    ) {
-        connectionDisposables += wrap(connection.from)
-            .subscribeWithMiddleware(connection, middleware)
+    private fun <In> subscribeWithLifecycle(binding: Binding) {
+        connectionDisposables += wrap(binding.source)
+            .subscribeWithMiddleware(
+                binding.connection as Connection<Any?, In>,
+                binding.middleware as? Middleware<Any?, In>,
+            )
     }
 
     private fun <Out, In> subscribe(
@@ -120,12 +127,8 @@ class Binder(
 
     private fun bindConnections() {
         isActive = true
-        connections.forEach { (connection, middleware) ->
-            subscribeWithLifecycle(
-                connection as Connection<Any, Any>,
-                middleware as? Middleware<Any, Any>
-            )
-        }
+        bindings.forEach { it.accumulate() }
+        bindings.forEach { subscribeWithLifecycle<Any>(it) }
     }
 
     private fun unbindConnections() {
@@ -159,6 +162,13 @@ class Binder(
         } else {
             this
         }
+
+    fun drain() {
+        if (!drained) {
+            bindings.forEach { it.drain() }
+            drained = true
+        }
+    }
 
     class BinderObserveOnScope(
         private val binder: Binder,

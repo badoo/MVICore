@@ -1,15 +1,15 @@
 package com.badoo.mvicoredemo.ui.common
 
+import com.badoo.binder.AccumulatorSubject
 import io.reactivex.ObservableSource
 import io.reactivex.Observer
-import io.reactivex.subjects.PublishSubject
 
 abstract class ObservableSourceActivity<T : Any> : DebugActivity(), ObservableSource<T> {
 
-    private val source = PublishSubject.create<T>()
+    private val source = AccumulatorSubject.create<T>()
 
     protected fun onNext(t: T) {
-        source.onNext(t)
+        source.accept(t)
     }
 
     override fun subscribe(observer: Observer<in T>) {

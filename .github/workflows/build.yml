@@ -71,7 +71,7 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
       - name: Pre build sources before launching emulator
-        run: ./gradlew compileDebugAndroidTestSources
+        run: ./gradlew assembleAndroidTest
       - name: Instrumentation tests
         uses: reactivecircus/android-emulator-runner@v2
         with:

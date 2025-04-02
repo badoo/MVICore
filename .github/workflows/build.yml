@@ -12,39 +12,39 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-java@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
-      - uses: gradle/wrapper-validation-action@v1
+      - uses: gradle/actions/wrapper-validation@v3
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          cache-read-only: ${{ env.MAIN_BRANCH != 'true' }}
       - name: "Build project & run tests"
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: |
-            build
-            projectHealth
-            mergeLintSarif
-            mergeDetektSarif
-            :plugins:buildPlugins
-            --continue
+        run: >
+          ./gradlew
+          build
+          projectHealth
+          mergeLintSarif
+          mergeDetektSarif
+          :plugins:buildPlugins
+          --continue
       - name: "Verify publishing"
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: publishToMavenLocal
-      - uses: github/codeql-action/upload-sarif@v2
+        run: ./gradlew publishToMavenLocal
+      - uses: github/codeql-action/upload-sarif@v3
         if: success() || failure()
         with:
           sarif_file: build/lint-merged.sarif
           category: lint
-      - uses: github/codeql-action/upload-sarif@v2
+      - uses: github/codeql-action/upload-sarif@v3
         if: success() || failure()
         with:
           sarif_file: build/detekt-merged.sarif
           category: detekt
       - name: Upload failure artifacts
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: reports
           path: |
@@ -53,20 +53,27 @@ jobs:
 
   instrumentation-tests:
     name: Instrumentation tests
-    runs-on: macos-13
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-java@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
-      - uses: gradle/wrapper-validation-action@v1
-      - uses: gradle/gradle-build-action@v2
+      - uses: gradle/actions/wrapper-validation@v3
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          cache-read-only: ${{ env.MAIN_BRANCH != 'true' }}
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
       - name: Pre build sources before launching emulator
         run: ./gradlew compileDebugAndroidTestSources
       - name: AVD cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: avd-cache
         with:
           path: |
@@ -79,7 +86,6 @@ jobs:
         with:
           # Use API 29 https://github.com/ReactiveCircus/android-emulator-runner/issues/222
           api-level: 29
-          arch: x86_64
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
@@ -89,7 +95,6 @@ jobs:
         with:
           # Use API 29 https://github.com/ReactiveCircus/android-emulator-runner/issues/222
           api-level: 29
-          arch: x86_64
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
@@ -98,7 +103,7 @@ jobs:
             ./gradlew connectedCheck
       - name: Upload failed instrumentation artifacts
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: instrumentation-failures
           path: |
@@ -109,8 +114,8 @@ jobs:
     name: Check documentation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
       - run: cp CHANGELOG.md documentation/changelog.md

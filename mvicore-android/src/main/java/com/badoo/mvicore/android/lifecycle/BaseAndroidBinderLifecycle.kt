@@ -11,14 +11,14 @@ abstract class BaseAndroidBinderLifecycle private constructor(
     androidLifecycle: AndroidLifecycle,
     observerFactory: ((BinderLifecycle.Event) -> Unit) -> DefaultLifecycleObserver,
     subject: BehaviorSubject<BinderLifecycle.Event>
-): BinderLifecycle,
+) : BinderLifecycle,
     ObservableSource<BinderLifecycle.Event> by subject,
     LifecycleObserver {
 
     constructor(
         androidLifecycle: AndroidLifecycle,
         observerFactory: ((BinderLifecycle.Event) -> Unit) -> DefaultLifecycleObserver
-    ): this(androidLifecycle, observerFactory, BehaviorSubject.create())
+    ) : this(androidLifecycle, observerFactory, BehaviorSubject.create())
 
     init {
         androidLifecycle.addObserver(observerFactory(subject::onNext))

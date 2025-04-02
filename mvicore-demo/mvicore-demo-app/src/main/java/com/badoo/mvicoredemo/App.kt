@@ -17,7 +17,8 @@ import javax.inject.Inject
 @HiltAndroidApp
 class App : Application() {
 
-    @Inject lateinit var recordStore: RecordStore
+    @Inject
+    lateinit var recordStore: RecordStore
 
     private val defaultStore = DefaultPluginStore(BuildConfig.APPLICATION_ID)
 

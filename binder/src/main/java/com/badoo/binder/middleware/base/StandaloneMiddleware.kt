@@ -7,7 +7,7 @@ internal class StandaloneMiddleware<In : Any>(
     private val wrappedMiddleware: Middleware<In, In>,
     name: String? = null,
     postfix: String? = null
-): Middleware<In, In>(wrappedMiddleware), Disposable {
+) : Middleware<In, In>(wrappedMiddleware), Disposable {
 
     private var bound = false
     private var disposed = false

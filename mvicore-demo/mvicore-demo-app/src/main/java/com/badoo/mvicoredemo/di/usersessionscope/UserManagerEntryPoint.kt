@@ -7,5 +7,5 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 @EntryPoint
 interface UserManagerEntryPoint {
-  fun userManager(): UserManager
+    fun userManager(): UserManager
 }

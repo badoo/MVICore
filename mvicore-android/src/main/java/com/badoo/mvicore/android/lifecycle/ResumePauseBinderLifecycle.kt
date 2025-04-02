@@ -5,10 +5,9 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Lifecycle as AndroidLifecycle
 import com.badoo.binder.lifecycle.Lifecycle as BinderLifecycle
 
-
 class ResumePauseBinderLifecycle(
     androidLifecycle: AndroidLifecycle
-): BaseAndroidBinderLifecycle(
+) : BaseAndroidBinderLifecycle(
     androidLifecycle,
     { sendEvent ->
         object : DefaultLifecycleObserver {

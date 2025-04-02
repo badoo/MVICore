@@ -2,11 +2,11 @@ package com.badoo.mvicore.utils
 
 import io.reactivex.rxjava3.exceptions.CompositeException
 import io.reactivex.rxjava3.plugins.RxJavaPlugins
-import java.util.Collections
 import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.extension.AfterEachCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
+import java.util.Collections
 
 class RxErrorRule : BeforeEachCallback, AfterEachCallback {
 

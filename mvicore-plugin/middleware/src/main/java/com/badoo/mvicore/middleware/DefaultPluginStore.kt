@@ -26,7 +26,7 @@ class DefaultPluginStore(
     private val elementsCacheSize: Int = 512,
     private val disposables: CompositeDisposable = CompositeDisposable(),
     ignoreOnSerialization: (Any?) -> Boolean = { false }
-): IdeaPluginMiddleware.EventStore, Disposable by disposables {
+) : IdeaPluginMiddleware.EventStore, Disposable by disposables {
     private val events = PublishSubject.create<Event>()
     private val socket = PluginSocketThread(port, elementsCacheSize * 2, events)
     private val queueWatcher = QueueWatcher(ReferenceQueue(), ::connectionComplete)
@@ -61,7 +61,7 @@ class DefaultPluginStore(
         }
     }
 
-    override fun <T: Any> onElement(connection: Connection<out Any, out Any>, element: T) {
+    override fun <T : Any> onElement(connection: Connection<out Any, out Any>, element: T) {
         runInBackground(connection to element) { (connection, element) ->
             val event = Event.Item(
                 connection = connection.parse(),
@@ -91,10 +91,12 @@ class DefaultPluginStore(
 
     private fun onSocketEvent(event: PluginSocketThread.Connected) {
         events.onNext(Event.Connect(name))
-        events.onNext(Event.Init(
-            activeConnections.toList(),
-            lastElements.toList()
-        ))
+        events.onNext(
+            Event.Init(
+                activeConnections.toList(),
+                lastElements.toList()
+            )
+        )
     }
 
     private fun <T : Any> runInBackground(element: T, block: (T) -> Unit) {

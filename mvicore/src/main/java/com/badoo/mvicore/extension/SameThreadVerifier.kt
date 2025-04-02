@@ -3,7 +3,7 @@ package com.badoo.mvicore.extension
 class SameThreadVerifier(private val clazz: Class<*>) {
 
     companion object {
-        var isEnabled : Boolean = true
+        var isEnabled: Boolean = true
     }
 
     private val originalThreadId: Long

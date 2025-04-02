@@ -16,14 +16,14 @@ import java.util.Collections
 class SocketObservable(
     project: Project,
     private val port: Int
-): ObservableSource<JsonElement> by Observable.create({ emitter ->
+) : ObservableSource<JsonElement> by Observable.create({ emitter ->
     val parser = JsonParser()
     if (!forwardPort(project, port)) {
         emitter.onComplete()
         return@create
     }
 
-    object : Thread( "mvicore-plugin-server") {
+    object : Thread("mvicore-plugin-server") {
         private var cancellables = Collections.synchronizedList(
             mutableListOf({ stopForwarding(project, port).ignore() })
         )
@@ -54,10 +54,8 @@ class SocketObservable(
                             emitter.onNext(parser.parse(line))
                         }
                     }
-                }
-                catch (e: SocketException) {
-                }
-                catch (e: Exception) {
+                } catch (e: SocketException) {
+                } catch (e: Exception) {
                     project.showError("Error while reading from socket:", e)
                 }
             }
@@ -66,4 +64,4 @@ class SocketObservable(
     }.start()
 })
 
-private fun Any.ignore() { }
+private fun Any.ignore() {}

@@ -52,7 +52,7 @@ fun <In : Any> Consumer<In>.wrapWithMiddleware(
         "com.badoo.binder.middleware.wrapWithMiddleware"
     )
 )
-fun <In: Any> Consumer<In>.wrap(
+fun <In : Any> Consumer<In>.wrap(
     standalone: Boolean = true,
     name: String? = null,
     postfix: String? = null,

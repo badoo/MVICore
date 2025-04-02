@@ -15,7 +15,11 @@ data class MiddlewareConfiguration(
         standalone: Boolean
     ): Consumer<T> {
         var current = consumerToWrap
-        val middlewares = if (condition.shouldWrap(targetToCheck, name, standalone)) factories else listOf()
+        val middlewares = if (condition.shouldWrap(targetToCheck, name, standalone)) {
+            factories
+        } else {
+            listOf()
+        }
         middlewares.forEach {
             current = it.invoke(current) as Middleware<Any, T>
         }

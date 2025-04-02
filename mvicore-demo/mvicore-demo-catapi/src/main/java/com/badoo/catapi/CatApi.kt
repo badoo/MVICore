@@ -10,7 +10,6 @@ import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-
 interface CatApi {
 
     @GET("images/get")
@@ -34,7 +33,8 @@ interface CatApi {
                     Persister(
                         AnnotationStrategy()
                     )
-                ))
+                )
+            )
             .build()
 
         val service = retrofit.create(CatApi::class.java)

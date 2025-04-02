@@ -11,7 +11,8 @@ import javax.swing.SwingUtilities
 
 fun Project.showError(message: String, ex: Exception? = null) {
     val exception = ex?.convertToString() ?: ""
-    val notification = notificationGroup.createNotification(message + "\n" + exception, NotificationType.ERROR)
+    val notification =
+        notificationGroup.createNotification(message + "\n" + exception, NotificationType.ERROR)
     SwingUtilities.invokeLater {
         Notifications.Bus.notify(notification, this)
     }

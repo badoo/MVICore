@@ -6,7 +6,7 @@ import com.badoo.mvicore.consumer.util.Logger
 import io.reactivex.rxjava3.functions.Consumer
 import java.util.Locale
 
-class LoggingMiddleware<Out: Any, In: Any>(
+class LoggingMiddleware<Out : Any, In : Any>(
     wrapped: Consumer<In>,
     private val logger: Logger,
     private val config: Config = Config()

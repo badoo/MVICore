@@ -42,7 +42,8 @@ open class ReducerFeature<Wish : Any, State : Any, News : Any>(
             just(wish)
     }
 
-    abstract class SimpleNewsPublisher<in Wish : Any, in State : Any, out News : Any> : NewsPublisher<Wish, Wish, State, News> {
+    abstract class SimpleNewsPublisher<in Wish : Any, in State : Any, out News : Any> :
+        NewsPublisher<Wish, Wish, State, News> {
         override fun invoke(wish: Wish, effect: Wish, state: State): News? =
             invoke(wish, state)
 

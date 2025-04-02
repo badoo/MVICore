@@ -40,11 +40,11 @@ class BinderTest {
         binder.bind(source to anyConsumer using IntToString)
     }
 
-    object IntToString: (Int) -> String {
+    object IntToString : (Int) -> String {
         override fun invoke(it: Int): String = it.toString()
     }
 
-    object TestConnector: Connector<Int, String> {
+    object TestConnector : Connector<Int, String> {
         override fun invoke(it: ObservableSource<out Int>): ObservableSource<String> =
             Observable.wrap(it).flatMap {
                 Observable.just(it.toString(), (it + 1).toString())

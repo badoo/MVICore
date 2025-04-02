@@ -13,7 +13,8 @@ class ClearAction(
     private val currentElement: Tree
 ) : AnAction() {
     init {
-        templatePresentation.icon = ActionManager.getInstance().iconFrom(IdeActions.CONSOLE_CLEAR_ALL)
+        templatePresentation.icon =
+            ActionManager.getInstance().iconFrom(IdeActions.CONSOLE_CLEAR_ALL)
     }
 
     override fun actionPerformed(e: AnActionEvent) {

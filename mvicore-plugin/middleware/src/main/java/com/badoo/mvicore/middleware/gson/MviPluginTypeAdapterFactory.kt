@@ -12,7 +12,9 @@ import com.google.gson.stream.JsonWriter
 import java.util.IdentityHashMap
 import kotlin.concurrent.getOrSet
 
-internal class MviPluginTypeAdapterFactory(private val ignoreValues: (Any?) -> Boolean) : TypeAdapterFactory {
+internal class MviPluginTypeAdapterFactory(
+    private val ignoreValues: (Any?) -> Boolean
+) : TypeAdapterFactory {
 
     private val map: ThreadLocal<IdentityHashMap<Any, Any>> = ThreadLocal()
 

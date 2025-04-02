@@ -4,7 +4,9 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Observable.wrap
 import io.reactivex.rxjava3.core.ObservableSource
 
-internal class NotNullConnector<Out : Any, In : Any>(private val mapper: (Out) -> In?): Connector<Out, In> {
+internal class NotNullConnector<Out : Any, In : Any>(
+    private val mapper: (Out) -> In?
+) : Connector<Out, In> {
     override fun invoke(element: ObservableSource<out Out>): ObservableSource<In> =
         wrap(element)
             .flatMap {

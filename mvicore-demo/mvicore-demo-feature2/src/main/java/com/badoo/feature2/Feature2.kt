@@ -33,9 +33,11 @@ class Feature2(
     featureScheduler = AndroidMainThreadFeatureScheduler
 ) {
     init {
-        timeCapsule?.register(Feature2::class.java) { state.copy(
-            isLoading = false
-        )}
+        timeCapsule?.register(Feature2::class.java) {
+            state.copy(
+                isLoading = false
+            )
+        }
     }
 
     @Parcelize
@@ -68,7 +70,7 @@ class Feature2(
         override fun invoke(state: State, wish: Wish): Observable<Effect> = when (wish) {
             is LoadNewImage -> loadRandomImage()
                 .map { LoadedImage(it.url!!) as Effect }
-                .startWith(just(StartedLoading))
+                .startWithItem(StartedLoading)
                 .onErrorReturn { ErrorLoading(it) }
         }
 
@@ -83,10 +85,12 @@ class Feature2(
             StartedLoading -> state.copy(
                 isLoading = true
             )
+
             is LoadedImage -> state.copy(
                 isLoading = false,
                 imageUrl = effect.url
             )
+
             is ErrorLoading -> state.copy(
                 isLoading = false
             )

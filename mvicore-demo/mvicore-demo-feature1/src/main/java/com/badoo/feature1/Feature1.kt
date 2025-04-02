@@ -26,6 +26,7 @@ class Feature1 : ReducerFeature<Wish, State, Nothing>(
             IncreaseCounter -> state.copy(
                 counter = state.counter + 1
             )
+
             is SetActiveButton -> state.copy(
                 activeButtonIdx = if (wish.idx != state.activeButtonIdx) wish.idx else null
             )

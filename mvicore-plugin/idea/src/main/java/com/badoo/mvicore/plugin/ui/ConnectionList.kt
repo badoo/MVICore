@@ -4,7 +4,6 @@ import com.badoo.mvicore.plugin.model.ConnectionData
 import com.badoo.mvicore.plugin.utils.toTreeNode
 import com.intellij.ui.TreeSpeedSearch
 import com.intellij.ui.treeStructure.Tree
-import java.util.ArrayList
 import javax.swing.event.TreeSelectionEvent
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
@@ -46,7 +45,8 @@ class ConnectionList : Tree() {
             }
 
 
-            val connection = (path.lastPathComponent as DefaultMutableTreeNode).userObject as ConnectionData
+            val connection =
+                (path.lastPathComponent as DefaultMutableTreeNode).userObject as ConnectionData
             listener?.invoke(connection, event.isAddedPath(i))
         }
     }

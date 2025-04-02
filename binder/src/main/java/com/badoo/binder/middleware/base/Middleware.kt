@@ -5,7 +5,7 @@ import io.reactivex.rxjava3.functions.Consumer
 
 abstract class Middleware<Out : Any, In : Any>(
     protected val wrapped: Consumer<In>
-): Consumer<In> {
+) : Consumer<In> {
 
     open fun onBind(connection: Connection<Out, In>) {
         wrapped.applyIfMiddleware { onBind(connection) }

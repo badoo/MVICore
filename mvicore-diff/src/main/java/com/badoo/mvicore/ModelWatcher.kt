@@ -51,8 +51,10 @@ class ModelWatcher<Model : Any> private constructor(
     )
 
     @ModelWatcherDsl
-    class Builder<Model : Any> @PublishedApi internal constructor() : BuilderBase<Model>, WatchDsl<Model> {
+    class Builder<Model : Any> @PublishedApi internal constructor() : BuilderBase<Model>,
+        WatchDsl<Model> {
         private val watchers = mutableListOf<Watcher<Model, Any?>>()
+
         @PublishedApi
         internal val childWatchers = hashMapOf<Class<out Model>, ModelWatcher<out Model>>()
 
@@ -68,7 +70,7 @@ class ModelWatcher<Model : Any> private constructor(
             ) as Watcher<Model, Any?>
         }
 
-        inline fun <reified SubModel : Model> type(block: ModelWatcher.Builder<SubModel>.() -> Unit) {
+        inline fun <reified SubModel : Model> type(block: Builder<SubModel>.() -> Unit) {
             val childWatcher = modelWatcher(block)
             childWatchers[SubModel::class.java] = childWatcher
         }

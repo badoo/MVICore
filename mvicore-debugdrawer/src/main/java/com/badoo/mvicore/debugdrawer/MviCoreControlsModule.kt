@@ -17,7 +17,7 @@ import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore.Play
 import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore.RecordKey
 import io.palaima.debugdrawer.DebugDrawer
 import io.palaima.debugdrawer.base.DebugModuleAdapter
-import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class MviCoreControlsModule(
     private val recordStore: PlaybackMiddleware.RecordStore
@@ -70,14 +70,21 @@ class MviCoreControlsModule(
                     stopRecording.disable()
                     playback.enable()
                 }
+
                 RECORDING -> {
                     startRecording.disable()
                     stopRecording.enable()
                     playback.disable()
                 }
+
                 FINISHED_PLAYBACK -> {
-                    Toast.makeText(startRecording.context, R.string.finished_playback, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        startRecording.context,
+                        R.string.finished_playback,
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
+
                 PLAYBACK -> {
                     startRecording.disable()
                     stopRecording.disable()
@@ -90,8 +97,8 @@ class MviCoreControlsModule(
     private fun ImageButton.enable() {
         isEnabled = true
         isClickable = true
-        background?.colorFilter  = null
-        drawable?.colorFilter  = null
+        background?.colorFilter = null
+        drawable?.colorFilter = null
     }
 
     private fun ImageButton.disable() {

@@ -3,7 +3,7 @@
   <ManuallySuppressedIssues/>
   <CurrentIssues>
     <ID>EmptyCatchBlock:SocketObservable.kt$SocketObservable.&lt;no name provided>${ }</ID>
-    <ID>EmptyFunctionBlock:SocketObservable.kt${ }</ID>
+    <ID>EmptyFunctionBlock:SocketObservable.kt${}</ID>
     <ID>ForbiddenComment:Adb.kt$//TODO: Select device?</ID>
     <ID>ForbiddenComment:ConnectionList.kt$ConnectionList$// TODO: make more understandable</ID>
     <ID>MagicNumber:MviPluginToolWindowFactory.kt$MviPluginToolWindowFactory$7675</ID>

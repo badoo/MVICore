@@ -6,12 +6,12 @@ import com.badoo.mvicore.feature.FeatureSchedulers.TrampolineFeatureScheduler
 import com.badoo.mvicore.feature.TrampolineFeatureSchedulerTest.TestFeature.Effect
 import com.badoo.mvicore.feature.TrampolineFeatureSchedulerTest.TestFeature.State
 import com.badoo.mvicore.feature.TrampolineFeatureSchedulerTest.TestFeature.Wish
-import io.reactivex.Observable
-import io.reactivex.Scheduler
-import io.reactivex.schedulers.TestScheduler
-import java.util.concurrent.TimeUnit
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Scheduler
+import io.reactivex.rxjava3.schedulers.TestScheduler
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.util.concurrent.TimeUnit
 
 class TrampolineFeatureSchedulerTest {
 

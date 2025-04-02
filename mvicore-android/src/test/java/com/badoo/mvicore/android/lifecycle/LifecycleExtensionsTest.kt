@@ -5,11 +5,10 @@ import androidx.arch.core.executor.TaskExecutor
 import androidx.lifecycle.Lifecycle
 import com.badoo.binder.Binder
 import com.badoo.binder.observeOn
-import io.reactivex.functions.Consumer
-import io.reactivex.internal.schedulers.RxThreadFactory
-import io.reactivex.plugins.RxJavaPlugins
-import io.reactivex.subjects.PublishSubject
-import java.util.concurrent.CountDownLatch
+import io.reactivex.rxjava3.functions.Consumer
+import io.reactivex.rxjava3.internal.schedulers.RxThreadFactory
+import io.reactivex.rxjava3.plugins.RxJavaPlugins
+import io.reactivex.rxjava3.subjects.PublishSubject
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -17,6 +16,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import java.util.concurrent.CountDownLatch
 
 typealias LifecycleEvent = Lifecycle.(Binder.() -> Unit) -> Unit
 
@@ -250,7 +250,7 @@ class LifecycleExtensionsTest {
         private var wasCalled: Boolean = false
         lateinit var threadName: String
 
-        override fun accept(t: Unit?) {
+        override fun accept(t: Unit) {
             wasCalled = true
             threadName = Thread.currentThread().name
         }

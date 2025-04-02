@@ -11,9 +11,9 @@ import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore.Play
 import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore.PlaybackState.RECORDING
 import com.badoo.mvicore.consumer.middleware.PlaybackMiddleware.RecordStore.RecordKey
 import com.badoo.mvicore.consumer.util.Logger
-import io.reactivex.Observable
-import io.reactivex.Scheduler
-import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Scheduler
+import io.reactivex.rxjava3.subjects.BehaviorSubject
 import java.util.concurrent.TimeUnit
 
 class MemoryRecordStore(
@@ -21,7 +21,8 @@ class MemoryRecordStore(
     private val playbackScheduler: Scheduler
 ) : RecordStore {
     private val state: BehaviorSubject<PlaybackState> = BehaviorSubject.createDefault(IDLE)
-    private val records: BehaviorSubject<List<RecordKey>> = BehaviorSubject.createDefault(emptyList())
+    private val records: BehaviorSubject<List<RecordKey>> =
+        BehaviorSubject.createDefault(emptyList())
     private val cachedEvents: MutableMap<Key<*, *>, MutableList<Event>> = mutableMapOf()
     private val lastElementBuffer: MutableMap<Key<*, *>, Any> = mutableMapOf()
     private var isRecording = false
@@ -48,19 +49,29 @@ class MemoryRecordStore(
         }
     }
 
-    override fun <Out: Any, In: Any> register(middleware: PlaybackMiddleware<Out, In>, endpoints: Connection<Out, In>) {
+    override fun <Out : Any, In : Any> register(
+        middleware: PlaybackMiddleware<Out, In>,
+        endpoints: Connection<Out, In>
+    ) {
         cachedEvents[Key(middleware, endpoints)] = mutableListOf()
         updateRecords()
     }
 
-    override fun <Out: Any, In: Any> unregister(middleware: PlaybackMiddleware<Out, In>, endpoints: Connection<Out, In>) {
+    override fun <Out : Any, In : Any> unregister(
+        middleware: PlaybackMiddleware<Out, In>,
+        endpoints: Connection<Out, In>
+    ) {
         val key = Key(middleware, endpoints)
         cachedEvents.remove(key)
         lastElementBuffer.remove(key)
         updateRecords()
     }
 
-    override fun <Out: Any, In: Any> record(middleware: PlaybackMiddleware<Out, In>, endpoints: Connection<Out, In>, element: In) {
+    override fun <Out : Any, In : Any> record(
+        middleware: PlaybackMiddleware<Out, In>,
+        endpoints: Connection<Out, In>,
+        element: In
+    ) {
         val key = Key(middleware, endpoints)
         lastElementBuffer[key] = element
 
@@ -76,7 +87,7 @@ class MemoryRecordStore(
         if (recordBaseTimestampNanos == 0L)
             throw IllegalStateException(
                 "Don't create events when base timestamp is 0, you'll wait forever for the delay on playback. " +
-                "Check if you are in recording state?"
+                        "Check if you are in recording state?"
             )
         else Event(
             delayNanos = System.nanoTime() - recordBaseTimestampNanos,
@@ -103,17 +114,19 @@ class MemoryRecordStore(
             throw IllegalStateException("Trying to playback while still recording")
         }
 
-        cachedEvents.keys
-            .first { it.id == recordKey.id }
-            .let { key ->
-                Observable.fromIterable(cachedEvents[key])
+        cachedEvents
+            .entries
+            .first { it.key.id == recordKey.id }
+            .let { (key, events) ->
+                Observable.fromIterable(events)
                     .delay { Observable.timer(it.delayNanos, TimeUnit.NANOSECONDS) }
                     .observeOn(playbackScheduler)
                     .doOnNext { logger?.invoke("MemoryRecordStore: PLAYBACK: ts: ${it.delayNanos}, event: ${it.obj}") }
                     .map { it.obj }
                     .doOnSubscribe {
                         state.onNext(PLAYBACK)
-                        key.middleWare.startPlayback() }
+                        key.middleWare.startPlayback()
+                    }
                     .doOnTerminate {
                         logger?.invoke("MemoryRecordStore: PLAYBACK FINISHED")
                         state.onNext(FINISHED_PLAYBACK)
@@ -130,7 +143,7 @@ class MemoryRecordStore(
             }
     }
 
-    private data class Key<Out: Any, In: Any>(
+    private data class Key<Out : Any, In : Any>(
         val middleWare: PlaybackMiddleware<Out, In>,
         val connection: Connection<Out, In>
     ) {

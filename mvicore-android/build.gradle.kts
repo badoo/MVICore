@@ -44,7 +44,7 @@ dependencies {
     api(project(":mvicore"))
     api(project(":binder"))
     api(libs.androidx.lifecycle.common)
-    api(libs.rxjava2)
+    api(libs.rxjava3)
 
     implementation(libs.kotlin.stdlib)
     implementation(libs.rxandroid)

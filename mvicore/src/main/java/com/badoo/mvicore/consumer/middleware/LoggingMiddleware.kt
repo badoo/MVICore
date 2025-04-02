@@ -3,10 +3,10 @@ package com.badoo.mvicore.consumer.middleware
 import com.badoo.binder.Connection
 import com.badoo.binder.middleware.base.Middleware
 import com.badoo.mvicore.consumer.util.Logger
-import io.reactivex.functions.Consumer
+import io.reactivex.rxjava3.functions.Consumer
 import java.util.Locale
 
-class LoggingMiddleware<Out: Any, In: Any>(
+class LoggingMiddleware<Out : Any, In : Any>(
     wrapped: Consumer<In>,
     private val logger: Logger,
     private val config: Config = Config()

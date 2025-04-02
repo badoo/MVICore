@@ -8,6 +8,7 @@ import com.badoo.mvicoredemo.auth.logout
 import com.badoo.mvicoredemo.databinding.ActivityMainBinding
 import com.badoo.mvicoredemo.glide.GlideApp
 import com.badoo.mvicoredemo.ui.common.ObservableSourceActivity
+import com.badoo.mvicoredemo.ui.common.init
 import com.badoo.mvicoredemo.ui.main.analytics.FakeAnalyticsTracker
 import com.badoo.mvicoredemo.ui.main.event.UiEvent
 import com.badoo.mvicoredemo.ui.main.event.UiEvent.ButtonClicked
@@ -15,8 +16,7 @@ import com.badoo.mvicoredemo.ui.main.event.UiEvent.ImageClicked
 import com.badoo.mvicoredemo.ui.main.event.UiEvent.PlusClicked
 import com.badoo.mvicoredemo.ui.main.viewmodel.ViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import init
-import io.reactivex.functions.Consumer
+import io.reactivex.rxjava3.functions.Consumer
 import javax.inject.Inject
 
 @AndroidEntryPoint

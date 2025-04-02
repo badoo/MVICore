@@ -33,7 +33,7 @@ android {
 }
 
 dependencies {
-    api(libs.rxjava2)
+    api(libs.rxjava3)
     api(project(":mvicore"))
     api(project(":mvicore-demo:mvicore-demo-catapi"))
 

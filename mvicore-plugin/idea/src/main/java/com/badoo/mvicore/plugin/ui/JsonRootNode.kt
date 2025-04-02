@@ -9,7 +9,11 @@ import javax.swing.tree.TreeNode
 class JsonRootNode(value: Item) : TreeNode {
     private val children = listOf(
         value.connection.toTreeNode(),
-        JsonTreeNode(value.element.childKey, value.element.asJsonObject[value.element.childKey], this)
+        JsonTreeNode(
+            value.element.childKey,
+            value.element.asJsonObject[value.element.childKey],
+            this
+        )
     )
 
     override fun isLeaf(): Boolean = children.isEmpty()

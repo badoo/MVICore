@@ -5,8 +5,8 @@ import com.badoo.mvicore.element.Actor
 import com.badoo.mvicore.element.Bootstrapper
 import com.badoo.mvicore.element.NewsPublisher
 import com.badoo.mvicore.element.Reducer
-import io.reactivex.Observable
-import io.reactivex.Observable.just
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Observable.just
 
 /**
  * An implementation of a single threaded feature.
@@ -42,7 +42,8 @@ open class ReducerFeature<Wish : Any, State : Any, News : Any>(
             just(wish)
     }
 
-    abstract class SimpleNewsPublisher<in Wish : Any, in State : Any, out News : Any> : NewsPublisher<Wish, Wish, State, News> {
+    abstract class SimpleNewsPublisher<in Wish : Any, in State : Any, out News : Any> :
+        NewsPublisher<Wish, Wish, State, News> {
         override fun invoke(wish: Wish, effect: Wish, state: State): News? =
             invoke(wish, state)
 

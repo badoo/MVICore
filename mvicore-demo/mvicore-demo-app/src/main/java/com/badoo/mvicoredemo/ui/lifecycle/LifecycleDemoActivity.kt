@@ -10,9 +10,9 @@ import com.badoo.mvicore.android.lifecycle.CreateDestroyBinderLifecycle
 import com.badoo.mvicore.android.lifecycle.ResumePauseBinderLifecycle
 import com.badoo.mvicore.android.lifecycle.StartStopBinderLifecycle
 import com.badoo.mvicoredemo.databinding.ActivityLifecycleDemoBinding
-import init
-import io.reactivex.functions.Consumer
-import io.reactivex.subjects.PublishSubject
+import com.badoo.mvicoredemo.ui.common.init
+import io.reactivex.rxjava3.functions.Consumer
+import io.reactivex.rxjava3.subjects.PublishSubject
 import timber.log.Timber
 
 class LifecycleDemoActivity : AppCompatActivity() {
@@ -53,6 +53,7 @@ class LifecycleDemoActivity : AppCompatActivity() {
                 binding.drawerLayout.openDrawer(GravityCompat.START)
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
 

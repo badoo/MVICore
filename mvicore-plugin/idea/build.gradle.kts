@@ -37,7 +37,7 @@ tasks {
 dependencies {
     api(project(":mvicore-plugin:common"))
     api(libs.gson)
-    api(libs.rxjava2)
+    api(libs.rxjava3)
 
     implementation(libs.rxkotlin)
     implementation(libs.kotlin.stdlib)

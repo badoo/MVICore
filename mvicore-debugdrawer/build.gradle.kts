@@ -40,7 +40,7 @@ dependencies {
     releaseApi(libs.debugdrawer.noop)
 
     implementation(libs.androidx.constraintlayout)
-    implementation(libs.rxjava2)
+    implementation(libs.rxjava3)
     implementation(libs.kotlin.stdlib)
 
     debugImplementation(libs.debugdrawer.view.impl)

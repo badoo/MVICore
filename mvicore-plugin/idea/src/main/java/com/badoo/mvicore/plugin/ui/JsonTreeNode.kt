@@ -2,7 +2,6 @@ package com.badoo.mvicore.plugin.ui
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonNull
-import java.util.ArrayList
 import java.util.Enumeration
 import javax.swing.tree.TreeNode
 
@@ -24,6 +23,7 @@ class JsonTreeNode(
                     }
                 }
             }
+
             element.isJsonArray -> {
                 val array = element.asJsonArray
                 for (i in 0 until array.size()) {

@@ -2,12 +2,12 @@ package com.badoo.mvicore.middleware
 
 import com.badoo.binder.Connection
 import com.badoo.binder.middleware.base.Middleware
-import io.reactivex.functions.Consumer
+import io.reactivex.rxjava3.functions.Consumer
 
-class IdeaPluginMiddleware<Out: Any, In: Any>(
+class IdeaPluginMiddleware<Out : Any, In : Any>(
     wrapped: Consumer<In>,
     private val store: EventStore
-): Middleware<Out, In>(wrapped) {
+) : Middleware<Out, In>(wrapped) {
 
     override fun onBind(connection: Connection<Out, In>) {
         super.onBind(connection)
@@ -26,7 +26,7 @@ class IdeaPluginMiddleware<Out: Any, In: Any>(
 
     interface EventStore {
         fun onBind(connection: Connection<out Any, out Any>)
-        fun <T: Any> onElement(connection: Connection<out Any, out Any>, element: T)
+        fun <T : Any> onElement(connection: Connection<out Any, out Any>, element: T)
         fun onComplete(connection: Connection<out Any, out Any>)
     }
 }

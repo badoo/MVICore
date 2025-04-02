@@ -37,10 +37,14 @@ class AndroidTimeCapsuleTest {
 
         companion object {
             @JvmField
-            val CREATOR: Parcelable.Creator<SimpleTestParcelable> = object : Parcelable.Creator<SimpleTestParcelable> {
-                override fun createFromParcel(source: Parcel): SimpleTestParcelable = SimpleTestParcelable(source)
-                override fun newArray(size: Int): Array<SimpleTestParcelable?> = arrayOfNulls(size)
-            }
+            val CREATOR: Parcelable.Creator<SimpleTestParcelable> =
+                object : Parcelable.Creator<SimpleTestParcelable> {
+                    override fun createFromParcel(source: Parcel): SimpleTestParcelable =
+                        SimpleTestParcelable(source)
+
+                    override fun newArray(size: Int): Array<SimpleTestParcelable?> =
+                        arrayOfNulls(size)
+                }
         }
     }
 }

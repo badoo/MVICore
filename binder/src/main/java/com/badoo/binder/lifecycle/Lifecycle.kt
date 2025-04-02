@@ -1,7 +1,7 @@
 package com.badoo.binder.lifecycle
 
 import com.badoo.binder.lifecycle.internal.FromObservableSource
-import io.reactivex.ObservableSource
+import io.reactivex.rxjava3.core.ObservableSource
 
 interface Lifecycle : ObservableSource<Lifecycle.Event> {
 
@@ -15,7 +15,7 @@ interface Lifecycle : ObservableSource<Lifecycle.Event> {
         fun manual(): ManualLifecycle =
             ManualLifecycle()
 
-        fun wrap(source: ObservableSource<Event>) : Lifecycle =
+        fun wrap(source: ObservableSource<Event>): Lifecycle =
             FromObservableSource(source)
     }
 

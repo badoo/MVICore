@@ -25,5 +25,5 @@ sealed class Event(val type: String) {
         val name: String
     ) : Event("connect")
 
-    data object Ping: Event("ping")
+    data object Ping : Event("ping")
 }

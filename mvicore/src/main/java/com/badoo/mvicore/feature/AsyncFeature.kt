@@ -1,6 +1,6 @@
 package com.badoo.mvicore.feature
 
-import io.reactivex.Observable
+import io.reactivex.rxjava3.core.Observable
 
 /**
  * [Feature] that explicitly defines its multithreading capabilities.

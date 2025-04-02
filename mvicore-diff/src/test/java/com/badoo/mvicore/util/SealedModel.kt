@@ -7,9 +7,9 @@ sealed class SealedModel {
         val int: Int = 0,
         override val list: List<String> = emptyList(),
         val nullable: Boolean? = null
-    ): SealedModel()
+    ) : SealedModel()
 
-    data object Nothing: SealedModel() {
+    data object Nothing : SealedModel() {
         override val list: List<String> = emptyList()
     }
 }
@@ -19,5 +19,6 @@ sealed class Nested {
         data class Value(val list: List<String>) : SubNested()
         data object Nothing : SubNested()
     }
-    data object Something: Nested()
+
+    data object Something : Nested()
 }

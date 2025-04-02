@@ -9,7 +9,6 @@ import com.badoo.mvicore.plugin.ui.EventList
 import com.badoo.mvicore.plugin.ui.JsonRootNode
 import com.badoo.mvicore.plugin.utils.mainThreadScheduler
 import com.google.gson.JsonElement
-import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
@@ -23,8 +22,8 @@ import com.intellij.ui.JBSplitter
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.treeStructure.Tree
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import java.awt.BorderLayout
 import javax.swing.JPanel
 import javax.swing.JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED
@@ -68,11 +67,12 @@ class MviPluginToolWindowFactory : ToolWindowFactory {
         eventsObservable = Observable.wrap(SocketObservable(project, 7675))
             .observeOn(mainThreadScheduler)
 
-        Disposer.register(project, Disposable { disposables.clear() })
+        Disposer.register(project) { disposables.clear() }
 
         // Left
         val sideActions = createSidePanelActions()
-        val sideActionsBar = ActionManager.getInstance().createActionToolbar(ActionPlaces.COMMANDER_TOOLBAR, sideActions, false)
+        val sideActionsBar = ActionManager.getInstance()
+            .createActionToolbar(ActionPlaces.COMMANDER_TOOLBAR, sideActions, false)
         val left = JPanel(BorderLayout()).apply {
             add(sideActionsBar.component, BorderLayout.WEST)
             add(JBScrollPane(events, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED))
@@ -80,8 +80,13 @@ class MviPluginToolWindowFactory : ToolWindowFactory {
 
         // Right
         val right = JBSplitter(true)
-        right.firstComponent = JBScrollPane(connections, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED)
-        right.secondComponent = JBScrollPane(currentElement, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED)
+        right.firstComponent =
+            JBScrollPane(connections, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED)
+        right.secondComponent = JBScrollPane(
+            currentElement,
+            VERTICAL_SCROLLBAR_AS_NEEDED,
+            HORIZONTAL_SCROLLBAR_AS_NEEDED
+        )
 
         // The pane
         val splitter = JBSplitter()
@@ -89,7 +94,8 @@ class MviPluginToolWindowFactory : ToolWindowFactory {
         splitter.secondComponent = right
 
         val actions = createToolbarActions(project)
-        val toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.COMMANDER_TOOLBAR, actions, true)
+        val toolbar = ActionManager.getInstance()
+            .createActionToolbar(ActionPlaces.COMMANDER_TOOLBAR, actions, true)
         val panel = JPanel(BorderLayout()).apply {
             add(toolbar.component, BorderLayout.NORTH)
             add(splitter)
@@ -111,7 +117,7 @@ class MviPluginToolWindowFactory : ToolWindowFactory {
         return group
     }
 
-    private fun createSidePanelActions() : ActionGroup {
+    private fun createSidePanelActions(): ActionGroup {
         val group = DefaultActionGroup()
 
         val clear = ClearAction(
@@ -126,7 +132,7 @@ class MviPluginToolWindowFactory : ToolWindowFactory {
 
     private fun Tree.setItem(item: Item) {
         val node = JsonRootNode(item)
-        val model =  (model as? DefaultTreeModel) ?: DefaultTreeModel(node).apply { model = this }
+        val model = (model as? DefaultTreeModel) ?: DefaultTreeModel(node).apply { model = this }
         model.setRoot(node)
 
         isRootVisible = false

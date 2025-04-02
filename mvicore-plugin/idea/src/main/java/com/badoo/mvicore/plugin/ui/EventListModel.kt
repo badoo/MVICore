@@ -35,7 +35,12 @@ class EventListModel : ListModel<Item> {
             filteredItems = filteredItems + item
             dataListeners.forEach {
                 it.intervalAdded(
-                    ListDataEvent(this, INTERVAL_ADDED, filteredItems.lastIndex, filteredItems.lastIndex)
+                    ListDataEvent(
+                        this,
+                        INTERVAL_ADDED,
+                        filteredItems.lastIndex,
+                        filteredItems.lastIndex
+                    )
                 )
             }
         }

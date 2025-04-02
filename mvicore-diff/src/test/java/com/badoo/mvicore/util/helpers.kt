@@ -8,7 +8,7 @@ fun <T, Model : Any> testWatcher(
     init: ModelWatcher.Builder<Model>.(result: MutableList<T>) -> Unit
 ): List<T> {
     val updates = mutableListOf<T>()
-    val watcher = modelWatcher<Model> { init(updates) }
+    val watcher = modelWatcher { init(updates) }
     models.forEach { watcher(it) }
     return updates
 }

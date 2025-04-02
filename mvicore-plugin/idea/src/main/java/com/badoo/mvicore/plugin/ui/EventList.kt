@@ -7,7 +7,7 @@ import com.intellij.ui.components.JBList
 import javax.swing.JList
 import javax.swing.ListSelectionModel
 
-class EventList: JBList<Item>() {
+class EventList : JBList<Item>() {
     private val items = EventListModel() // what we show
     private var itemSelectionListener: ((Item) -> Unit)? = null
 
@@ -54,7 +54,13 @@ class EventList: JBList<Item>() {
     }
 
     private class CellRenderer : ColoredListCellRenderer<Item>() {
-        override fun customizeCellRenderer(list: JList<out Item>, value: Item?, index: Int, selected: Boolean, hasFocus: Boolean) {
+        override fun customizeCellRenderer(
+            list: JList<out Item>,
+            value: Item?,
+            index: Int,
+            selected: Boolean,
+            hasFocus: Boolean
+        ) {
             append(value?.name().orEmpty())
         }
 

@@ -26,10 +26,10 @@ import com.badoo.mvicore.element.Actor
 import com.badoo.mvicore.element.Bootstrapper
 import com.badoo.mvicore.element.NewsPublisher
 import com.badoo.mvicore.element.Reducer
-import io.reactivex.Observable
-import io.reactivex.Observable.empty
-import io.reactivex.Observable.just
-import io.reactivex.Scheduler
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Observable.empty
+import io.reactivex.rxjava3.core.Observable.just
+import io.reactivex.rxjava3.core.Scheduler
 import java.util.concurrent.TimeUnit
 
 class TestHelper {
@@ -130,7 +130,7 @@ class TestHelper {
             just(delayedFulfillAmount)
                 .delay(wish.delayMs, TimeUnit.MILLISECONDS, asyncWorkScheduler)
                 .map<TestEffect> { FinishedAsync(it) }
-                .startWith(StartedAsync)
+                .startWithItem(StartedAsync)
 
         private fun emit3effects(): Observable<TestEffect> =
             just(
@@ -140,7 +140,8 @@ class TestHelper {
             )
     }
 
-    class TestReducer(private val invocationCallback: () -> Unit = {}) : Reducer<TestState, TestEffect> {
+    class TestReducer(private val invocationCallback: () -> Unit = {}) :
+        Reducer<TestState, TestEffect> {
         override fun invoke(state: TestState, effect: TestEffect): TestState {
             invocationCallback()
             return when (effect) {
@@ -150,6 +151,7 @@ class TestHelper {
                     counter = state.counter + effect.amount,
                     loading = false
                 )
+
                 is ConditionalThingHappened -> state.copy(counter = state.counter * effect.multiplier)
                 MultipleEffect1 -> state
                 MultipleEffect2 -> state

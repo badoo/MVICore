@@ -17,7 +17,8 @@ import javax.inject.Inject
 @HiltAndroidApp
 class App : Application() {
 
-    @Inject lateinit var recordStore: RecordStore
+    @Inject
+    lateinit var recordStore: RecordStore
 
     private val defaultStore = DefaultPluginStore(BuildConfig.APPLICATION_ID)
 
@@ -31,9 +32,7 @@ class App : Application() {
         Middlewares.configurations.add(
             MiddlewareConfiguration(
                 condition = WrappingCondition.Always,
-                factories = listOf(
-                    { consumer -> LoggingMiddleware(consumer, { Timber.d(it) }) }
-                )
+                factories = listOf { consumer -> LoggingMiddleware(consumer, { Timber.d(it) }) }
             )
         )
 
@@ -46,18 +45,19 @@ class App : Application() {
                         WrappingCondition.IsStandalone
                     )
                 ),
-                factories = listOf(
-                    { consumer -> PlaybackMiddleware(consumer, recordStore, { Timber.d(it) }) }
-                )
+                factories = listOf { consumer ->
+                    PlaybackMiddleware(
+                        consumer,
+                        recordStore
+                    ) { Timber.d(it) }
+                }
             )
         )
 
         Middlewares.configurations.add(
             MiddlewareConfiguration(
                 condition = WrappingCondition.Always,
-                factories = listOf(
-                    { consumer -> IdeaPluginMiddleware(consumer, defaultStore) }
-                )
+                factories = listOf { consumer -> IdeaPluginMiddleware(consumer, defaultStore) }
             )
         )
     }

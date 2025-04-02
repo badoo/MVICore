@@ -2,7 +2,7 @@ package com.badoo.binder.middleware.config
 
 interface WrappingCondition {
 
-    fun shouldWrap(target: Any, name: String?, standalone: Boolean) : Boolean
+    fun shouldWrap(target: Any, name: String?, standalone: Boolean): Boolean
 
     object Always : WrappingCondition {
         override fun shouldWrap(target: Any, name: String?, standalone: Boolean) =
@@ -21,12 +21,12 @@ interface WrappingCondition {
             condition()
     }
 
-    object IsStandalone: WrappingCondition {
+    object IsStandalone : WrappingCondition {
         override fun shouldWrap(target: Any, name: String?, standalone: Boolean): Boolean =
             standalone
     }
 
-    object IsNamed: WrappingCondition {
+    object IsNamed : WrappingCondition {
         override fun shouldWrap(target: Any, name: String?, standalone: Boolean): Boolean =
             name != null
     }

@@ -32,11 +32,11 @@ android {
 }
 
 dependencies {
-    api(libs.rxjava2)
+    api(libs.rxjava3)
     api(libs.retrofit.runtime)
 
     implementation(libs.kotlin.stdlib)
-    implementation(libs.retrofit.adapter.rxjava2)
+    implementation(libs.retrofit.adapter.rxjava3)
     implementation(libs.retrofit.converter.simplexml)
 
     configurations {

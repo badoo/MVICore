@@ -2,9 +2,9 @@ package com.badoo.mvicore.middleware.socket
 
 import com.badoo.mvicore.plugin.model.Event
 import com.google.gson.Gson
-import io.reactivex.Observable
-import io.reactivex.ObservableSource
-import io.reactivex.subjects.PublishSubject
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.ObservableSource
+import io.reactivex.rxjava3.subjects.PublishSubject
 import java.io.IOException
 import java.net.InetAddress
 import java.net.Socket

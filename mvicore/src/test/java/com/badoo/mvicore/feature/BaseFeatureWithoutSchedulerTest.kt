@@ -19,14 +19,14 @@ import com.badoo.mvicore.TestHelper.TestWish.TranslatesTo3Effects
 import com.badoo.mvicore.TestHelper.TestWish.Unfulfillable
 import com.badoo.mvicore.extension.SameThreadVerifier
 import com.badoo.mvicore.onNextEvents
-import io.reactivex.observers.TestObserver
-import io.reactivex.schedulers.TestScheduler
-import io.reactivex.subjects.PublishSubject
-import java.util.concurrent.TimeUnit
+import io.reactivex.rxjava3.observers.TestObserver
+import io.reactivex.rxjava3.schedulers.TestScheduler
+import io.reactivex.rxjava3.subjects.PublishSubject
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.util.concurrent.TimeUnit
 
 class BaseFeatureWithoutSchedulerTest {
     private lateinit var feature: Feature<TestWish, TestState, TestNews>
@@ -40,8 +40,8 @@ class BaseFeatureWithoutSchedulerTest {
     fun prepare() {
         SameThreadVerifier.isEnabled = false
 
-        newsSubject = PublishSubject.create<TestNews>()
-        actorInvocationLog = PublishSubject.create<Pair<TestWish, TestState>>()
+        newsSubject = PublishSubject.create()
+        actorInvocationLog = PublishSubject.create()
         actorInvocationLogTest = actorInvocationLog.test()
         actorScheduler = TestScheduler()
 

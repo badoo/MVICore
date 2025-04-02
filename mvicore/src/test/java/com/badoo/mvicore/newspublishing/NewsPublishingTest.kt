@@ -17,10 +17,9 @@ import com.badoo.mvicore.newspublishing.TestNews.News3
 import com.badoo.mvicore.newspublishing.TestWish.Wish1
 import com.badoo.mvicore.newspublishing.TestWish.Wish2
 import com.badoo.mvicore.newspublishing.TestWish.Wish3
-import io.reactivex.Observable
-import io.reactivex.functions.Consumer
-import io.reactivex.observers.TestObserver
-import java.util.stream.Stream
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.functions.Consumer
+import io.reactivex.rxjava3.observers.TestObserver
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.params.ParameterizedTest
@@ -31,7 +30,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.whenever
-
+import java.util.stream.Stream
 
 sealed class TestWish {
     data object Wish1 : TestWish()
@@ -58,7 +57,8 @@ class ConfigurationArgumentProvider : ArgumentsProvider {
         return Stream.of(
             Parameter(null),
             Parameter(
-                MiddlewareConfiguration(condition = WrappingCondition.Always,
+                MiddlewareConfiguration(
+                    condition = WrappingCondition.Always,
                     factories = listOf { consumer -> createMiddlewareStub(consumer) })
             )
         ).map(Arguments::of)

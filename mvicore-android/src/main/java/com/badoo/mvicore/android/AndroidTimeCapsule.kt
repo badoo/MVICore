@@ -9,11 +9,13 @@ class AndroidTimeCapsule(private val savedState: Bundle?) : TimeCapsule<Parcelab
 
     private val stateSuppliers = hashMapOf<String, () -> Parcelable>()
 
-    override fun <State : Parcelable> get(key: Any): State? = savedState?.getParcelable(key.toString())
+    override fun <State : Parcelable> get(key: Any): State? =
+        savedState?.getParcelable(key.toString())
 
     override fun <State : Parcelable> register(key: Any, stateSupplier: () -> State) {
         stateSuppliers[key.toString()] = stateSupplier
     }
 
-    fun saveState(outState: Bundle) = stateSuppliers.kotlinForEach { entry -> outState.putParcelable(entry.key, entry.value()) }
+    fun saveState(outState: Bundle) =
+        stateSuppliers.kotlinForEach { entry -> outState.putParcelable(entry.key, entry.value()) }
 }

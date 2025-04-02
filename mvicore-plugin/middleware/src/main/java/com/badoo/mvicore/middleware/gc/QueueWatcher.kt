@@ -10,12 +10,12 @@ internal class ConnectionReference(
     ref: Connection<*, *>,
     queue: ReferenceQueue<Connection<*, *>>,
     val data: ConnectionData
-): PhantomReference<Connection<*, *>>(ref, queue)
+) : PhantomReference<Connection<*, *>>(ref, queue)
 
 internal class QueueWatcher(
     private val referenceQueue: ReferenceQueue<Connection<*, *>>,
     private val destroyCallback: (ConnectionData) -> Unit
-): Thread("mvicore-plugin-queue-watcher") {
+) : Thread("mvicore-plugin-queue-watcher") {
 
     private val references = Collections.synchronizedList(mutableListOf<ConnectionReference>())
 
@@ -29,7 +29,7 @@ internal class QueueWatcher(
         }
     }
 
-    fun <T, R> add(ref: Connection<T, R>, data: ConnectionData) {
+    fun <T : Any, R : Any> add(ref: Connection<T, R>, data: ConnectionData) {
         references.add(
             ConnectionReference(ref, referenceQueue, data)
         )

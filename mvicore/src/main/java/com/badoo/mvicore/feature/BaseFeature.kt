@@ -10,16 +10,16 @@ import com.badoo.mvicore.element.WishToAction
 import com.badoo.mvicore.extension.SameThreadVerifier
 import com.badoo.mvicore.extension.asConsumer
 import com.badoo.mvicore.extension.subscribeOnNullable
-import io.reactivex.Observable
-import io.reactivex.ObservableSource
-import io.reactivex.Observer
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Consumer
-import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.subjects.BehaviorSubject
-import io.reactivex.subjects.PublishSubject
-import io.reactivex.subjects.Subject
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.ObservableSource
+import io.reactivex.rxjava3.core.Observer
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.functions.Consumer
+import io.reactivex.rxjava3.kotlin.plusAssign
+import io.reactivex.rxjava3.subjects.BehaviorSubject
+import io.reactivex.rxjava3.subjects.PublishSubject
+import io.reactivex.rxjava3.subjects.Subject
 
 /**
  * A base implementation of a single threaded feature.

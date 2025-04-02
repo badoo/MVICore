@@ -20,20 +20,20 @@ import com.badoo.mvicore.TestHelper.TestWish.Unfulfillable
 import com.badoo.mvicore.extension.SameThreadVerifier
 import com.badoo.mvicore.onNextEvents
 import com.badoo.mvicore.utils.RxErrorRule
-import io.reactivex.Observable
-import io.reactivex.Scheduler
-import io.reactivex.disposables.Disposable
-import io.reactivex.observers.TestObserver
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.schedulers.TestScheduler
-import io.reactivex.subjects.PublishSubject
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Scheduler
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.observers.TestObserver
+import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.schedulers.TestScheduler
+import io.reactivex.rxjava3.subjects.PublishSubject
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 @ExtendWith(RxErrorRule::class)
 class BaseFeatureWithSchedulerTest {

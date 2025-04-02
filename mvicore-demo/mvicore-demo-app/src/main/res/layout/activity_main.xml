@@ -14,10 +14,10 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:layout_constraintTop_toTopOf="parent"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <View
             android:id="@+id/button0"
@@ -110,9 +110,9 @@
             android:id="@+id/counter"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
+            android:gravity="center_vertical"
             android:text="1"
             android:textSize="24sp"
-            android:gravity="center_vertical"
             app:layout_constraintBottom_toBottomOf="@id/image"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/image"
@@ -123,13 +123,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:theme="@style/Widget.AppCompat.Button"
             android:text="@string/settings_show_toasts"
+            android:theme="@style/Widget.AppCompat.Button"
 
+            app:layout_constraintEnd_toStartOf="@id/help"
             app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintTop_toBottomOf="@id/image"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/help" />
+            app:layout_constraintTop_toBottomOf="@id/image" />
 
         <Button
             android:id="@+id/help"
@@ -137,8 +137,8 @@
             android:layout_height="wrap_content"
             android:text="\?"
 
-            app:layout_constraintStart_toEndOf="@id/showToasts"
             app:layout_constraintEnd_toStartOf="@id/signOut"
+            app:layout_constraintStart_toEndOf="@id/showToasts"
             app:layout_constraintTop_toTopOf="@id/showToasts" />
 
         <Button
@@ -146,10 +146,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/action_sign_out"
-            app:layout_constraintTop_toTopOf="@id/help"
-            app:layout_constraintStart_toEndOf="@id/help"
             app:layout_constraintEnd_toEndOf="parent"
-             />
+            app:layout_constraintStart_toEndOf="@id/help"
+            app:layout_constraintTop_toTopOf="@id/help" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
@@ -168,5 +167,5 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
-        app:menu="@menu/main_drawer_menu"/>
+        app:menu="@menu/main_drawer_menu" />
 </androidx.drawerlayout.widget.DrawerLayout>

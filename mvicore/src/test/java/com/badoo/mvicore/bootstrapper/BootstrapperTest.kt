@@ -10,9 +10,9 @@ import com.badoo.mvicore.bootstrapper.BootstrapperTest.Action.Action3
 import com.badoo.mvicore.element.Bootstrapper
 import com.badoo.mvicore.feature.BaseFeature
 import com.badoo.mvicore.feature.Feature
-import io.reactivex.Observable
-import io.reactivex.observers.TestObserver
-import io.reactivex.subjects.ReplaySubject
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.observers.TestObserver
+import io.reactivex.rxjava3.subjects.ReplaySubject
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test

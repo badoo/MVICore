@@ -8,7 +8,7 @@ import com.badoo.mvicore.feature.PostProcessorTestFeature.Effect
 import com.badoo.mvicore.feature.PostProcessorTestFeature.News
 import com.badoo.mvicore.feature.PostProcessorTestFeature.State
 import com.badoo.mvicore.feature.PostProcessorTestFeature.Wish
-import io.reactivex.Observable
+import io.reactivex.rxjava3.core.Observable
 import org.junit.jupiter.api.Test
 
 class BaseFeaturePostProcessorTest {

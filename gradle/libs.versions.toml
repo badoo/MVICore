@@ -1,5 +1,5 @@
 [versions]
-kotlinVersion = "1.9.23"
+kotlinVersion = "2.4.20"
 detekt = "1.22.0"
 dependencyAnalysis = "1.31.0"
 dokka = "1.9.20" # Dokka versions no longer match Kotlin 1:1
